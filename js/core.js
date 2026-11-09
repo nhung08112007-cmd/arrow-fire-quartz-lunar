@@ -62,7 +62,7 @@ const Store = {
   remove(k, id) { const arr = this.list(k); const i = arr.findIndex(x => x.id === id); if (i >= 0) arr.splice(i, 1); this.save(k); },
   settings() {
     return this.get('settings', {
-      apiKey: '', model: 'claude-opus-5-5', baseUrl: 'https://api.anthropic.com', showGate: true,
+      apiKey: '', model: 'gemini-3.8-flash', baseUrl: 'https://api.anthropic.com', showGate: true,
       theme: 'day', name: 'Bạn', yearGoal: 24
     });
   },
