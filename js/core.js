@@ -174,31 +174,26 @@ const AI = {
     return false;
   },
   /** messages: [{role, content}] hoặc prompt: string */
-  async ask({ system = '', prompt, messages, maxTokens = 4000, effort = 'low' }) {
+   async ask({ system = '', prompt, messages, maxTokens = 4000 }) {
     const s = Store.settings();
     if (!s.apiKey) { this.needKey(); throw new Error('Chưa có API key'); }
+    const msgs = messages || [{ role: 'user', content: prompt }];
     const body = {
-      model: s.model || 'claude-opus-5-5',
-      max_tokens: maxTokens,
-      system: (system ? system + '\n' : '') + 'Luôn trả lời bằng tiếng Việt trừ khi được yêu cầu khác. Không dùng markdown thừa.',
-      messages: messages || [{ role: 'user', content: prompt }],
-      output_config: { effort }
+      systemInstruction: { parts: [{ text: (system ? system + '\n' : '') + 'Luôn trả lời bằng tiếng Việt trừ khi được yêu cầu khác. Không dùng markdown thừa.' }] },
+      contents: msgs.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+      generationConfig: { maxOutputTokens: maxTokens }
     };
-    const isDefaultModel = /^claude-(opus-5|fable-5|sonnet-5-5)/.test(body.model);
-    const headers = {
-      'content-type': 'application/json',
-      'x-api-key': s.apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    };
-    if (isDefaultModel) { headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'; body.fallbacks = 'default'; }
-    const res = await fetch((s.baseUrl || 'https://api.anthropic.com').replace(/\/$/, '') + '/v1/messages', {
-      method: 'POST', headers, body: JSON.stringify(body)
+    const model = s.model || 'gemini-3.8-flash';
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': s.apiKey },
+      body: JSON.stringify(body)
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data?.error?.message || ('Lỗi HTTP ' + res.status));
-    if (data.stop_reason === 'refusal') throw new Error('AI từ chối yêu cầu này.');
-    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    const cand = data.candidates?.[0];
+    if (!cand || cand.finishReason === 'SAFETY') throw new Error('AI từ chối hoặc không trả lời được.');
+    return (cand.content?.parts || []).map(p => p.text || '').join('').trim();
   },
   async json(opts) {
     const txt = await this.ask({ ...opts, system: (opts.system || '') + '\nCHỈ trả về JSON hợp lệ, không có chữ nào khác, không bọc trong ```.' });
