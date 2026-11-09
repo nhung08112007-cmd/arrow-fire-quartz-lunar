@@ -343,7 +343,7 @@ const Settings = {
       <section class="set-sec"><h2>✦ Trợ lý AI (Claude)</h2>
         <p class="muted">Các nút ✦ dùng Claude API gọi trực tiếp từ trình duyệt. Khoá API được lưu cục bộ trên máy này — chỉ dùng trên thiết bị cá nhân. Có thể đặt một proxy riêng ở “Base URL” để khỏi để khoá trên trình duyệt.</p>
         <label class="lbl">Anthropic API key</label><div class="row"><input class="inp grow" type="password" id="sKey" value="${esc(S.apiKey)}" placeholder="sk-ant-…"><button class="btn" id="sShow">👁</button></div>
-        <label class="lbl">Mô hình</label><select class="inp" id="sModel">${[['claude-opus-5-5', 'Claude Opus 5.5 (mặc định)'], ['claude-sonnet-5-5', 'Claude Sonnet 5.5 (nhanh hơn)'], ['claude-haiku-5-5', 'Claude Haiku 5.5 (rẻ nhất)'], ['claude-fable-5-1', 'Claude Fable 5.1 (mạnh nhất)']].map(m => `<option value="${m[0]}" ${S.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}</select>
+        <label class="lbl">Mô hình</label><select class="inp" id="sModel">${[['gemini-3.8-flash', 'Gemini 3.8 Flash (mặc định)'], ['gemini-3.1-pro-preview', 'Gemini 3.1 Pro (preview, mạnh hơn)']].map(m => `<option value="${m[0]}" ${S.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}</select>
         <label class="lbl">Base URL</label><input class="inp" id="sBase" value="${esc(S.baseUrl)}">
         <button class="btn" id="sTest">✦ Thử kết nối</button></section>
       <section class="set-sec"><h2>💾 Dữ liệu</h2>
