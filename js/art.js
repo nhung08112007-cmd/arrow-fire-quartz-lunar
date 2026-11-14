@@ -202,7 +202,13 @@ const Art = (() => {
       <path d="M50 80 v10 M34 92 h32" stroke="${INK}" stroke-width="3.4"/>
       <path d="M14 46 a36 36 0 0 0 72 0" fill="none" stroke="#ffd23f" stroke-width="4"/>`, '0 0 100 100', w),
     board: (w = 140, txt = 'A あ 字 é') => svg(`<rect x="6" y="6" width="128" height="78" rx="6" fill="#2f8f6a" stroke="${INK}" stroke-width="3.4"/><rect x="6" y="6" width="128" height="78" rx="6" fill="none" stroke="#b8763e" stroke-width="7" transform="translate(0 0)"/>
-      <text x="70" y="52" text-anchor="middle" font-family="Patrick Hand, Itim" font-size="24" fill="#fff">${txt}</text>
+      ${(() => {
+        const units = t => [...t].reduce((n, ch) => n + (/[\u3000-\u9fff\uac00-\ud7af]/.test(ch) ? 1 : .52), 0);
+        const lines = units(txt) * 24 <= 112 ? [txt] : txt.split(/\s*·\s*/);
+        const fs = Math.min(24, Math.floor(112 / Math.max(...lines.map(units))), Math.floor(64 / lines.length / 1.15));
+        const y0 = 47 - (lines.length - 1) * fs * 1.15 / 2 + fs * .35;
+        return lines.map((l, i) => `<text x="70" y="${(y0 + i * fs * 1.15).toFixed(1)}" text-anchor="middle" font-family="Patrick Hand, Itim, sans-serif" font-size="${fs}" fill="#fff">${l}</text>`).join('');
+      })()}
       <rect x="100" y="76" width="20" height="5" rx="2" fill="#fff" stroke="${INK}" stroke-width="1.4"/>`, '0 0 140 90', w),
     desk: (w = 140) => svg(`<rect x="10" y="40" width="120" height="12" rx="3" fill="#ffad4d" stroke="${INK}" stroke-width="3"/>
       <path d="M20 52 v34 M120 52 v34" stroke="${INK}" stroke-width="4"/>

@@ -152,48 +152,36 @@ button.tag { cursor: pointer; } button.tag.on { background: var(--yellow); color
 .empty h2 { color: var(--text); }
 
 /* =========================================================
-   CỔNG VÀO — bìa tạp chí: máy trứng bổ đôi + chú thích viết tay
+   CỔNG VÀO — trang bìa truyện tranh tràn màn hình
    ========================================================= */
-.gate {
-  position: fixed; inset: 0; z-index: 500; overflow: hidden auto; color: #2a2346; font-family: var(--fb);
-  background-color: #ffe6f1;
-  background-image: radial-gradient(#ffc6df 4px, transparent 4.5px), radial-gradient(#ffc6df 4px, transparent 4.5px);
-  background-size: 40px 40px; background-position: 0 0, 20px 20px;
-  transition: opacity .55s ease;
-}
+.gate { position: fixed; inset: 0; z-index: 500; overflow: hidden; color: #2a2346; background: #fffdf6; transition: opacity .55s ease; }
 .gate.leave { opacity: 0; }
-.g3-skip { position: fixed; top: max(14px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); z-index: 6; border: 2.5px solid #2a2346; border-radius: 999px; background: #fff; padding: 5px 16px; font: 20px var(--fw); color: #2a2346; box-shadow: 3px 3px 0 #2a2346; cursor: pointer; }
+.g4-scene { position: absolute; inset: 0; transition: transform 1.05s cubic-bezier(.7, 0, .25, 1); will-change: transform; }
+.g4-host, .g4-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.g4-scene canvas { position: absolute; image-rendering: pixelated; border-radius: 2px; }
+.g4-grain { position: absolute; inset: 0; pointer-events: none; opacity: .28; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .35 0 0 0 .3 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.g3-skip { position: fixed; top: max(12px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); z-index: 6; border: 2.5px solid #2a2346; border-radius: 999px; background: #fff; padding: 4px 16px; font: 20px var(--fw); color: #2a2346; box-shadow: 3px 3px 0 #2a2346; cursor: pointer; }
 .g3-skip:hover { background: #ffe14d; }
-.g3-wrap { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px max(12px, env(safe-area-inset-left, 0px)) 18px max(12px, env(safe-area-inset-right, 0px)); }
-.g3-cover {
-  position: relative; height: min(calc(100vh - 82px), 1300px); aspect-ratio: 1000 / 1300; max-width: calc(100vw - 24px);
-  background: #fffdf8; border-radius: 4px; transform: rotate(-1.2deg);
-  box-shadow: 0 1px 0 #e9dccf, 0 2px 0 #fff, 0 3px 0 #e9dccf, 0 4px 0 #fff, 0 5px 0 #e2d4c4, 14px 22px 0 rgba(42, 35, 70, .18), 0 30px 60px rgba(120, 40, 90, .2);
-  transition: transform 1.05s cubic-bezier(.7, 0, .25, 1);
-  animation: g3in .7s cubic-bezier(.2, 1.3, .4, 1) both;
-}
-@keyframes g3in { from { transform: rotate(-6deg) translateY(30px) scale(.94); opacity: 0; } }
-.g3-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.g3-cover canvas { position: absolute; left: 38%; top: 58.846%; width: 24%; height: 9.2308%; image-rendering: pixelated; border-radius: 3px; }
-.g3-paper { position: absolute; inset: 0; pointer-events: none; border-radius: 4px; opacity: .22; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .35 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.g4-hint { position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 6; margin: 0; width: max-content; max-width: calc(100vw - 32px); text-align: center; font: 19px var(--fw); color: #2a2346; background: #fff; border: 2.5px solid #2a2346; border-radius: 999px; padding: 3px 18px; box-shadow: 3px 3px 0 #2a2346; }
+.g4-hint kbd { font-size: 15px; }
 
 /* chữ trên bìa */
-.g3-kick { font: 700 21px 'Baloo 2', var(--fb); letter-spacing: 3px; fill: #2a2346; }
-.g3-head { font: 800 38px 'Baloo 2', var(--fb); fill: #2a2346; }
-.g3-t1 { font: 800 182px 'Baloo 2', var(--fb); fill: #ffb6e3; stroke: #2a2346; stroke-width: 9px; paint-order: stroke; text-anchor: middle; letter-spacing: -2px; }
-.g3-t2 { font-family: 'Baloo 2', var(--fb); font-weight: 800; fill: #ffb6e3; stroke: #2a2346; stroke-width: 7px; paint-order: stroke; text-anchor: middle; }
+.g3-kick { font-family: 'Baloo 2', 'Hachi Maru Pop', var(--fb); font-weight: 700; letter-spacing: 3px; fill: #2a2346; }
+.g3-head { font-family: 'Baloo 2', var(--fb); font-weight: 800; fill: #2a2346; }
+.g3-t1 { font-family: 'Baloo 2', var(--fb); font-weight: 800; fill: #ffb3e6; stroke: #2a2346; stroke-width: 10px; paint-order: stroke; text-anchor: middle; }
+.g3-t2 { font-family: 'Baloo 2', var(--fb); font-weight: 800; fill: #ffb3e6; stroke: #2a2346; stroke-width: 8px; paint-order: stroke; text-anchor: middle; }
 .g3-stamp { font: 800 19px 'Baloo 2', var(--fb); fill: #e8475f; text-anchor: middle; }
-.co-t { font: 31px 'Patrick Hand', 'Itim', cursive; fill: #f0602f; }
-.co-d { font: 21px 'Patrick Hand', 'Itim', cursive; fill: #2a2346; }
+.co-t { font-family: 'Itim', 'Patrick Hand', cursive; fill: #f0602f; }
+.co-d { font-family: 'Patrick Hand', 'Itim', cursive; fill: #2a2346; }
 .co-arr { fill: none; stroke: #2a2346; stroke-width: 2.6; }
-.g3-sfx { font: 24px 'Patrick Hand', cursive; fill: #2a2346; }
-.g3-sfx.big { font-size: 34px; fill: #f0602f; }
-.g3-bub { font: 24px 'Patrick Hand', cursive; fill: #2a2346; text-anchor: middle; }
+.g4-jp { font: 30px 'Hachi Maru Pop', 'Yomogi', 'Itim', cursive; fill: #2a2346; }
+.g4-jp.or { fill: #f0602f; font-size: 34px; }
+.g4-jp.pk { fill: #e8247a; }
+.g4-jp.sm { font-size: 24px; }
 .g3-bl { font: 26px 'VT323', monospace; fill: #2a2346; text-anchor: middle; }
 
 /* tương tác */
 .g3-co { cursor: pointer; outline: none; }
-.g3-co text, .g3-co path { transition: fill .15s, stroke .15s; }
 .g3-co:hover .co-t, .g3-co:focus-visible .co-t { fill: #e8247a; text-decoration: underline; }
 .g3-co:hover .co-arr, .g3-co:focus-visible .co-arr { stroke: #e8247a; stroke-width: 3.4; }
 .g3-co.hot .co-t { fill: #e8247a; }
@@ -204,17 +192,11 @@ button.tag { cursor: pointer; } button.tag.on { background: var(--yellow); color
 .g3-ring { transform-box: fill-box; transform-origin: center; animation: g3ring 1.6s ease-out infinite; }
 @keyframes g3ring { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.8); opacity: 0; } }
 .gate.opening .g3-ring { animation: none; opacity: 0; }
-.g3-hint { margin: 0; text-align: center; font: 20px var(--fw); background: #fff; border: 2.5px solid #2a2346; border-radius: 999px; padding: 4px 18px; box-shadow: 3px 3px 0 #2a2346; max-width: 100%; }
-.g3-hint kbd { font-size: 16px; }
-.gate.zooming .g3-cover { animation: none; box-shadow: none; }
-.gate.zooming .g3-hint, .gate.zooming .g3-skip { opacity: 0; transition: opacity .3s; }
+.gate.zooming .g4-hint, .gate.zooming .g3-skip, .gate.zooming .g4-grain { opacity: 0; transition: opacity .3s; }
 .g3-flash { position: fixed; inset: 0; z-index: 7; background: #f6fbf2; opacity: 0; pointer-events: none; transition: opacity .3s; }
 .g3-flash.on { opacity: 1; }
-@media (max-width: 600px) {
-  .g3-cover { height: auto; width: calc(100vw - 24px); transform: none; }
-  .g3-hint { font-size: 17px; }
-}
-@media (prefers-reduced-motion: reduce) { .g3-cover { animation: none; } .g3-ring { animation: none; } }
+@media (max-width: 600px) { .g4-hint { font-size: 16px; padding: 3px 12px; } }
+@media (prefers-reduced-motion: reduce) { .g3-ring { animation: none; } }
 
 /* =========================================================
    SẢNH (mặt cắt nhiều tầng)
