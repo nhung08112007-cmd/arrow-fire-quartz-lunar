@@ -340,21 +340,54 @@ const Settings = {
         <div class="ph-txt"><div class="kicker">Phòng máy</div><h1>Cài đặt</h1><p>Mọi dữ liệu được lưu ngay trong trình duyệt của bạn (IndexedDB). Hãy xuất bản sao lưu thường xuyên.</p></div></header>
       <section class="set-sec"><h2>👤 Bạn</h2><label class="lbl">Tên gọi</label><input class="inp" id="sName" value="${esc(S.name)}">
         <label class="row"><input type="checkbox" id="sGate" ${S.showGate ? 'checked' : ''}> Hiện cảnh “máy trứng” mỗi lần mở trang</label></section>
-      <section class="set-sec"><h2>✦ Trợ lý AI (Claude)</h2>
-        <p class="muted">Các nút ✦ dùng Claude API gọi trực tiếp từ trình duyệt. Khoá API được lưu cục bộ trên máy này — chỉ dùng trên thiết bị cá nhân. Có thể đặt một proxy riêng ở “Base URL” để khỏi để khoá trên trình duyệt.</p>
-        <label class="lbl">Anthropic API key</label><div class="row"><input class="inp grow" type="password" id="sKey" value="${esc(S.apiKey)}" placeholder="sk-ant-…"><button class="btn" id="sShow">👁</button></div>
-        <label class="lbl">Mô hình</label><select class="inp" id="sModel">${[['claude-opus-5-5', 'Claude Opus 5.5 (mặc định)'], ['claude-sonnet-5-5', 'Claude Sonnet 5.5 (nhanh hơn)'], ['claude-haiku-5-5', 'Claude Haiku 5.5 (rẻ nhất)'], ['claude-fable-5-1', 'Claude Fable 5.1 (mạnh nhất)']].map(m => `<option value="${m[0]}" ${S.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}</select>
-        <label class="lbl">Base URL</label><input class="inp" id="sBase" value="${esc(S.baseUrl)}">
-        <button class="btn" id="sTest">✦ Thử kết nối</button></section>
+      <section class="set-sec"><h2>✦ Trợ lý AI</h2>
+        <p class="muted">Các nút ✦ gọi AI trực tiếp từ trình duyệt. Key chỉ lưu trên máy này, không nằm trong code hay trên trang web, nên chỉ nhập trên thiết bị của bạn.</p>
+        <label class="lbl">Nhà cung cấp</label>
+        <div class="seg" id="sProv"><button data-p="gemini" class="${S.provider === 'gemini' ? 'on' : ''}">Gemini (Google, có gói miễn phí)</button><button data-p="claude" class="${S.provider === 'claude' ? 'on' : ''}">Claude (Anthropic)</button></div>
+        <div id="pGemini" ${S.provider === 'gemini' ? '' : 'hidden'}>
+          <label class="lbl" for="sGKey">Gemini API key <small class="muted">(lấy ở Google AI Studio, mục Get API key)</small></label>
+          <div class="row"><input class="inp grow" type="password" id="sGKey" value="${esc(S.geminiKey || '')}" placeholder="AIza…"><button class="btn" data-show="sGKey">👁</button></div>
+          <label class="lbl" for="sGModel">Model</label>
+          <div class="row"><select class="inp grow" id="sGModel"><option value="auto">Tự động chọn (khuyên dùng)</option>${(S.geminiList || []).map(m => `<option value="${m}" ${S.geminiModel === m ? 'selected' : ''}>${m}</option>`).join('')}</select><button class="btn" id="sGList">↻ Tải lại danh sách model</button></div>
+          <p class="muted sm" id="sGInfo">${S.geminiWorking ? `Model chạy được gần nhất: <b>${esc(S.geminiWorking)}</b>. ` : ''}Ở chế độ tự động, app ưu tiên các model Flash (có hạn mức miễn phí) và tự chuyển sang model khác khi một model bị ngừng, hết hạn mức hoặc quá tải.</p>
+        </div>
+        <div id="pClaude" ${S.provider === 'claude' ? '' : 'hidden'}>
+          <label class="lbl" for="sKey">Claude API key <small class="muted">(lấy ở Claude Console, mục API Keys)</small></label>
+          <div class="row"><input class="inp grow" type="password" id="sKey" value="${esc(S.apiKey)}" placeholder="sk-ant-…"><button class="btn" data-show="sKey">👁</button></div>
+          <label class="lbl" for="sModel">Model</label><select class="inp" id="sModel">${[['claude-haiku-5-5', 'Claude Haiku 5.5 (rẻ nhất, đủ cho thẻ từ và sửa lỗi)'], ['claude-sonnet-5-5', 'Claude Sonnet 5.5 (cân bằng)'], ['claude-opus-5-5', 'Claude Opus 5.5 (viết và phân tích sâu)']].map(m => `<option value="${m[0]}" ${S.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}</select>
+          <label class="lbl" for="sBase">Base URL <small class="muted">(chỉ đổi nếu bạn có proxy riêng)</small></label><input class="inp" id="sBase" value="${esc(S.baseUrl)}">
+        </div>
+        <div class="row"><button class="btn pri" id="sTest">✦ Thử kết nối</button><span class="muted sm" id="sTestOut"></span></div></section>
       <section class="set-sec"><h2>💾 Dữ liệu</h2>
         <div class="row"><button class="btn" id="sExp">⇩ Xuất bản sao lưu (.json)</button><button class="btn" id="sImp">⇧ Nhập bản sao lưu</button><button class="btn" id="sSeed">🌱 Nạp dữ liệu mẫu</button><button class="btn danger" id="sWipe">🗑 Xoá sạch</button></div>
         <p class="muted" id="sUsage"></p></section>
       <section class="set-sec"><h2>⌨️ Phím tắt</h2><ul class="tips"><li><kbd>Ctrl</kbd>+<kbd>K</kbd> tìm kiếm</li><li><kbd>Ctrl</kbd>+<kbd>S</kbd> lưu khi viết · <kbd>Ctrl</kbd>+<kbd>H</kbd> tìm & thay</li><li>Chế độ đọc: <kbd>N</kbd> ghi chú · <kbd>F</kbd> tập trung · <kbd>+</kbd>/<kbd>-</kbd> cỡ chữ</li><li>Ôn thẻ: <kbd>Space</kbd> lật · <kbd>1</kbd>–<kbd>4</kbd> chấm điểm</li><li>Lật thẻ: <kbd>←</kbd> <kbd>→</kbd> · <kbd>S</kbd> đọc to</li></ul></section>
     </div>`;
-    const save = () => { S.name = $('#sName').value; S.showGate = $('#sGate').checked; S.apiKey = $('#sKey').value.trim(); S.model = $('#sModel').value; S.baseUrl = $('#sBase').value.trim() || 'https://api.anthropic.com'; Store.save('settings'); };
-    $$('input,select', view).forEach(i => i.addEventListener('change', () => { save(); toast('Đã lưu cài đặt'); }));
-    $('#sShow').onclick = () => { const i = $('#sKey'); i.type = i.type === 'password' ? 'text' : 'password'; };
-    $('#sTest').onclick = async e => { save(); const o = await AI.withSpinner(e.currentTarget, () => AI.ask({ prompt: 'Chào một câu thật dễ thương, xưng là Chữ-tchi, dưới 20 chữ.', maxTokens: 300 })); if (o) toast('✦ ' + o, 'ok', 5000); };
+    AI.cfg();
+    const save = () => {
+      S.name = $('#sName').value; S.showGate = $('#sGate').checked;
+      S.geminiKey = $('#sGKey').value.trim(); S.geminiModel = $('#sGModel').value;
+      S.apiKey = $('#sKey').value.trim(); S.model = $('#sModel').value; S.baseUrl = $('#sBase').value.trim() || 'https://api.anthropic.com';
+      Store.save('settings');
+    };
+    $$('input,select', view).forEach(i => i.addEventListener('change', () => { if (i.id === 'sGKey') { S.geminiList = []; AI._bad.clear(); } save(); toast('Đã lưu cài đặt'); }));
+    $$('[data-show]', view).forEach(b => b.onclick = () => { const i = $('#' + b.dataset.show); i.type = i.type === 'password' ? 'text' : 'password'; });
+    $$('#sProv button').forEach(b => b.onclick = () => { S.provider = b.dataset.p; $$('#sProv button').forEach(x => x.classList.toggle('on', x === b)); $('#pGemini').hidden = S.provider !== 'gemini'; $('#pClaude').hidden = S.provider !== 'claude'; save(); });
+    $('#sGList').onclick = async e => {
+      save(); if (!S.geminiKey) return toast('Nhập Gemini API key trước', 'err');
+      const btn = e.currentTarget; btn.disabled = true;
+      try {
+        const list = await AI.listGemini(true); AI._bad.clear();
+        $('#sGModel').innerHTML = '<option value="auto">Tự động chọn (khuyên dùng)</option>' + list.map(m => `<option value="${m}" ${S.geminiModel === m ? 'selected' : ''}>${m}</option>`).join('');
+        toast(`Tìm thấy ${list.length} model dùng được`);
+      } catch (err) { toast(err.message, 'err', 6000); }
+      btn.disabled = false;
+    };
+    $('#sTest').onclick = async e => {
+      save(); $('#sTestOut').textContent = '';
+      const o = await AI.withSpinner(e.currentTarget, () => AI.ask({ prompt: 'Chào một câu thật dễ thương, xưng là Chữ-tchi, dưới 20 chữ.', maxTokens: 300 }));
+      if (o) { toast('✦ ' + o, 'ok', 5000); $('#sTestOut').innerHTML = `Kết nối được qua <b>${esc(AI.lastModel)}</b>.`; if (S.provider === 'gemini') $('#sGInfo').innerHTML = `Model chạy được gần nhất: <b>${esc(AI.lastModel)}</b>.`; }
+    };
     $('#sExp').onclick = () => download(`chutchi-backup-${today()}.json`, JSON.stringify(Store.exportAll()), 'application/json');
     $('#sImp').onclick = async () => { const f = await pickFile('.json,application/json'); if (!f) return; try { const o = JSON.parse(await f.text()); if (await confirmBox('Nhập sẽ GHI ĐÈ dữ liệu hiện tại. Tiếp tục?')) { Store.importAll(o); toast('Đã nhập xong'); location.reload(); } } catch (e) { toast('File không hợp lệ', 'err'); } };
     $('#sSeed').onclick = () => { Seed.run(true); toast('Đã nạp dữ liệu mẫu 🌱'); };

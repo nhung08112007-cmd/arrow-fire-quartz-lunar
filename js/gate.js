@@ -21,135 +21,170 @@ const Gate = {
   show(onDone) {
     const g = $('#gate');
     g.hidden = false;
-    const cre = (n, o, cls, style) => `<div class="g-cre ${cls}" style="${style}">${Art.creature(n, o)}</div>`;
-    const label = (txt, sub, style, arrow = 'r') => `<div class="callout-lbl" style="${style}"><b>${txt}</b><span>${sub}</span><i class="arr arr-${arrow}"></i></div>`;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const icon = n => Art.pixel(n, { px: 1.5, c: '#8f86b8' });
     g.innerHTML = `
-    <div class="g-sky">
-      <div class="g-dots"></div>
-      ${[...Array(14)].map((_, i) => `<span class="g-star" style="left:${(i * 37) % 100}%;top:${(i * 23) % 60}%;animation-delay:${i * .3}s">${Art.deco.sparkle(14 + (i % 3) * 6, i % 2 ? '#fff' : '#ffe14d')}</span>`).join('')}
-      <div class="g-cloud c1">${Art.deco.cloud(170)}</div>
-      <div class="g-cloud c2">${Art.deco.cloud(120, '#fff6fb')}</div>
-      <div class="g-cloud c3">${Art.deco.cloud(140)}</div>
-      <div class="g-ufo">${Art.deco.ufo(150)}</div>
-    </div>
+    <div class="g2-bg" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i><i class="o4"></i><div class="g2-grain"></div></div>
 
-    <div class="g-title">
-      <div class="g-kicker">✦ Sổ tay đặc biệt · số 01 ✦</div>
-      <h1><span class="t-small">Hành tinh</span><span class="t-big">Chữ-tchi</span></h1>
-      <p class="g-sub">cuốn sổ hiểu hết mọi điều tôi yêu — <em>văn chương, triết học, âm nhạc, hội hoạ, sách & ngôn ngữ</em></p>
-    </div>
+    <header class="g2-top">
+      <span class="g2-mark">${Art.creature('egg', { size: 26 })}<b>chữ-tchi</b></span>
+      <button class="g2-skip" id="gSkip">Bỏ qua <span aria-hidden="true">→</span></button>
+    </header>
 
-    <div class="g-stage">
-      ${label('Phòng Viết', 'nơi chữ được ấp cho nở', 'left:2%;top:6%', 'r')}
-      ${label('Kho Lưu Trữ', 'tủ hồ sơ không đáy, cất mọi bài hay', 'left:0%;top:36%', 'r')}
-      ${label('Hộp Nhạc', 'lên dây cót là hát', 'left:4%;top:66%', 'r')}
-      ${label('Thư Viện Thế Giới', 'sách từ 11 vùng đất', 'right:2%;top:6%', 'l')}
-      ${label('Lớp Ngoại Ngữ', 'thầy Ếch Kính chờ bạn', 'right:0%;top:36%', 'l')}
-      ${label('Thùng Thư', 'gửi được cả cho tương lai', 'right:4%;top:66%', 'l')}
+    <main class="g2-main">
+      <section class="g2-copy">
+        <p class="g2-eyebrow">Sổ tay cá nhân · Số 01</p>
+        <h1 class="g2-title"><span>Hành tinh</span><strong>Chữ‑tchi</strong></h1>
+        <p class="g2-lede">Nơi tôi viết, đọc, lưu giữ và học ngoại ngữ. Mọi thứ được ấp trong một quả trứng nhỏ.</p>
+        <ul class="g2-rooms">
+          <li style="--d:#ff7eb6"><b>Phòng viết</b><span>văn học, triết học, âm nhạc, hội hoạ…</span></li>
+          <li style="--d:#7cc4ff"><b>Kho lưu trữ</b><span>tài liệu từ mọi nguồn</span></li>
+          <li style="--d:#ffcf4a"><b>Thư viện</b><span>sách theo bản đồ thế giới</span></li>
+          <li style="--d:#8fd16a"><b>Lớp ngoại ngữ</b><span>thẻ từ, ôn tập, trò chơi</span></li>
+        </ul>
+      </section>
 
-      <div class="g-device" id="gDevice">
-        <svg viewBox="0 0 360 440" class="dev-svg" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="3.4" fill="#fff" opacity=".7"/><circle cx="16" cy="16" r="2.2" fill="#ff8fc8" opacity=".6"/></pattern>
-          </defs>
-          ${[...Array(11)].map((_, i) => { const a = Math.PI * (1.05 + i * .09); return `<circle cx="${180 + Math.cos(a) * 64 + 64}" cy="${70 + Math.sin(a) * 60}" r="9" fill="#d9dde3" stroke="${INK}" stroke-width="3"/>`; }).join('')}
-          <rect x="166" y="54" width="28" height="16" rx="5" fill="#d9dde3" stroke="${INK}" stroke-width="3"/>
-          <path d="M180 66 C292 66 342 196 342 286 C342 384 272 432 180 432 C88 432 18 384 18 286 C18 196 68 66 180 66Z" fill="#9fdcff" stroke="${INK}" stroke-width="6"/>
-          <path d="M180 66 C292 66 342 196 342 286 C342 384 272 432 180 432 C88 432 18 384 18 286 C18 196 68 66 180 66Z" fill="url(#dots)"/>
-          <path d="M70 160 l20 -18 h180 l20 18 v150 l-20 18 h-180 l-20 -18z" fill="#ffe14d" stroke="${INK}" stroke-width="5"/>
-          <g transform="translate(96 150)">${['pen', 'box', 'book', 'abc'].map((n, i) => `<g transform="translate(${i * 46} 0)">${Art.pixel(n, { px: 1.6 })}</g>`).join('')}</g>
-          <g transform="translate(96 302)">${['note', 'mail', 'pet', 'gear'].map((n, i) => `<g transform="translate(${i * 46} 0)">${Art.pixel(n, { px: 1.6 })}</g>`).join('')}</g>
-          <rect x="94" y="176" width="172" height="120" rx="8" fill="#c9e3b4" stroke="${INK}" stroke-width="4"/>
-          <g class="dev-btn" data-b="A"><circle cx="122" cy="372" r="19" fill="#ffe14d" stroke="${INK}" stroke-width="4.5"/><text x="122" y="408" text-anchor="middle" font-family="VT323" font-size="20" fill="${INK}">A</text></g>
-          <g class="dev-btn pulse" data-b="B"><circle cx="180" cy="386" r="21" fill="#ffe14d" stroke="${INK}" stroke-width="4.5"/><text x="180" y="425" text-anchor="middle" font-family="VT323" font-size="20" fill="${INK}">B</text></g>
-          <g class="dev-btn" data-b="C"><circle cx="238" cy="372" r="19" fill="#ffe14d" stroke="${INK}" stroke-width="4.5"/><text x="238" y="408" text-anchor="middle" font-family="VT323" font-size="20" fill="${INK}">C</text></g>
-          <text x="180" y="122" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="20" fill="${INK}" letter-spacing="2">CHỮ·TCHI</text>
-        </svg>
-        <canvas id="lcd" width="320" height="160"></canvas>
-        <div class="g-hint" id="gHint">bấm <b>B</b> (hoặc Enter) để nở trứng ↓</div>
-      </div>
+      <section class="g2-stage">
+        <div class="g2-zoom" id="gZoom">
+          <div class="g2-float" id="gFloat">
+            <div class="g2-tilt" id="gTilt">
+              <svg viewBox="0 0 360 470" class="g2-svg" xmlns="http://www.w3.org/2000/svg" aria-label="Máy trứng Chữ-tchi">
+                <defs>
+                  <radialGradient id="gShell" cx="34%" cy="26%" r="80%">
+                    <stop offset="0" stop-color="#ffffff"/><stop offset=".32" stop-color="#fdeaf6"/><stop offset=".68" stop-color="#e4d8ff"/><stop offset="1" stop-color="#b9a6f2"/>
+                  </radialGradient>
+                  <linearGradient id="gIri" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#9fdcff" stop-opacity=".0"/><stop offset=".5" stop-color="#9fdcff" stop-opacity=".35"/><stop offset="1" stop-color="#ffb3dd" stop-opacity=".0"/>
+                  </linearGradient>
+                  <linearGradient id="gPlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#efe8ff"/></linearGradient>
+                  <linearGradient id="gLcd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcebd0"/><stop offset="1" stop-color="#c8dcba"/></linearGradient>
+                  <radialGradient id="gBtn" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e2d8fb"/></radialGradient>
+                  <radialGradient id="gBtnB" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#ffb6d6"/><stop offset=".55" stop-color="#ff6fa8"/><stop offset="1" stop-color="#e64a8c"/></radialGradient>
+                  <linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#c7c3d6"/><stop offset="1" stop-color="#8e89a6"/></linearGradient>
+                  <filter id="gBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+                  <filter id="gSoft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#5b4a9a" flood-opacity=".25"/></filter>
+                  <filter id="gInset"><feOffset dy="2"/><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="arithmetic" k2="-1" k3="1" result="s"/><feFlood flood-color="#2a2346" flood-opacity=".35"/><feComposite in2="s" operator="in"/><feComposite in2="SourceGraphic" operator="over"/></filter>
+                </defs>
 
-      ${cre('mascot', { mood: 'wink', size: 130 }, 'cl1 bob', 'left:22%;bottom:4%')}
-      ${cre('prof', { size: 120 }, 'cl2 bob d2', 'right:21%;bottom:3%')}
-      ${cre('note', { size: 74 }, 'cl3 bob d3', 'right:28%;top:2%')}
-      ${cre('cloud', { size: 80, mood: 'joy' }, 'cl4 floaty', 'left:27%;top:0%')}
-      ${cre('booky', { size: 84, mood: 'joy' }, 'cl5 bob d1', 'left:12%;bottom:22%')}
-      ${cre('tomato', { size: 70, mood: 'star' }, 'cl6 bob d2', 'right:12%;bottom:22%')}
-    </div>
+                <!-- móc khoá -->
+                <circle cx="180" cy="30" r="20" fill="none" stroke="url(#gMetal)" stroke-width="5"/>
+                ${[0, 1, 2, 3, 4].map(i => `<circle cx="180" cy="${58 + i * 9}" r="4.2" fill="url(#gMetal)"/>`).join('')}
+                <rect x="166" y="96" width="28" height="18" rx="7" fill="#dcd3f7"/>
 
-    <div class="g-ground">
-      ${[8, 22, 70, 86].map((l, i) => `<span style="left:${l}%">${Art.deco.flower(34, ['#ffd23f', '#ff8fc8', '#7ec8ff', '#b48cff'][i])}</span>`).join('')}
-      <span style="left:46%;bottom:6px">${Art.deco.worm(60)}</span>
-    </div>
+                <!-- vỏ trứng -->
+                <path d="M180 106 C288 106 340 236 340 318 C340 412 270 462 180 462 C90 462 20 412 20 318 C20 236 72 106 180 106Z" fill="url(#gShell)"/>
+                <path d="M180 106 C288 106 340 236 340 318 C340 412 270 462 180 462 C90 462 20 412 20 318 C20 236 72 106 180 106Z" fill="url(#gIri)"/>
+                <path d="M180 106 C288 106 340 236 340 318 C340 412 270 462 180 462 C90 462 20 412 20 318 C20 236 72 106 180 106Z" fill="none" stroke="#7a68c4" stroke-opacity=".28" stroke-width="2"/>
+                <ellipse cx="118" cy="190" rx="44" ry="22" fill="#fff" opacity=".7" filter="url(#gBlur)" transform="rotate(-32 118 190)"/>
 
-    <div class="g-bubbles">
-      <span class="bub" style="left:29%;bottom:30%">chào~!</span>
-      <span class="bub" style="right:27%;bottom:30%">vào học thôi!</span>
-    </div>
-    <button class="g-skip" id="gSkip">bỏ qua ›</button>
-    <div class="g-flash" id="gFlash"></div>`;
+                <!-- mặt máy -->
+                <rect x="72" y="176" width="216" height="168" rx="34" fill="url(#gPlate)" filter="url(#gSoft)"/>
+                <text x="180" y="200" text-anchor="middle" class="g2-brand">CHỮ · TCHI</text>
+                <g transform="translate(104 208)">${['pen', 'box', 'book', 'abc'].map((n, i) => `<g transform="translate(${i * 40} 0)" opacity=".75">${icon(n)}</g>`).join('')}</g>
+                <rect x="96" y="226" width="168" height="98" rx="14" fill="#2a2346"/>
+                <rect x="104" y="232" width="152" height="86" rx="9" fill="url(#gLcd)" filter="url(#gInset)"/>
+                <g transform="translate(104 328)">${['note', 'mail', 'pet', 'gear'].map((n, i) => `<g transform="translate(${i * 40} 0)" opacity=".75">${icon(n)}</g>`).join('')}</g>
 
-    /* ---- màn LCD ---- */
+                <!-- nút -->
+                <g class="g2-btn" data-b="A" tabindex="0" role="button" aria-label="Nút A"><circle cx="118" cy="398" r="17" fill="url(#gBtn)" filter="url(#gSoft)"/><text x="118" y="432" class="g2-lbl">A</text></g>
+                <g class="g2-btn g2-b" data-b="B" tabindex="0" role="button" aria-label="Nút B: mở trứng">
+                  <circle class="g2-ring" cx="180" cy="410" r="24" fill="none" stroke="#ff6fa8" stroke-width="2"/>
+                  <circle cx="180" cy="410" r="24" fill="url(#gBtnB)" filter="url(#gSoft)"/>
+                  <ellipse cx="173" cy="401" rx="9" ry="5" fill="#fff" opacity=".55"/>
+                  <text x="180" y="450" class="g2-lbl">B</text>
+                </g>
+                <g class="g2-btn" data-b="C" tabindex="0" role="button" aria-label="Nút C: bỏ qua"><circle cx="242" cy="398" r="17" fill="url(#gBtn)" filter="url(#gSoft)"/><text x="242" y="432" class="g2-lbl">C</text></g>
+              </svg>
+              <canvas id="lcd" width="320" height="160"></canvas>
+            </div>
+          </div>
+          <div class="g2-floor" aria-hidden="true"></div>
+        </div>
+        <p class="g2-hint" id="gHint">Nhấn nút giữa để mở <kbd>Enter</kbd></p>
+      </section>
+    </main>
+    <div class="g2-flash" id="gFlash"></div>`;
+
+    /* ---- màn LCD ma trận điểm ---- */
     const cv = $('#lcd'), ctx = cv.getContext('2d');
     const W = 32, H = 16, cs = 10;
     let frame = 0, state = 'idle', t0 = 0, raf;
-    const grid = () => { const a = []; for (let y = 0; y < H; y++) a.push(new Array(W).fill(0)); return a; };
-    const blit = (g, spr, ox, oy) => spr.forEach((row, y) => [...row].forEach((ch, x) => { if (ch === '#' && g[oy + y] && ox + x >= 0 && ox + x < W) g[oy + y][ox + x] = 1; }));
-    const draw = g => {
-      ctx.fillStyle = '#c9e3b4'; ctx.fillRect(0, 0, cv.width, cv.height);
+    const grid = () => Array.from({ length: H }, () => new Array(W).fill(0));
+    const blit = (gr, spr, ox, oy) => spr.forEach((row, y) => [...row].forEach((ch, x) => { if (ch === '#' && gr[oy + y] && ox + x >= 0 && ox + x < W) gr[oy + y][ox + x] = 1; }));
+    const draw = gr => {
+      ctx.clearRect(0, 0, cv.width, cv.height);
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-        ctx.fillStyle = g[y][x] ? '#2a2346' : 'rgba(42,35,70,.07)';
+        ctx.fillStyle = gr[y][x] ? 'rgba(42,35,70,.92)' : 'rgba(42,35,70,.06)';
         ctx.fillRect(x * cs + 1, y * cs + 1, cs - 2, cs - 2);
       }
     };
     const S = Art.SPR;
     const loop = ts => {
       frame++;
-      const g = grid();
-      const el = ts - t0;
+      const gr = grid(); const el = ts - t0;
       if (state === 'idle') {
-        const off = Math.floor(frame / 30) % 2 ? 1 : -1;
-        blit(g, S.egg, 10 + off, 2);
-        if (Math.floor(frame / 45) % 2) blit(g, S.note.map(r => r.slice(4)), 25, 2);
-        blit(g, ['#.#', '.#.', '#.#'], 2, 2);
+        blit(gr, S.egg, 10 + (Math.floor(frame / 32) % 2 ? 1 : -1), 2);
+        if (Math.floor(frame / 48) % 2) blit(gr, S.heart, 25, 3);
       } else if (state === 'shake') {
-        const off = (frame % 6 < 3) ? 2 : -2;
-        blit(g, S.egg, 10 + off, 2);
-        if (el > 600) blit(g, ['#.....#', '.#...#.', '..#.#..'], 12 + off, 6);
-        if (el > 1400) { state = 'hatch'; t0 = ts; flash(); Sfx.jingle([392, 523, 659, 784, 1047]); }
-      } else if (state === 'hatch') {
-        const jump = Math.floor(el / 250) % 2 ? 0 : 2;
-        blit(g, el % 800 < 400 ? S.blob : S.blob2, 9, 3 - jump + 2);
-        blit(g, S.heart, 24, 2 + (jump ? 1 : 0));
-        blit(g, S.heart, 1, 7 - (jump ? 1 : 0));
-        if (el > 1700 && state !== 'zoom') { state = 'zoom'; zoom(); }
+        const off = frame % 6 < 3 ? 2 : -2;
+        blit(gr, S.egg, 10 + off, 2);
+        if (el > 600) blit(gr, ['#.....#', '.#...#.', '..#.#..'], 12 + off, 6);
+        if (el > 1300) { state = 'hatch'; t0 = ts; Sfx.jingle([392, 523, 659, 784, 1047]); }
       } else {
-        blit(g, S.blob2, 9, 4);
+        const jump = Math.floor(el / 250) % 2 ? 0 : 2;
+        blit(gr, el % 800 < 400 ? S.blob : S.blob2, 9, 5 - jump);
+        blit(gr, S.heart, 24, 2 + (jump ? 1 : 0)); blit(gr, S.heart, 1, 7 - (jump ? 1 : 0));
+        if (el > 1200 && state === 'hatch') { state = 'zoom'; zoom(); }
       }
-      draw(g);
+      draw(gr);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
-    const flash = () => { const f = $('#gFlash'); f.classList.add('on'); setTimeout(() => f.classList.remove('on'), 260); };
+    /* ---- nghiêng theo chuột ---- */
+    const tilt = $('#gTilt');
+    const onMove = e => {
+      if (reduce || state === 'zoom') return;
+      const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+      tilt.style.setProperty('--ry', (x * 14).toFixed(2) + 'deg');
+      tilt.style.setProperty('--rx', (-y * 10).toFixed(2) + 'deg');
+    };
+    addEventListener('pointermove', onMove);
+
+    /* ---- phóng vào màn hình ---- */
+    let done = false;
     const finish = () => {
+      if (done) return; done = true;
       cancelAnimationFrame(raf);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey); removeEventListener('pointermove', onMove);
       g.classList.add('leave');
-      setTimeout(() => { g.hidden = true; g.innerHTML = ''; g.classList.remove('leave'); onDone(); }, 650);
+      setTimeout(() => { g.hidden = true; g.innerHTML = ''; g.className = 'gate'; onDone(); }, 600);
     };
     const zoom = () => {
-      $('#gHint').textContent = 'chào mừng về nhà ♥';
-      $('#gDevice').classList.add('zoom'); g.classList.add('zooming');
-      setTimeout(finish, 900);
+      if (reduce) return setTimeout(finish, 300);
+      g.classList.add('zooming');
+      tilt.style.setProperty('--rx', '0deg'); tilt.style.setProperty('--ry', '0deg');
+      requestAnimationFrame(() => {
+        const z = $('#gZoom'), zr = z.getBoundingClientRect(), r = cv.getBoundingClientRect();
+        const ox = r.left + r.width / 2 - zr.left, oy = r.top + r.height / 2 - zr.top;
+        const s = Math.max(innerWidth / r.width, innerHeight / r.height) * 1.08;
+        z.style.transformOrigin = `${ox}px ${oy}px`;
+        z.style.transform = `translate(${innerWidth / 2 - (zr.left + ox)}px, ${innerHeight / 2 - (zr.top + oy)}px) scale(${s})`;
+        setTimeout(() => $('#gFlash').classList.add('on'), 700);
+        setTimeout(finish, 1050);
+      });
     };
     const press = b => {
       Sfx.click();
-      if (b === 'B' && state === 'idle') { state = 'shake'; t0 = performance.now(); $('#gHint').textContent = 'rắc… rắc…'; $('.dev-btn.pulse')?.classList.remove('pulse'); }
-      else if (b === 'A') { Sfx.jingle([659, 784, 988]); $('#gHint').innerHTML = 'nút A: chọn — thử nút <b>B</b> nhé!'; }
+      const el = $(`.g2-btn[data-b="${b}"]`, g); el?.classList.add('down'); setTimeout(() => el?.classList.remove('down'), 140);
+      if (b === 'B' && state === 'idle') { state = 'shake'; t0 = performance.now(); g.classList.add('opening'); $('#gHint').textContent = 'Trứng đang nở…'; }
+      else if (b === 'A') { Sfx.jingle([659, 784, 988]); $('#gHint').innerHTML = 'Thử nút giữa nhé <kbd>Enter</kbd>'; }
       else if (b === 'C') finish();
     };
-    $$('.dev-btn', g).forEach(el => el.addEventListener('click', () => { el.classList.add('down'); setTimeout(() => el.classList.remove('down'), 120); press(el.dataset.b); }));
+    $$('.g2-btn', g).forEach(el => {
+      el.addEventListener('click', () => press(el.dataset.b));
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); press(el.dataset.b); } });
+    });
     const onKey = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); press('B'); } if (e.key === 'Escape') finish(); };
     document.addEventListener('keydown', onKey);
     $('#gSkip').onclick = finish;

@@ -48,6 +48,39 @@ const COLORS = ['#2a2346', '#e8475f', '#ff8a3d', '#d4a106', '#3aa35a', '#19b5b0'
 const HILITES = ['#fff176', '#ffc6e0', '#c4ecff', '#cff5c0', '#e3d4ff', '#ffd9b0', 'transparent'];
 
 const Editor = {
+  /** làm sạch HTML dán từ web / Word / Google Docs: giữ cấu trúc (bảng, tiêu đề,
+      danh sách, đậm/nghiêng, link, ảnh), bỏ style lạ làm mất viền bảng, lệch phông */
+  cleanPaste(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('script,style,meta,link,title,xml,colgroup,col,o\\:p').forEach(n => n.remove());
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_COMMENT); const cm = [];
+    while (walker.nextNode()) cm.push(walker.currentNode); cm.forEach(n => n.remove());
+    const unwrap = el => el.replaceWith(...el.childNodes);
+    const KEEP = { a: ['href'], img: ['src', 'alt'], td: ['colspan', 'rowspan'], th: ['colspan', 'rowspan'], ol: ['start'] };
+    [...doc.body.querySelectorAll('*')].reverse().forEach(el => {
+      const tag = el.tagName.toLowerCase();
+      if (tag.includes(':')) return unwrap(el);
+      if (tag === 'b' && /^docs-internal-guid/.test(el.id || '')) return unwrap(el);
+      const st = (el.getAttribute('style') || '').toLowerCase();
+      if (tag === 'span' || tag === 'font') {
+        let inner = el.innerHTML;
+        if (/font-weight:\s*(bold|[6-9]00)/.test(st)) inner = `<b>${inner}</b>`;
+        if (/font-style:\s*italic/.test(st)) inner = `<i>${inner}</i>`;
+        if (/text-decoration[^;]*underline/.test(st)) inner = `<u>${inner}</u>`;
+        const t = doc.createElement('template'); t.innerHTML = inner;
+        return el.replaceWith(t.content);
+      }
+      [...el.attributes].forEach(a => { if (!(KEEP[tag] || []).includes(a.name)) el.removeAttribute(a.name); });
+      if (tag === 'a') { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
+    });
+    doc.body.querySelectorAll('table').forEach(t => {
+      t.className = 'tbl';
+      if (!t.querySelector('th')) { const r = t.querySelector('tr'); if (r && t.rows.length > 1) [...r.cells].forEach(c => { const th = doc.createElement('th'); th.innerHTML = c.innerHTML; c.replaceWith(th); }); }
+      const w = doc.createElement('div'); w.className = 'tbl-wrap'; t.replaceWith(w); w.appendChild(t);
+    });
+    doc.body.querySelectorAll('td p:only-child, th p:only-child').forEach(unwrap);
+    return doc.body.innerHTML.replace(/ {2,}/g, ' ');
+  },
   mount(host, { html = '', onChange, placeholder = 'Bắt đầu viết…', compact = false, context = () => '' } = {}) {
     host.innerHTML = `
     <div class="ed ${compact ? 'compact' : ''}">
@@ -322,8 +355,14 @@ const Editor = {
       }
     }
     area.addEventListener('paste', e => {
-      const items = [...(e.clipboardData?.items || [])];
-      const img = items.find(i => i.type.startsWith('image/'));
+      const cd = e.clipboardData; if (!cd) return;
+      const html = cd.getData('text/html');
+      if (html && /<(table|p|div|h\d|ul|ol|li|br|img|b|strong|i|em|a)\b/i.test(html)) {
+        e.preventDefault();
+        document.execCommand('insertHTML', false, Editor.cleanPaste(html)); changed();
+        return;
+      }
+      const img = [...(cd.items || [])].find(i => i.type.startsWith('image/'));
       if (img) { e.preventDefault(); fileToDataURL(img.getAsFile()).then(d => insert(`<figure class="fig" data-w="100"><img src="${d}"><figcaption>Chú thích…</figcaption></figure><p><br></p>`)); }
     });
     document.addEventListener('mousedown', e => { if (!host.contains(e.target)) $$('.pop.open', tools).forEach(x => x.classList.remove('open')); });

@@ -62,7 +62,7 @@ const Store = {
   remove(k, id) { const arr = this.list(k); const i = arr.findIndex(x => x.id === id); if (i >= 0) arr.splice(i, 1); this.save(k); },
   settings() {
     return this.get('settings', {
-      apiKey: '', model: 'claude-opus-5-5', baseUrl: 'https://api.anthropic.com', showGate: true,
+      provider: 'gemini', geminiKey: '', geminiModel: 'auto', apiKey: '', model: 'claude-opus-5-5', baseUrl: 'https://api.anthropic.com', showGate: true,
       theme: 'day', name: 'Bạn', yearGoal: 24
     });
   },
@@ -166,17 +166,110 @@ const Activity = {
   }
 };
 
-/* ---------- AI (Claude Messages API, gọi thẳng từ trình duyệt) ---------- */
+/* ---------- AI: Gemini (Google) hoặc Claude (Anthropic), gọi thẳng từ trình duyệt ----------
+   Gemini: tự lấy danh sách model còn dùng được, tự chuyển model khi một model
+   bị ngừng / hết hạn mức / quá tải, tự thử lại khi máy chủ bận. */
+const GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta';
 const AI = {
-  ready() { return !!Store.settings().apiKey; },
+  cfg() {
+    const s = Store.settings();
+    if (!s.provider) {                     // chuyển cài đặt cũ sang dạng mới
+      if ((s.apiKey || '').startsWith('AIza')) { s.provider = 'gemini'; s.geminiKey = s.apiKey; s.apiKey = ''; }
+      else s.provider = s.apiKey ? 'claude' : 'gemini';
+      if (/^gemini/.test(s.model || '')) { s.geminiModel = 'auto'; s.model = 'claude-opus-5-5'; }
+      Store.save('settings');
+    }
+    s.geminiModel = s.geminiModel || 'auto';
+    return s;
+  },
+  ready() { const s = this.cfg(); return s.provider === 'gemini' ? !!s.geminiKey : !!s.apiKey; },
   needKey() {
-    toast('Cần nhập API key trong ⚙️ Cài đặt để dùng AI', 'err', 3600);
+    toast(`Cần nhập ${this.cfg().provider === 'gemini' ? 'Gemini' : 'Claude'} API key trong ⚙️ Cài đặt để dùng AI`, 'err', 3600);
     return false;
   },
+  sleep: ms => new Promise(r => setTimeout(r, ms)),
+  _bad: new Set(),          // model đã hỏng trong phiên này
+  lastModel: '',
+
   /** messages: [{role, content}] hoặc prompt: string */
-  async ask({ system = '', prompt, messages, maxTokens = 4000, effort = 'low' }) {
-    const s = Store.settings();
-    if (!s.apiKey) { this.needKey(); throw new Error('Chưa có API key'); }
+  async ask(opts) {
+    const s = this.cfg();
+    if (!this.ready()) { this.needKey(); throw new Error('Chưa có API key'); }
+    return s.provider === 'gemini' ? this.askGemini(opts, s) : this.askClaude(opts, s);
+  },
+
+  /* ===== GEMINI ===== */
+  async listGemini(force = false) {
+    const s = this.cfg();
+    if (!force && s.geminiList?.length && Date.now() - (s.geminiListAt || 0) < 12 * 3600000) return s.geminiList;
+    const res = await fetch(`${GEMINI_API}/models?pageSize=200`, { headers: { 'x-goog-api-key': s.geminiKey } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(this.explain(res.status, data?.error?.message || ''));
+    const ver = n => { const m = n.match(/gemini-(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : 0; };
+    const rank = n => /flash-lite/.test(n) ? 1 : /flash/.test(n) ? 0 : /pro/.test(n) ? 2 : 3;
+    const list = (data.models || [])
+      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map(m => m.name.replace(/^models\//, ''))
+      .filter(n => /^gemini-/.test(n) && !/(embed|image|tts|audio|live|native|robotics|computer|exp-\d|learnlm|aqa)/.test(n))
+      .sort((a, b) => rank(a) - rank(b) || ver(b) - ver(a) || (/preview/.test(a) ? 1 : 0) - (/preview/.test(b) ? 1 : 0) || a.localeCompare(b));
+    s.geminiList = list; s.geminiListAt = Date.now(); Store.save('settings');
+    return list;
+  },
+  async askGemini({ system = '', prompt, messages, json = false }, s) {
+    const msgs = messages || [{ role: 'user', content: prompt }];
+    const body = {
+      systemInstruction: { parts: [{ text: (system ? system + '\n' : '') + 'Luôn trả lời bằng tiếng Việt trừ khi được yêu cầu khác. Không dùng markdown thừa.' }] },
+      contents: msgs.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+      generationConfig: json ? { responseMimeType: 'application/json' } : {}
+    };
+    let list = [];
+    try { list = await this.listGemini(); } catch (e) { if (s.geminiModel === 'auto') throw e; }
+    const order = [...new Set([s.geminiModel !== 'auto' ? s.geminiModel : null, s.geminiWorking, ...list].filter(Boolean))]
+      .filter(m => !this._bad.has(m)).slice(0, 6);
+    if (!order.length) throw new Error('Không còn model Gemini nào dùng được với key này. Bấm “Tải lại danh sách model” trong ⚙️ Cài đặt, hoặc thử lại sau.');
+    let lastErr = '';
+    for (const model of order) {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        let res, data;
+        try {
+          res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:generateContent`, {
+            method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': s.geminiKey }, body: JSON.stringify(body)
+          });
+          data = await res.json().catch(() => ({}));
+        } catch (e) { lastErr = 'Không kết nối được tới Google. Kiểm tra mạng.'; await this.sleep(1500); continue; }
+        if (res.ok) {
+          const cand = data.candidates?.[0];
+          const text = (cand?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('').trim();
+          if (!text) {
+            if (data.promptFeedback?.blockReason || cand?.finishReason === 'SAFETY') throw new Error('Gemini từ chối nội dung này (bộ lọc an toàn).');
+            lastErr = 'Model trả về rỗng.'; break;
+          }
+          if (s.geminiWorking !== model) { s.geminiWorking = model; Store.save('settings'); }
+          this.lastModel = model;
+          return text;
+        }
+        const msg = data?.error?.message || '';
+        lastErr = this.explain(res.status, msg, model);
+        console.warn('[Gemini]', model, res.status, msg);
+        if (res.status === 400 && /api key/i.test(msg)) throw new Error(lastErr);
+        if (res.status === 403) throw new Error(lastErr);
+        const gone = res.status === 404 || /no longer available|not found|not supported/i.test(msg);
+        const zeroQuota = res.status === 429 && /limit:\s*0\b/.test(msg);
+        if (gone || zeroQuota) { this._bad.add(model); break; }           // đổi model khác
+        if (res.status === 429) {                                         // vượt giới hạn theo phút
+          const wait = (data?.error?.details || []).map(d => parseFloat(d.retryDelay)).find(x => x > 0) || 0;
+          if (wait && wait <= 20 && attempt === 0) { toast(`Gemini bận, chờ ${Math.ceil(wait)} giây rồi thử lại…`, 'ok', 2500); await this.sleep(wait * 1000 + 300); continue; }
+          break;
+        }
+        if (res.status >= 500 && attempt === 0) { await this.sleep(1200); continue; }  // quá tải: thử lại 1 lần rồi đổi model
+        break;
+      }
+    }
+    throw new Error(lastErr || 'Gemini không trả lời.');
+  },
+
+  /* ===== CLAUDE ===== */
+  async askClaude({ system = '', prompt, messages, maxTokens = 4000, effort = 'low' }, s) {
     const body = {
       model: s.model || 'claude-opus-5-5',
       max_tokens: maxTokens,
@@ -184,29 +277,41 @@ const AI = {
       messages: messages || [{ role: 'user', content: prompt }],
       output_config: { effort }
     };
-    const isDefaultModel = /^claude-(opus-5|fable-5|sonnet-5-5)/.test(body.model);
-    const headers = {
-      'content-type': 'application/json',
-      'x-api-key': s.apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    };
-    if (isDefaultModel) { headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'; body.fallbacks = 'default'; }
-    const res = await fetch((s.baseUrl || 'https://api.anthropic.com').replace(/\/$/, '') + '/v1/messages', {
-      method: 'POST', headers, body: JSON.stringify(body)
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data?.error?.message || ('Lỗi HTTP ' + res.status));
-    if (data.stop_reason === 'refusal') throw new Error('AI từ chối yêu cầu này.');
-    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    const headers = { 'content-type': 'application/json', 'x-api-key': s.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' };
+    if (/^claude-(opus-5|fable-5|sonnet-5-5)/.test(body.model)) { headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'; body.fallbacks = 'default'; }
+    for (let attempt = 0; ; attempt++) {
+      const res = await fetch((s.baseUrl || 'https://api.anthropic.com').replace(/\/$/, '') + '/v1/messages', { method: 'POST', headers, body: JSON.stringify(body) });
+      const data = await res.json().catch(() => ({}));
+      if ((res.status === 529 || res.status >= 500 || res.status === 429) && attempt < 2) { await this.sleep(2000 * (attempt + 1)); continue; }
+      if (!res.ok) throw new Error(this.explain(res.status, data?.error?.message || '', body.model));
+      if (data.stop_reason === 'refusal') throw new Error('Claude từ chối yêu cầu này.');
+      this.lastModel = body.model;
+      return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    }
   },
+
+  /** đổi lỗi kỹ thuật thành câu dễ hiểu */
+  explain(status, msg, model = '') {
+    const m = model ? ` (${model})` : '';
+    if (status === 400 && /api key/i.test(msg)) return 'API key không hợp lệ. Kiểm tra lại key trong ⚙️ Cài đặt.';
+    if (status === 401) return 'API key không hợp lệ hoặc đã bị xoá.';
+    if (status === 403) return 'Key không có quyền dùng API này (có thể do khu vực hoặc project chưa bật API).';
+    if (status === 404 || /no longer available|not found/i.test(msg)) return `Model${m} đã ngừng hoặc không tồn tại.`;
+    if (status === 429 && /limit:\s*0\b/.test(msg)) return `Model${m} không có hạn mức miễn phí cho key này. Hãy dùng model Flash hoặc bật thanh toán trong Google AI Studio.`;
+    if (status === 429 && /per day|PerDay/i.test(msg)) return 'Đã hết hạn mức miễn phí hôm nay. Thử lại vào ngày mai, hoặc bật thanh toán trong Google AI Studio.';
+    if (status === 429) return 'Gửi quá nhiều yêu cầu trong thời gian ngắn hoặc hết hạn mức. Đợi một chút rồi thử lại.';
+    if (status === 529 || status === 503 || /high demand|overloaded/i.test(msg)) return `Model${m} đang quá tải. Thử lại sau ít phút.`;
+    if (/credit balance/i.test(msg)) return 'Tài khoản Claude hết credit. Nạp thêm trong Claude Console.';
+    return msg || ('Lỗi HTTP ' + status);
+  },
+
   async json(opts) {
-    const txt = await this.ask({ ...opts, system: (opts.system || '') + '\nCHỈ trả về JSON hợp lệ, không có chữ nào khác, không bọc trong ```.' });
+    const txt = await this.ask({ ...opts, json: true, system: (opts.system || '') + '\nCHỈ trả về JSON hợp lệ, không có chữ nào khác, không bọc trong ```.' });
     const a = txt.indexOf('{'), b = txt.lastIndexOf('}');
     const a2 = txt.indexOf('['), b2 = txt.lastIndexOf(']');
     let s = txt;
     if (a2 >= 0 && (a < 0 || a2 < a)) s = txt.slice(a2, b2 + 1); else if (a >= 0) s = txt.slice(a, b + 1);
-    return JSON.parse(s);
+    try { return JSON.parse(s); } catch (e) { throw new Error('AI trả về dữ liệu không đúng định dạng. Bấm lại lần nữa nhé.'); }
   },
   /** chạy kèm hiệu ứng "đang nghĩ" trên nút */
   async withSpinner(btn, fn) {
@@ -214,7 +319,7 @@ const AI = {
     const old = btn ? btn.innerHTML : '';
     if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin">✦</span> Đang nghĩ…'; }
     try { return await fn(); }
-    catch (e) { toast('AI lỗi: ' + e.message, 'err', 5000); }
+    catch (e) { toast('AI lỗi: ' + e.message, 'err', 6000); }
     finally { if (btn) { btn.disabled = false; btn.innerHTML = old; } }
   }
 };

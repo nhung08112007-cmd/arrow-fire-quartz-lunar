@@ -296,11 +296,20 @@ const Lang = {
   bulk(c, sc, after) {
     modal({
       title: '⚡ Thêm hàng loạt', wide: true,
-      body: `<p class="muted">Mỗi dòng một từ. Có thể thêm nghĩa sau dấu <code>|</code> hoặc <code>-</code> (vd: <code>serendipity | sự tình cờ may mắn</code>). Bấm “AI điền” để tự động bổ sung mọi trường còn thiếu.</p>
+      body: `<p class="muted">Mỗi dòng một từ. Có thể thêm nghĩa sau dấu <code>|</code> hoặc <code>-</code> (vd: <code>serendipity | sự tình cờ may mắn</code>). Bấm “AI điền” để tự động bổ sung mọi trường còn thiếu. Cũng có thể dán một mảng JSON <code>[{"word":…,"ipa":…,"pos":…,"meaning":…,"def":…,"usage":…,"examples":[{"s":…,"t":…}],"syn":…,"ant":…}]</code> để nhập đầy đủ các trường.</p>
         <textarea class="inp" id="bk" rows="12" placeholder="ephemeral\nubiquitous | có mặt khắp nơi\n..."></textarea>
         <label class="row"><input type="checkbox" id="bkAi" ${AI.ready() ? 'checked' : ''}> ✦ Dùng AI điền đầy đủ (IPA, từ loại, định nghĩa, ví dụ, đồng/trái nghĩa…)</label>
         <div id="bkProg" class="muted"></div>`,
       actions: [{ label: 'Thêm', cls: 'pri', onClick: async (w) => {
+        const raw = $('#bk', w).value.trim();
+        if (raw.startsWith('[')) {
+          let arr;
+          try { arr = JSON.parse(raw); } catch (e) { toast('JSON chưa đúng: ' + e.message, 'err', 5000); return false; }
+          arr.forEach(o => Store.list('cards').unshift({ id: uid(), courseId: c.id, bookId: sc.bookId, unitId: sc.unitId, part: sc.part, created: Date.now(), tags: o.tags || [], word: o.word || '', ipa: o.ipa || '', pos: o.pos || '', meaning: o.meaning || '', def: o.def || '', usage: o.usage || '', examples: o.examples || [], syn: o.syn || '', ant: o.ant || '', coll: o.coll || '', family: o.family || '', note: o.note || '' }));
+          Store.save('cards'); Activity.add('card', arr.length);
+          toast(`Đã thêm ${arr.length} thẻ 🃏`); after && after();
+          return;
+        }
         const lines = $('#bk', w).value.split('\n').map(l => l.trim()).filter(Boolean);
         if (!lines.length) return false;
         const items = lines.map(l => { const [a, b] = l.split(/\s[|\-–]\s|\|/); return { id: uid(), courseId: c.id, bookId: sc.bookId, unitId: sc.unitId, part: sc.part, word: a.trim(), meaning: (b || '').trim(), examples: [], tags: [] }; });

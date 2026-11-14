@@ -635,3 +635,12 @@ body[data-theme="night"] .arc-card { background: var(--card) !important; }
 @media (max-width: 640px) { .music-panel { left: 8px; right: 8px; width: auto; } .match-grid { grid-template-columns: repeat(3, 1fr); } .quiz-opts { grid-template-columns: 1fr; } .rv-grade { grid-template-columns: 1fr 1fr; } }
 
 #view.full ~ #pet { display: none; }
+
+/* bảng dán từ web / Word / Google Docs */
+.tbl-wrap { overflow-x: auto; margin: 1.2em 0; }
+.tbl-wrap > table { margin: 0; }
+.ed-area table, .prose table { border-collapse: collapse; width: 100%; font-size: .92em; line-height: 1.5; background: transparent; }
+.ed-area table:not(.tbl-wrap > table), .prose table:not(.tbl-wrap > table) { margin: 1.2em 0; }
+.ed-area td, .ed-area th, .prose td, .prose th { border: 1.5px solid currentColor !important; padding: 6px 10px !important; vertical-align: top; text-align: left; }
+.ed-area th, .prose th { background: rgba(255, 207, 74, .35) !important; font-weight: 700; }
+.ed-area tr:nth-child(even) td, .prose tr:nth-child(even) td { background: rgba(124, 196, 255, .08); }
