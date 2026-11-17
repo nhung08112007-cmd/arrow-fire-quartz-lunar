@@ -35,7 +35,7 @@ const QUOTES = [
 const Home = {
   render(view) {
     const posts = Store.list('posts'), arc = Store.list('archive'), books = Store.list('books'), cards = Store.list('cards');
-    const due = cards.filter(c => (c.due || 0) <= Date.now()).length;
+    const due = cards.filter(c => c.seen && (c.due || 0) <= Date.now()).length;
     const letters = Store.list('letters');
     const qs = Store.list('quotes');
     const q = qs.length && Math.random() < .5 ? [qs[Math.floor(Math.random() * qs.length)].text, qs[0].source] : QUOTES[new Date().getDate() % QUOTES.length];
