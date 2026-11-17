@@ -169,13 +169,36 @@ Object.assign(Lang, {
       <label class="rlbl">Từ mới mỗi ngày <input type="number" class="inp sm" id="stNew" value="${S.newPerDay}" min="0" max="500" style="width:80px"></label>
       <div class="row st-more"><span class="muted sm">Hôm nay đã học ${learnedToday} từ mới · còn ${unseen.length} từ chưa học.</span>${unseen.length > fresh.length ? `<button class="btn sm" data-more="10">＋ Học thêm 10 từ</button><button class="btn sm" data-more="20">＋ 20</button><button class="btn sm" data-more="50">＋ 50</button>` : ''}</div>
       <p class="muted sm">Từ mới sẽ được <b>giới thiệu</b> trước (nghe, xem ví dụ, tự đặt câu), rồi <b>kiểm tra lại sau vài thẻ</b>. Thẻ ôn được trộn nhiều dạng bài khác nhau.</p>
-      <button class="btn pri big" id="stGo" ${due.length + fresh.length ? '' : 'disabled'}>▶ Bắt đầu phiên học</button>
+      <div class="row"><button class="btn pri big" id="stGo" ${due.length + fresh.length ? '' : 'disabled'}>▶ Bắt đầu phiên học</button><button class="btn big" id="stPrac" title="Lấy ngẫu nhiên 15 thẻ trong phạm vi để luyện với dạng bài đã chọn, kể cả khi chưa đến hạn">🎯 Luyện thêm 15 thẻ</button></div>
+      <p class="muted sm">Dạng bài bạn chọn được dùng cho cả bước kiểm tra từ mới lẫn thẻ ôn. Dịch câu / Xếp câu / Điền trợ từ dùng câu ví dụ trong thẻ — thiếu câu thì bấm ✦ nhờ AI đặt.</p>
       ${due.length + fresh.length ? '' : `<p class="ok">Hôm nay không còn gì để học ở phạm vi này 🎉 Thử <a href="#/ngoai-ngu/${c.id}/video">nghe chép video</a> hoặc <a href="#/luu-tru">đọc một bài báo</a> để đào thêm từ.</p>`}
     </div>`;
     $$('#stMode button').forEach(b => b.onclick = () => { S.studyMode = b.dataset.m; Store.save('settings'); $$('#stMode button').forEach(x => x.classList.toggle('on', x === b)); });
     $('#stNew').onchange = e => { S.newPerDay = +e.target.value; Store.save('settings'); this.study(el, c, sc); };
     $$('[data-more]', el).forEach(b => b.onclick = () => more(+b.dataset.more));
     $('#stGo').onclick = () => this.runSession(el, c, due, fresh, sc);
+    $('#stPrac').onclick = () => this.practice(el, c, sc);
+  },
+
+  /** AI đặt một câu ví dụ mới (kèm dịch), lưu vào thẻ, rồi gọi done(câu) */
+  async aiSentence(btn, x, c, done) {
+    const old = btn.textContent; btn.disabled = true; btn.textContent = '✦ Đang đặt câu…';
+    try {
+      const have = (x.examples || []).map(e => e.s).join(' | ');
+      const o = await AI.json({ prompt: `Đặt 1 câu ví dụ ${c.name} (${c.lang}) MỚI, ngắn, tự nhiên, mức sơ cấp${isJa(c) ? ' (JLPT N5, ưu tiên ngữ pháp Minna no Nihongo, có dấu cách giữa các cụm như sách)' : ''}, có dùng từ "${x.word}" (${x.ipa || ''}, nghĩa: ${x.meaning || x.def || ''}). Khác các câu đã có: ${have || '(chưa có)'}.\nTrả về JSON {"s":"câu","t":"dịch tiếng Việt tự nhiên"}`, maxTokens: 300 });
+      if (!o || !o.s) throw new Error('AI không trả về câu');
+      const e2 = { s: String(o.s).trim(), t: String(o.t || '').trim(), ai: true };
+      x.examples = [...(x.examples || []), e2]; Store.save('cards');
+      done(e2);
+    } catch (er) { toast('AI chưa đặt câu được: ' + (er.message || er), 'err'); btn.disabled = false; btn.textContent = old; }
+  },
+
+  /* luyện thêm: lấy ngẫu nhiên thẻ trong phạm vi (không cần đến hạn) để thử các dạng bài */
+  practice(el, c, sc, k = 15) {
+    const all = this.cardsIn(c.id, sc || {});
+    const seen = all.filter(x => x.seen), pool = seen.length >= 5 ? seen : all;
+    if (!pool.length) return toast('Phạm vi này chưa có thẻ', 'err');
+    this.runSession(el, c, shuffle(pool).slice(0, k), [], sc);
   },
 
   runSession(el, c, due, fresh, sc) {
@@ -222,12 +245,19 @@ Object.assign(Lang, {
     };
     document.addEventListener('keydown', key);
 
+    /* từ mới: bước kiểm tra dùng đúng dạng bài bạn chọn; Tự trộn thì thỉnh thoảng xếp câu / dịch câu */
+    const testMode = x => {
+      const m = S.studyMode, ex = exOf(x);
+      if (['translate', 'build', 'particle', 'cloze', 'type', 'listen', 'speak'].includes(m)) return m;
+      if (m === 'mix' && ex) { const r = Math.random(); return r < .3 ? 'build' : r < .5 ? 'translate' : null; }
+      return null;
+    };
     const next = () => {
       onKeyAct = null; progress();
       if (!q.length) return finish();
       const it = q.shift(), x = it.x;
       if (it.ph === 'intro') return intro(it);
-      if (it.ph === 'test') return test(it);
+      if (it.ph === 'test') { const m = testMode(x); return m ? review(it, m) : test(it); }
       return review(it, pickMode(x));
     };
     /* 1. giới thiệu từ mới: xem đủ thông tin, nghe, tự đặt câu */
@@ -243,13 +273,28 @@ Object.assign(Lang, {
           ${(x.examples || []).length ? `<ul class="fb-ex">${x.examples.slice(0, 3).map(e => `<li>${esc(e.s)}${e.t ? `<small>${esc(e.t)}</small>` : ''}</li>`).join('')}</ul>` : ''}
           ${x.note ? `<div class="fb-note">💡 ${esc(x.note)}</div>` : ''}
           <label class="lbl">✍️ Đặt một câu của riêng bạn với từ này <small class="muted">(không bắt buộc, nhưng giúp nhớ lâu hơn hẳn)</small></label>
-          <textarea class="inp" id="inMine" rows="2" placeholder="Câu của tôi…"></textarea>
+          <textarea class="inp" id="inMine" rows="2" placeholder="Câu của tôi… (viết tiếng ${esc(c.name)}, hoặc viết tiếng Việt rồi nhờ AI dịch)"></textarea>
+          <div class="row in-ai"><button class="btn sm" id="inFix">✦ AI sửa & dịch câu của tôi</button><button class="btn sm" id="inGen">✦ AI đặt thêm câu ví dụ</button></div><div id="inAI"></div>
           <div class="row"><button class="btn pri big" id="inOk">Đã hiểu, kiểm tra sau ›</button><span class="muted sm">Enter để tiếp</span></div>
         </div></div>`;
       const say = () => Speech.speak(x.word, c.lang, .9); say(); $('#inSay').onclick = say;
+      let fixed = null;
+      $('#inGen').onclick = ev => this.aiSentence(ev.target, x, c, e2 => { $('#inAI').innerHTML = `<div class="ai-fb">Đã thêm vào thẻ: <b>${esc(e2.s)}</b><br><small>${esc(e2.t)}</small></div>`; Speech.speak(e2.s, c.lang, .9); });
+      $('#inFix').onclick = async ev => {
+        const m = $('#inMine').value.trim(); if (!m) return toast('Viết một câu trước đã (tiếng Việt cũng được)');
+        const b = ev.target; b.disabled = true; b.textContent = '✦ Đang xem…';
+        try {
+          const o = await AI.json({ prompt: `Học viên tiếng Việt đang học ${c.name} (${c.lang}), cấp độ sơ cấp, vừa học từ "${x.word}" (${x.ipa || ''}) = "${x.meaning || ''}".\nHọ viết câu: "${m}".\nNếu câu viết bằng tiếng Việt: dịch sang ${c.name} tự nhiên, đơn giản, có dùng từ "${x.word}". Nếu câu bằng ${c.name}: sửa lỗi tối thiểu (giữ ý), rồi dịch sang tiếng Việt.\nTrả về JSON {"s":"câu ${c.name} đúng${isJa(c) ? ', viết như sách sơ cấp: có dấu cách giữa các cụm' : ''}","reading":"${isJa(c) ? 'cách đọc hiragana' : ''}","t":"nghĩa tiếng Việt","ok":true/false (câu gốc đã đúng chưa, nếu là tiếng Việt thì true),"notes":["giải thích ngắn bằng tiếng Việt các lỗi đã sửa"]}`, maxTokens: 700 });
+          fixed = { s: o.s, t: o.t };
+          $('#inAI').innerHTML = `<div class="ai-fb">${o.ok ? '✓ ' : '✎ '}<b>${esc(o.s)}</b> <button class="btn sm" id="inFixSay">🔊</button>${o.reading ? `<br><small>${esc(o.reading)}</small>` : ''}<br>${esc(o.t)}${(o.notes || []).length ? `<ul>${o.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}<small class="muted">Bấm “Đã hiểu” để lưu câu này vào thẻ.</small></div>`;
+          $('#inFixSay').onclick = () => Speech.speak(o.s, c.lang, .9); Speech.speak(o.s, c.lang, .9);
+        } catch (er) { $('#inAI').innerHTML = `<p class="bad">AI chưa trả lời được: ${esc(er.message || er)}</p>`; }
+        b.disabled = false; b.textContent = '✦ AI sửa & dịch câu của tôi';
+      };
       const ok = () => {
         const m = $('#inMine').value.trim();
-        if (m) { x.mine = [...(x.mine || []), m]; x.examples = [...(x.examples || []), { s: m, t: '(câu của tôi)' }]; Store.save('cards'); this.track(c.id, 'sentences'); Activity.add('note'); }
+        if (fixed) { x.mine = [...(x.mine || []), fixed.s]; x.examples = [...(x.examples || []), { s: fixed.s, t: fixed.t, mine: true }]; Store.save('cards'); this.track(c.id, 'sentences'); Activity.add('note'); }
+        else if (m) { x.mine = [...(x.mine || []), m]; x.examples = [...(x.examples || []), { s: m, t: '(câu của tôi)' }]; Store.save('cards'); this.track(c.id, 'sentences'); Activity.add('note'); }
         later({ x, ph: 'test', tries: (it.tries || 0) }, 3); next();
       };
       $('#inOk').onclick = ok;
@@ -318,14 +363,16 @@ Object.assign(Lang, {
         };
         $('#rvCheck').onclick = chk; inp.onkeydown = e => { if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); inp.readOnly ? null : chk(); } };
       } else if (mode === 'translate') {
-        const e = exOf(x); if (!e) return review(it, 'type');
+        const e = it._ex || exOf(x); delete it._ex;
+        if (!e) { stage.innerHTML = head + `<div class="rv-q"><p>Thẻ “${esc(x.word)}” chưa có câu ví dụ để dịch.</p><button class="btn pri" id="trGen">✦ Nhờ AI đặt câu</button> <button class="btn" id="trType">Làm dạng gõ từ</button></div>`; $('#trType').onclick = () => review(it, 'type'); $('#trGen').onclick = ev => this.aiSentence(ev.target, x, c, e2 => { it._ex = e2; review(it, 'translate'); }); return; }
         const toTarget = Math.random() < .65;   // phần lớn: Việt → ngoại ngữ (khó hơn, nhớ lâu hơn)
         const src = toTarget ? e.t : e.s, ans = toTarget ? e.s : e.t;
         stage.innerHTML = head + `<div class="rv-q tr-q">
           <div class="muted sm">${toTarget ? `Dịch sang ${esc(c.name)}` : 'Dịch sang tiếng Việt'} · từ khoá: <b>${rubyWord(x, c)}</b> (${esc(x.meaning || '')})</div>
           <div class="tr-src">${esc(src)} ${toTarget ? '' : '<button class="btn sm" id="trSay">🔊</button>'}</div>
           <textarea class="inp" id="trIn" rows="2" placeholder="Bản dịch của bạn… (Enter để kiểm tra)"></textarea>
-          <div class="row"><button class="btn pri" id="trOk">Kiểm tra ↵</button><button class="btn" id="trShow">Xem đáp án</button></div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
+          <div class="row"><button class="btn pri" id="trOk">Kiểm tra ↵</button><button class="btn" id="trShow">Xem đáp án</button><button class="btn" id="trGen" title="AI đặt một câu mới có từ này (kèm bản dịch) và lưu vào thẻ">✦ Câu khác (AI)</button></div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
+        $('#trGen').onclick = ev => this.aiSentence(ev.target, x, c, e2 => { it._ex = e2; review(it, 'translate'); });
         $('#trSay') && ($('#trSay').onclick = () => Speech.speak(e.s, c.lang, .9));
         if (!toTarget) Speech.speak(e.s, c.lang, .9);
         const inp = $('#trIn'); inp.focus();
@@ -423,6 +470,7 @@ Object.assign(Lang, {
       const grade = g => {
         onKeyAct = null; n++;
         SRS.grade(x, g); this.track(c.id, 'reviews');
+        if (g >= 3 && it.ph === 'test') { learned++; this.track(c.id, 'learned'); }
         if (g >= 3) { right++; this.track(c.id, 'correct'); } else { wrong.push(x); later({ x, ph: 'review' }, 3); }
         Sfx.beep(g < 3 ? 300 : 700 + g * 60, .07);
         // từ hay quên: gợi ý viết mẹo nhớ (mã hoá tinh tế)

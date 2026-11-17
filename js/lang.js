@@ -86,9 +86,22 @@ const hasKanji = t => /[一-龯㐀-䶿]/.test(t || '');
 const rubyWord = (x, c) => {
   const S = Store.settings();
   const reading = (x.ipa || '').split(/[\/／,、]/)[0].trim();
-  if (isJa(c) && S.furigana !== false && hasKanji(x.word) && reading && /[぀-ヿ]/.test(reading)) return `<ruby>${esc(x.word)}<rt>${esc(reading)}</rt></ruby>`;
+  if (isJa(c) && S.furigana !== false && hasKanji(x.word) && reading && /[぀-ヿ]/.test(reading)) return furi(x.word, reading);
   return esc(x.word || '…');
 };
+/** gióng cách đọc với chữ: phần kana giữ nguyên, chỉ chữ Hán mới có furigana */
+function furi(word, reading) {
+  const segs = word.match(/[一-龯㐀-䶿々〆ヵヶ]+|[^一-龯㐀-䶿々〆ヵヶ]+/g) || [word];
+  const isK = t => /[一-龯㐀-䶿々]/.test(t);
+  const reEsc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const plain = t => t.split(/([［\[（(][^］\]）)]*[］\]）)])/).map(p => /^[［\[（(]/.test(p) ? '(?:' + reEsc(kata2hira(p.slice(1, -1))) + ')?' : reEsc(kata2hira(p))).join('');
+  try {
+    const re = new RegExp('^' + segs.map(t => isK(t) ? '(.+?)' : plain(t)).join('') + '$');
+    const m = kata2hira(reading).match(re);
+    if (m) { let k = 1; return segs.map(t => isK(t) ? `<ruby>${esc(t)}<rt>${esc(m[k++])}</rt></ruby>` : esc(t)).join(''); }
+  } catch (e) { }
+  return `<ruby>${esc(word)}<rt>${esc(reading)}</rt></ruby>`;
+}
 /** so đáp án: chấp nhận cả chữ viết, cách đọc (kana) và bỏ qua dấu câu, khoảng trắng */
 /** katakana → hiragana để ハンサム = はんさむ */
 const kata2hira = s => s.replace(/[ァ-ヶ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60));
