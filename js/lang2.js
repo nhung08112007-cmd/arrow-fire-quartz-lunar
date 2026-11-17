@@ -156,22 +156,29 @@ Object.assign(Lang, {
     const all = this.cardsIn(c.id, sc);
     const due = all.filter(x => x.seen && (x.due || 0) <= Date.now()).sort((a, b) => (a.due || 0) - (b.due || 0));
     const learnedToday = this.todayStat(c.id, 'learned');
-    const fresh = all.filter(x => !x.seen).slice(0, Math.max(0, S.newPerDay - learnedToday));
-    const MODES = [['mix', '🔀 Tự trộn (khuyên dùng)'], ['flip', '🃏 Lật thẻ'], ['type', '⌨ Gõ đáp án'], ['cloze', '✍️ Điền chỗ trống'], ['listen', '🎧 Nghe → nghĩa'], ['speak', '🎙 Luyện nói']];
+    const today = new Date().toDateString();
+    if (!S.extraNew || S.extraNew.d !== today) S.extraNew = { d: today, n: 0 };
+    const unseen = all.filter(x => !x.seen);
+    const fresh = unseen.slice(0, Math.max(0, S.newPerDay + S.extraNew.n - learnedToday));
+    // “học thêm”: nâng hạn mức riêng hôm nay để có thêm k từ mới
+    const more = k => { S.extraNew = { d: today, n: Math.max(0, learnedToday + fresh.length + k - S.newPerDay) }; Store.save('settings'); this.study(el, c, sc); };
+    const MODES = [['mix', '🔀 Tự trộn (khuyên dùng)'], ['flip', '🃏 Lật thẻ'], ['type', '⌨ Gõ đáp án'], ['cloze', '✍️ Điền chỗ trống'], ['translate', '🔁 Dịch câu'], ['build', '🧩 Xếp câu'], ...(isJa(c) ? [['particle', '🔣 Điền trợ từ']] : []), ['listen', '🎧 Nghe → nghĩa'], ['speak', '🎙 Luyện nói']];
     el.innerHTML = `<div class="st-start">
       <div class="st-big"><div><b>${due.length}</b><span>thẻ đến hạn</span></div><div><b>${fresh.length}</b><span>từ mới hôm nay</span></div><div><b>${Math.max(1, Math.round((due.length * 8 + fresh.length * 30) / 60))}′</b><span>ước tính</span></div></div>
       <label class="lbl">Cách luyện</label><div class="seg wrap" id="stMode">${MODES.map(m => `<button data-m="${m[0]}" class="${S.studyMode === m[0] ? 'on' : ''}">${m[1]}</button>`).join('')}</div>
-      <label class="rlbl">Từ mới mỗi ngày <input type="number" class="inp sm" id="stNew" value="${S.newPerDay}" min="0" max="50" style="width:70px"></label>
+      <label class="rlbl">Từ mới mỗi ngày <input type="number" class="inp sm" id="stNew" value="${S.newPerDay}" min="0" max="500" style="width:80px"></label>
+      <div class="row st-more"><span class="muted sm">Hôm nay đã học ${learnedToday} từ mới · còn ${unseen.length} từ chưa học.</span>${unseen.length > fresh.length ? `<button class="btn sm" data-more="10">＋ Học thêm 10 từ</button><button class="btn sm" data-more="20">＋ 20</button><button class="btn sm" data-more="50">＋ 50</button>` : ''}</div>
       <p class="muted sm">Từ mới sẽ được <b>giới thiệu</b> trước (nghe, xem ví dụ, tự đặt câu), rồi <b>kiểm tra lại sau vài thẻ</b>. Thẻ ôn được trộn nhiều dạng bài khác nhau.</p>
       <button class="btn pri big" id="stGo" ${due.length + fresh.length ? '' : 'disabled'}>▶ Bắt đầu phiên học</button>
       ${due.length + fresh.length ? '' : `<p class="ok">Hôm nay không còn gì để học ở phạm vi này 🎉 Thử <a href="#/ngoai-ngu/${c.id}/video">nghe chép video</a> hoặc <a href="#/luu-tru">đọc một bài báo</a> để đào thêm từ.</p>`}
     </div>`;
     $$('#stMode button').forEach(b => b.onclick = () => { S.studyMode = b.dataset.m; Store.save('settings'); $$('#stMode button').forEach(x => x.classList.toggle('on', x === b)); });
     $('#stNew').onchange = e => { S.newPerDay = +e.target.value; Store.save('settings'); this.study(el, c, sc); };
-    $('#stGo').onclick = () => this.runSession(el, c, due, fresh);
+    $$('[data-more]', el).forEach(b => b.onclick = () => more(+b.dataset.more));
+    $('#stGo').onclick = () => this.runSession(el, c, due, fresh, sc);
   },
 
-  runSession(el, c, due, fresh) {
+  runSession(el, c, due, fresh, sc) {
     const S = Store.settings();
     // xếp hàng: cứ 3 thẻ ôn thì chen một từ mới (giới thiệu)
     const q = []; const d = [...due], f = [...fresh];
@@ -181,8 +188,14 @@ Object.assign(Lang, {
     const stage = $('#ssStage');
     const later = (item, k) => q.splice(Math.min(q.length, k), 0, item);
     const pickMode = x => {
-      if (S.studyMode !== 'mix') return S.studyMode === 'cloze' && !clozeOf(x) ? 'type' : S.studyMode;
+      const ex = exOf(x);
+      if (S.studyMode !== 'mix') {
+        if (S.studyMode === 'cloze' && !clozeOf(x)) return 'type';
+        if (['translate', 'build', 'particle'].includes(S.studyMode) && !ex) return 'type';
+        return S.studyMode;
+      }
       const opts = ['flip', 'type', 'listen']; if (clozeOf(x)) opts.push('cloze', 'cloze');
+      if (ex && (x.reps || 0) >= 1) { opts.push('translate', 'build'); if (isJa(c) && (x.examples || []).some(e => e.s && particleOf(e))) opts.push('particle'); }
       if ((x.reps || 0) < 2) return Math.random() < .5 ? 'flip' : 'choose';
       return opts[Math.floor(Math.random() * opts.length)];
     };
@@ -194,7 +207,10 @@ Object.assign(Lang, {
       stage.innerHTML = `<div class="ss-end">${Art.creature(Pet.form(), { size: 120, mood: 'star' })}<h2>Xong phiên học!</h2>
         <div class="st-big"><div><b>${n}</b><span>lượt</span></div><div><b>${acc}%</b><span>đúng</span></div><div><b>${learned}</b><span>từ mới đã thuộc</span></div></div>
         ${wrong.length ? `<p>Những từ cần chú ý:</p><div class="pc-tags">${[...new Set(wrong)].map(x => `<span class="tag">${esc(x.word)} · ${esc(x.meaning || '')}</span>`).join('')}</div>` : '<p class="ok">Không sai từ nào, giỏi quá!</p>'}
-        <a class="btn pri" href="#/ngoai-ngu/${c.id}/hanh-trinh">🗺 Xem hành trình</a></div>`;
+        <div class="row center">${(() => { const left = this.cardsIn(c.id, sc || {}).filter(y => !y.seen).length; return left ? `<button class="btn pri" id="ssMore">＋ Học thêm 10 từ mới</button><button class="btn" id="ssMore20">＋ 20 từ</button>` : ''; })()}
+        <a class="btn" href="#/ngoai-ngu/${c.id}/hanh-trinh">🗺 Xem hành trình</a></div></div>`;
+      const goMore = k => { const fr = this.cardsIn(c.id, sc || {}).filter(y => !y.seen).slice(0, k); const S2 = Store.settings(); const today = new Date().toDateString(); S2.extraNew = { d: today, n: Math.max(S2.extraNew && S2.extraNew.d === today ? S2.extraNew.n : 0, this.todayStat(c.id, 'learned') + k - S2.newPerDay) }; Store.save('settings'); this.runSession(el, c, [], fr, sc); };
+      $('#ssMore') && ($('#ssMore').onclick = () => goMore(10)); $('#ssMore20') && ($('#ssMore20').onclick = () => goMore(20));
       $('#ssBar').style.width = '100%'; Sfx.jingle();
     };
     $('#ssEnd').onclick = finish;
@@ -256,7 +272,7 @@ Object.assign(Lang, {
       } else {
         stage.innerHTML = `<div class="rv-q"><span class="badge-new">Kiểm tra từ vừa học</span><div class="fc-word sm">${esc(x.meaning || x.def)}</div><input class="inp big-word" id="tIn" autocomplete="off" placeholder="Gõ từ (hoặc cách đọc)…"><button class="btn pri" id="tOk">Kiểm tra ↵</button></div>`;
         const inp = $('#tIn'); inp.focus();
-        const chk = () => { const ok = answerOk(inp.value, x); toast(ok ? 'Chính xác!' : 'Đáp án: ' + x.word, ok ? 'ok' : 'err'); result(ok); };
+        const chk = () => { const j = judgeCard(inp.value, x); const ok = j.ok || j.near; toast(j.ok ? 'Chính xác!' : j.near ? `Gần đúng (${j.pct}%) · chuẩn là: ${x.word}` : 'Đáp án: ' + x.word, ok ? 'ok' : 'err'); result(ok); };
         $('#tOk').onclick = chk; inp.onkeydown = e => { if (e.key === 'Enter') { e.stopPropagation(); chk(); } };
       }
       const result = ok => {
@@ -270,7 +286,7 @@ Object.assign(Lang, {
     const review = (it, mode) => {
       const x = it.x; const btns = gradeBtns(x);
       const show = sug => { $('.rv-btns', stage).hidden = false; if (sug) $('.g-' + sug, stage)?.classList.add('suggest'); onKeyAct = e => { if (['1', '2', '3', '4'].includes(e.key)) grade([0, 3, 4, 5][+e.key - 1]); }; };
-      const tag = { flip: '🃏 Lật thẻ', type: '⌨ Gõ đáp án', cloze: '✍️ Điền chỗ trống', listen: '🎧 Nghe', speak: '🎙 Nói', choose: '🔘 Chọn đáp án' }[mode];
+      const tag = { flip: '🃏 Lật thẻ', type: '⌨ Gõ đáp án', cloze: '✍️ Điền chỗ trống', listen: '🎧 Nghe', speak: '🎙 Nói', choose: '🔘 Chọn đáp án', translate: '🔁 Dịch câu', build: '🧩 Xếp câu', particle: '🔣 Điền trợ từ' }[mode];
       const head = `<span class="mode-tag">${tag}</span>`;
       if (mode === 'flip') {
         stage.innerHTML = head + this.cardFace(x, c) + `<div class="rv-show"><button class="btn big pri" id="rvShow">Hiện đáp án (Space)</button></div><div class="rv-btns" hidden>${btns}</div>`;
@@ -291,14 +307,93 @@ Object.assign(Lang, {
         const inp = $('#rvIn'); inp.focus();
         const chk = () => {
           if (inp.readOnly) return;
-          const ok = cz ? normAns(inp.value) === normAns(cz.hidden) || answerOk(inp.value, x) : answerOk(inp.value, x);
-          inp.readOnly = true; inp.classList.add(ok ? 'ok' : 'bad'); if (cz) inp.value = cz.hidden;
-          $('#rvRes').innerHTML = (ok ? '<b class="ok">✓ Chính xác!</b> ' : '<b class="bad">✗ Đáp án:</b> ') + `<b>${rubyWord(x, c)}</b> ${esc(x.ipa || '')} · ${esc(x.meaning || '')}`;
+          const j = judgeAns(inp.value, [...(cz ? [cz.hidden] : []), ...cardForms(x)]);
+          const ok = j.ok, near = j.near;
+          inp.readOnly = true; inp.classList.add(ok ? 'ok' : near ? 'near' : 'bad');
+          const typed = inp.value; if (cz) inp.value = cz.hidden;
+          $('#rvRes').innerHTML = (ok ? '<b class="ok">✓ Chính xác!</b> ' : near ? `<b class="near">≈ Gần đúng (${j.pct}%)</b> bạn gõ <s>${esc(typed)}</s> → ` : '<b class="bad">✗ Đáp án:</b> ') + `<b>${rubyWord(x, c)}</b> ${esc(x.ipa || '')} · ${esc(x.meaning || '')}`;
           Speech.speak(cz ? cz.before + cz.hidden + cz.after : x.word, c.lang, .95);
-          if (cz && ok) this.track(c.id, 'cloze');
-          show(ok ? 'good' : 'again');
+          if (cz && (ok || near)) this.track(c.id, 'cloze');
+          show(ok ? 'good' : near ? 'hard' : 'again');
         };
         $('#rvCheck').onclick = chk; inp.onkeydown = e => { if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); inp.readOnly ? null : chk(); } };
+      } else if (mode === 'translate') {
+        const e = exOf(x); if (!e) return review(it, 'type');
+        const toTarget = Math.random() < .65;   // phần lớn: Việt → ngoại ngữ (khó hơn, nhớ lâu hơn)
+        const src = toTarget ? e.t : e.s, ans = toTarget ? e.s : e.t;
+        stage.innerHTML = head + `<div class="rv-q tr-q">
+          <div class="muted sm">${toTarget ? `Dịch sang ${esc(c.name)}` : 'Dịch sang tiếng Việt'} · từ khoá: <b>${rubyWord(x, c)}</b> (${esc(x.meaning || '')})</div>
+          <div class="tr-src">${esc(src)} ${toTarget ? '' : '<button class="btn sm" id="trSay">🔊</button>'}</div>
+          <textarea class="inp" id="trIn" rows="2" placeholder="Bản dịch của bạn… (Enter để kiểm tra)"></textarea>
+          <div class="row"><button class="btn pri" id="trOk">Kiểm tra ↵</button><button class="btn" id="trShow">Xem đáp án</button></div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
+        $('#trSay') && ($('#trSay').onclick = () => Speech.speak(e.s, c.lang, .9));
+        if (!toTarget) Speech.speak(e.s, c.lang, .9);
+        const inp = $('#trIn'); inp.focus();
+        const chk = () => {
+          if (inp.readOnly) return; inp.readOnly = true;
+          const typed = inp.value.trim(); const j = judgeAns(typed, [ans]);
+          const sug = !typed ? 'again' : j.pct >= 90 ? 'good' : j.pct >= 65 ? 'hard' : 'again';
+          const diff = toTarget && (isJa(c) || !/\s/.test(ans)) ? charDiff(typed, ans) : esc(ans);
+          $('#rvRes').innerHTML = `<div class="d-res"><div class="d-score ${j.pct >= 85 ? 'good' : ''}">${typed ? j.pct : 0}%</div><div>
+            <div class="muted sm">Câu mẫu:</div><div class="d-ans">${diff}</div>${typed ? `<div class="muted">Bạn viết: ${esc(typed)}</div>` : ''}
+            <div class="muted sm">${toTarget ? 'Dịch có nhiều cách đúng — % chỉ so với câu mẫu. Nếu câu bạn vẫn đúng ý, cứ chấm “Được”.' : 'So sánh ý với câu mẫu rồi tự chấm.'}</div>
+            ${typed && window.AI ? '<button class="btn sm" id="trAI">✦ Nhờ AI chấm & sửa</button><div id="trAIres"></div>' : ''}</div></div>`;
+          Speech.speak(e.s, c.lang, .9);
+          $('#trAI') && ($('#trAI').onclick = async ev => {
+            ev.target.disabled = true; ev.target.textContent = '✦ Đang chấm…';
+            try {
+              const o = await AI.json({ prompt: `Học viên dịch ${toTarget ? `câu tiếng Việt sang ${c.name}` : `câu ${c.name} sang tiếng Việt`}.\nCâu gốc: "${src}"\nCâu mẫu: "${ans}"\nBản dịch học viên: "${typed}"\nChấm như giáo viên tận tâm. Trả về JSON {"score":0-100,"ok":true/false (đúng ý và đúng ngữ pháp),"fixed":"bản dịch của học viên đã sửa tối thiểu","notes":["giải thích ngắn bằng tiếng Việt từng lỗi: ngữ pháp, trợ từ, từ vựng, sắc thái"]}`, maxTokens: 800 });
+              $('#trAIres').innerHTML = `<div class="ai-fb"><b>${o.ok ? '✓' : '✗'} ${o.score}/100</b>${o.fixed ? `<div>Sửa: <b>${esc(o.fixed)}</b></div>` : ''}<ul>${(o.notes || []).map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>`;
+              $$('.rv-grade .suggest', stage).forEach(b => b.classList.remove('suggest')); $('.g-' + (o.score >= 85 ? 'good' : o.score >= 60 ? 'hard' : 'again'), stage)?.classList.add('suggest');
+            } catch (er) { $('#trAIres').innerHTML = `<p class="bad">AI chưa chấm được: ${esc(er.message || er)}</p>`; }
+            ev.target.remove();
+          });
+          show(sug);
+        };
+        $('#trOk').onclick = chk; $('#trShow').onclick = () => { inp.value = inp.value || ''; chk(); };
+        inp.onkeydown = ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); ev.stopPropagation(); chk(); } };
+      } else if (mode === 'build') {
+        const e = exOf(x); const parts = e ? chunksOf(e.s, c.lang) : [];
+        if (parts.length < 3) return review(it, e ? 'translate' : 'type');
+        const sep = /\s/.test(e.s.trim()) ? ' ' : '';
+        delete stage.dataset.done;
+        let bank = shuffle(parts.map((t, i) => ({ t, i }))); if (bank.every((b, k) => b.i === k)) bank.reverse();
+        const placed = [];
+        stage.innerHTML = head + `<div class="rv-q bd-q"><div class="muted sm">Xếp các mảnh thành câu đúng · nghĩa:</div><div class="tr-src">${esc(e.t)}</div>
+          <div class="bd-line" id="bdLine"></div><div class="bd-bank" id="bdBank"></div>
+          <div class="row"><button class="btn" id="bdReset">↺ Làm lại</button><button class="btn pri" id="bdOk" disabled>Kiểm tra</button></div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
+        const draw = () => {
+          $('#bdLine').innerHTML = placed.map((b, k) => `<button class="chip on" data-k="${k}">${esc(b.t)}</button>`).join('') || '<span class="muted sm">Bấm các mảnh bên dưới theo thứ tự…</span>';
+          $('#bdBank').innerHTML = bank.map((b, k) => `<button class="chip" data-k="${k}">${esc(b.t)}</button>`).join('');
+          $('#bdOk').disabled = bank.length > 0;
+          $$('#bdBank .chip').forEach(b => b.onclick = () => { if (stage.dataset.done) return; placed.push(...bank.splice(+b.dataset.k, 1)); draw(); });
+          $$('#bdLine .chip').forEach(b => b.onclick = () => { if (stage.dataset.done) return; bank.push(...placed.splice(+b.dataset.k, 1)); draw(); });
+        };
+        draw();
+        $('#bdReset').onclick = () => { if (stage.dataset.done) return; bank.push(...placed.splice(0)); draw(); };
+        $('#bdOk').onclick = () => {
+          stage.dataset.done = 1;
+          const mine = placed.map(b => b.t).join(sep); const ok = normAns(mine) === normAns(e.s);
+          $$('#bdLine .chip').forEach((b, k) => b.classList.add(normAns(placed[k].t) === normAns(parts[k]) ? 'ok' : 'bad'));
+          $('#rvRes').innerHTML = ok ? '<b class="ok">✓ Chuẩn rồi!</b>' : `<b class="bad">✗ Câu đúng:</b> <span class="d-ans">${esc(e.s)}</span>`;
+          Speech.speak(e.s, c.lang, .9); show(ok ? 'good' : 'again');
+        };
+      } else if (mode === 'particle') {
+        const pool = (x.examples || []).filter(e => e.s && e.t && e.t !== '(câu của tôi)').map(particleOf).filter(Boolean);
+        if (!pool.length) return review(it, 'translate');
+        const p = pool[Math.floor(Math.random() * pool.length)];
+        const opts = shuffle([p.pt, ...shuffle(PARTICLES.filter(q => q !== p.pt)).slice(0, 3)]);
+        stage.innerHTML = head + `<div class="rv-q"><div class="cz-sent">${esc(p.before)}<span class="pt-gap">？</span>${esc(p.after)}</div><div class="muted">${esc(p.t)}</div>
+          <div class="quiz-opts pt-opts">${opts.map(o => `<button data-p="${o}">${o}</button>`).join('')}</div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
+        const pick = b => {
+          if (!b || stage.dataset.locked) return; stage.dataset.locked = 1;
+          const ok = b.dataset.p === p.pt; b.classList.add(ok ? 'ok' : 'bad'); $(`.pt-opts [data-p="${p.pt}"]`, stage).classList.add('ok');
+          $('.pt-gap', stage).textContent = p.pt; $('.pt-gap', stage).classList.add(ok ? 'ok' : 'bad');
+          $$('.pt-opts button', stage).forEach(y => y.disabled = true); delete stage.dataset.locked;
+          Speech.speak(p.s, c.lang, .9); show(ok ? 'good' : 'again');
+        };
+        $$('.pt-opts button', stage).forEach(b => b.onclick = () => pick(b));
+        onKeyAct = ev => { const k = +ev.key; if (k >= 1 && k <= 4 && $('.rv-btns', stage).hidden) pick($$('.pt-opts button', stage)[k - 1]); };
       } else if (mode === 'listen') {
         stage.innerHTML = head + `<div class="rv-q"><button class="btn big" id="rvPlay">🔊 Nghe lại</button><p class="muted">Nghe và tự nhớ nghĩa trong đầu, rồi bấm hiện đáp án.</p><button class="btn pri" id="rvShow">Hiện đáp án (Space)</button><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
         const play = () => Speech.speak(x.word, c.lang); play(); $('#rvPlay').onclick = play;

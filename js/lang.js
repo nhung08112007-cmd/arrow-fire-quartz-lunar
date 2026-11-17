@@ -90,8 +90,60 @@ const rubyWord = (x, c) => {
   return esc(x.word || '…');
 };
 /** so đáp án: chấp nhận cả chữ viết, cách đọc (kana) và bỏ qua dấu câu, khoảng trắng */
-const normAns = t => (t || '').toLowerCase().normalize('NFC').replace(/[\s.,!?;:"'“”‘’「」。、！？（）()［］\[\]〜~]/g, '');
-const answerOk = (input, x) => { const v = normAns(input); if (!v) return false; return [x.word, ...(x.ipa || '').split(/[\/／,、]/)].map(normAns).filter(Boolean).includes(v); };
+/** katakana → hiragana để ハンサム = はんさむ */
+const kata2hira = s => s.replace(/[ァ-ヶ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60));
+/** chuẩn hoá: toàn/bán độ rộng (NFKC), hoa/thường, katakana/hiragana, bỏ mọi loại ngoặc, dấu câu, khoảng trắng */
+const normAns = t => kata2hira((t || '').normalize('NFKC').toLowerCase()).replace(/[\s.,!?;:"'“”‘’「」『』【】〔〕《》〈〉｛｝{}()\[\]。、・·〜~…\-–—]/g, '');
+/** các dạng chấp nhận: có hoặc không có phần trong ngoặc (［な］, ［お］, （ミルク）…) */
+const BRK = /[［\[【〔（(｛{〈《][^［\[【〔（(｛{〈《\]］】〕）)｝}〉》]*[\]］】〕）)｝}〉》]/g;
+const ansForms = s => { s = s || ''; const f = [s, s.replace(BRK, '')]; (s.match(BRK) || []).forEach(m => f.push(m.slice(1, -1))); return [...new Set(f.map(x => x.trim()).filter(Boolean))]; };
+const cardForms = x => [x.word, ...(x.ipa || '').split(/[\/／,、]/)].flatMap(ansForms).filter(f => normAns(f).length);
+const answerOk = (input, x) => { const v = normAns(input); if (!v) return false; return cardForms(x).map(normAns).includes(v); };
+/** chấm có độ lệch: ok = khớp hẳn, near = chỉ sai nhỏ (≥80% & đủ dài) */
+function judgeAns(input, targets) {
+  const v = normAns(input); if (!v) return { ok: false, near: false, pct: 0, best: targets[0] || '' };
+  let pct = 0, best = targets[0] || '';
+  targets.flatMap(ansForms).forEach(f => { const p = normAns(f) === v ? 100 : similarity(input, f); if (p > pct) { pct = p; best = f; } });
+  const L = normAns(best).length;
+  return { ok: pct === 100, near: pct < 100 && ((pct >= 80 && L >= 3) || (pct >= 75 && L >= 4)), pct, best };
+}
+const judgeCard = (input, x) => judgeAns(input, cardForms(x));
+/** tô màu từng chữ của đáp án: xanh = bạn gõ đúng, đỏ = thiếu/sai (dùng LCS, hợp cho tiếng Nhật không có dấu cách) */
+function charDiff(typed, target) {
+  const A = [...target], B = [...normAns(typed)], a = A.map(ch => normAns(ch));
+  const dp = Array.from({ length: A.length + 1 }, () => new Array(B.length + 1).fill(0));
+  for (let i = A.length - 1; i >= 0; i--) for (let j = B.length - 1; j >= 0; j--) dp[i][j] = a[i] && a[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  let i = 0, j = 0; const out = [];
+  while (i < A.length) {
+    if (!a[i]) { out.push(esc(A[i])); i++; continue; }
+    if (j < B.length && a[i] === B[j]) { out.push(`<span class="d-ok">${esc(A[i])}</span>`); i++; j++; }
+    else if (j < B.length && dp[i][j + 1] >= dp[i + 1][j]) j++;
+    else { out.push(`<span class="d-bad">${esc(A[i])}</span>`); i++; }
+  }
+  return out.join('');
+}
+/** câu ví dụ thật (không phải câu tự viết) để làm bài dịch / xếp câu */
+const exOf = x => { const l = (x.examples || []).filter(e => e.s && e.t && e.t !== '(câu của tôi)'); return l.length ? l[Math.floor(Math.random() * l.length)] : null; };
+/** tách câu thành mảnh để xếp: theo dấu cách nếu có, không thì theo từ (Intl.Segmenter) */
+function chunksOf(s, lang) {
+  let parts = s.trim().split(/\s+/);
+  if (parts.length < 3 && window.Intl && Intl.Segmenter) {
+    const seg = [...new Intl.Segmenter(lang || 'ja', { granularity: 'word' }).segment(s.replace(/\s+/g, ''))];
+    parts = []; seg.forEach(g => { if (!g.isWordLike && parts.length) parts[parts.length - 1] += g.segment; else parts.push(g.segment); });
+  }
+  return parts.filter(Boolean);
+}
+const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も', 'の', 'から', 'まで', 'や', 'か', 'より'];
+/** bài điền trợ từ tiếng Nhật: tìm một mảnh kết thúc bằng trợ từ */
+function particleOf(e) {
+  const parts = e.s.trim().split(/\s+/); const cand = [];
+  parts.forEach((p, i) => { const core = p.replace(/[。、！？!?]+$/, ''); const pt = ['から', 'まで', 'より'].find(q => core.endsWith(q) && core.length > q.length) || (core.length > 1 && PARTICLES.includes(core.slice(-1)) && !/(です|ます|でした|ました|ません|ませんでした)$/.test(core.slice(0, -1)) ? core.slice(-1) : null); if (pt && i < parts.length - 1) cand.push({ i, pt, core }); });
+  if (!cand.length) return null;
+  const c = cand[Math.floor(Math.random() * cand.length)];
+  const before = parts.slice(0, c.i).join(' ') + (c.i ? ' ' : '') + c.core.slice(0, -c.pt.length);
+  const after = parts[c.i].slice(c.core.length) + ' ' + parts.slice(c.i + 1).join(' ');
+  return { before, after, pt: c.pt, t: e.t, s: e.s };
+}
 /** giống nhau bao nhiêu % (dùng cho luyện nói) */
 function similarity(a, b) {
   a = normAns(a); b = normAns(b); if (!a || !b) return 0; if (a === b) return 100;
@@ -498,7 +550,7 @@ const Lang = {
         st.innerHTML = `<div class="rv-q"><div class="fc-word sm">${esc(x.meaning || x.def)}</div>${x.pos ? `<div class="fc-pos">${esc(x.pos)}</div>` : ''}${x.examples?.[0] ? `<div class="vc-ex">${esc(x.examples[0].s.replace(new RegExp(x.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '____'))}</div>` : ''}
           <input class="inp big-word" id="rvIn" placeholder="Gõ từ…" autocomplete="off"><button class="btn pri" id="rvCheck">Kiểm tra ↵</button><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
         const inp = $('#rvIn'); inp.focus();
-        const check = () => { const ok = answerOk(inp.value, x); $('#rvRes').innerHTML = (ok ? '<b class="ok">✓ Chính xác!</b> ' : `<b class="bad">✗</b> Đáp án: `) + `<b>${esc(x.word)}</b> ${esc(x.ipa || '')}`; Speech.speak(x.word, c.lang); $('.rv-btns', st).hidden = false; if (!ok) $('.g-again', st).classList.add('suggest'); else $('.g-good', st).classList.add('suggest'); };
+        const check = () => { const ok = answerOk(inp.value, x) || judgeCard(inp.value, x).near; $('#rvRes').innerHTML = (ok ? '<b class="ok">✓ Chính xác!</b> ' : `<b class="bad">✗</b> Đáp án: `) + `<b>${esc(x.word)}</b> ${esc(x.ipa || '')}`; Speech.speak(x.word, c.lang); $('.rv-btns', st).hidden = false; if (!ok) $('.g-again', st).classList.add('suggest'); else $('.g-good', st).classList.add('suggest'); };
         $('#rvCheck').onclick = check; inp.onkeydown = e => { if (e.key === 'Enter') { e.stopPropagation(); check(); } };
       } else if (m === 'cloze') {
         const cz = clozeOf(x);
@@ -574,7 +626,7 @@ const Lang = {
     $$('#dSrc button').forEach(b => b.onclick = () => { src = b.dataset.s; $$('#dSrc button').forEach(x => x.classList.toggle('on', x === b)); $('#dCustom').hidden = src !== 'custom'; });
     $('#dRate').oninput = e => { rate = +e.target.value; $('#dRateV').textContent = rate + '×'; };
     $('#dStart').onclick = () => {
-      if (src === 'word') list = shuffle(cs.map(x => ({ t: x.word, hint: x.meaning })));
+      if (src === 'word') list = shuffle(cs.map(x => ({ t: x.word, hint: x.meaning, alts: cardForms(x) })));
       if (src === 'sent') list = shuffle(cs.flatMap(x => (x.examples || []).map(e => ({ t: e.s, hint: e.t }))));
       if (src === 'custom') list = ($('#dCustom').value.match(/[^.!?。！？]+[.!?。！？]?/g) || []).map(s => ({ t: s.trim() })).filter(s => s.t);
       if (!list.length) return toast('Không có nội dung để chép trong phạm vi này', 'err');
@@ -595,11 +647,21 @@ const Lang = {
       $('#dHint') && ($('#dHint').onclick = e => { e.target.outerHTML = `<span class="tag">${esc(it.hint)}</span>`; });
       $('#dSkip').onclick = () => { i++; show(); };
       const check = () => {
-        const a = norm(it.t).split(' '), b = norm($('#dIn').value).split(' ');
-        let ok = 0;
-        const html = a.map((w, k) => { const hit = b[k] === w || b.includes(w); if (hit) ok++; return `<span class="${hit ? 'd-ok' : 'd-bad'}">${esc(w)}</span>`; }).join(' ');
-        const pct = Math.round(ok / a.length * 100); score += pct; Activity.add('dictation'); if (pct >= 80) Lang.track(c.id, 'dict');
-        $('#dRes').innerHTML = `<div class="d-res"><div class="d-score ${pct >= 80 ? 'good' : ''}">${pct}%</div><div><div>${html}</div><div class="muted">Bạn gõ: ${esc($('#dIn').value)}</div>${it.hint ? `<div class="muted">Nghĩa: ${esc(it.hint)}</div>` : ''}</div></div><button class="btn pri" id="dNext">Tiếp ›</button>`;
+        const typed = $('#dIn').value;
+        const spaced = !isJa(c) && /\s/.test(it.t.trim());
+        let pct, html;
+        if (spaced) {
+          const a = it.t.split(/\s+/).filter(Boolean), b = new Set(typed.split(/\s+/).map(normAns));
+          let ok = 0;
+          html = a.map(w => { const hit = !normAns(w) || b.has(normAns(w)); if (hit) ok++; return `<span class="${hit ? 'd-ok' : 'd-bad'}">${esc(w)}</span>`; }).join(' ');
+          pct = Math.max(Math.round(ok / a.length * 100), judgeAns(typed, [it.t]).pct);
+        } else {
+          const j = judgeAns(typed, it.alts || [it.t]); pct = j.pct;
+          html = j.ok ? `<span class="d-ok">${esc(it.t)}</span>` : charDiff(typed, it.t);
+        }
+        const verdict = pct === 100 ? '<b class="ok">✓ Chính xác!</b> <small class="muted">(đã bỏ qua khác biệt ngoặc, khoảng trắng, katakana/hiragana)</small>' : pct >= 85 ? '<b class="near">≈ Gần đúng</b> — chỉ lệch một chút, xem chữ đỏ' : pct >= 50 ? '<b class="bad">Còn thiếu vài chỗ</b>' : '<b class="bad">✗ Nghe lại nhé</b>';
+        score += pct; Activity.add('dictation'); if (pct >= 80) Lang.track(c.id, 'dict');
+        $('#dRes').innerHTML = `<div class="d-res"><div class="d-score ${pct >= 85 ? 'good' : ''}">${pct}%</div><div><div>${verdict}</div><div class="d-ans">${html}</div><div class="muted">Bạn gõ: ${esc(typed)}</div>${it.hint ? `<div class="muted">Nghĩa: ${esc(it.hint)}</div>` : ''}</div></div><button class="btn pri" id="dNext">Tiếp ›</button>`;
         $('#dNext').onclick = () => { i++; show(); };
       };
       $('#dCheck').onclick = check;

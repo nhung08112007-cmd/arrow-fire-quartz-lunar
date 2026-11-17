@@ -191,3 +191,22 @@ a.wiki::before { content: '⇢ '; font-size: .8em; }
 .mn-l small { opacity: .7; font-size: 12px; }
 .mn-l i { font-style: normal; font-size: 12px; font-weight: 700; color: #6b8f3a; }
 .mn-l.done { opacity: .6; }
+
+/* ---------- chấm khoan dung & dạng bài mới ---------- */
+.near { color: #c07a00; }
+.cz-in.near, .big-word.near { background: #ffe9b0; } .big-word.ok { background: #cff5c0; } .big-word.bad { background: #ffc6c6; }
+.d-ans { font-size: 22px; line-height: 1.7; margin: 4px 0; font-family: 'Noto Serif', serif; }
+.d-ans .d-ok, .d-ans .d-bad { padding: 0; border-radius: 0; }
+.tr-src { font-size: 22px; font-weight: 700; margin: 10px 0; line-height: 1.5; }
+.tr-q textarea { font-size: 18px; }
+.bd-line { min-height: 54px; border: 2px dashed var(--ink); border-radius: 14px; padding: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0; background: #fffdf6; }
+.bd-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; min-height: 40px; }
+.bd-q .chip { font-size: 18px; padding: 6px 14px; cursor: pointer; font-family: 'Noto Serif', 'Be Vietnam Pro', serif; }
+.bd-q .chip.on { background: var(--yellow); }
+.bd-q .chip.ok { background: #cff5c0; } .bd-q .chip.bad { background: #ffc6c6; }
+.pt-gap { display: inline-block; min-width: 1.6em; text-align: center; border-bottom: 3px solid var(--ink); margin: 0 4px; font-weight: 800; color: #9a7bff; }
+.pt-gap.ok { color: #2f8f3a; } .pt-gap.bad { color: #d6223b; }
+.pt-opts button { font-size: 24px; }
+.ai-fb { margin-top: 8px; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 12px; background: #f3efff; }
+.ai-fb ul { margin: 6px 0 0 18px; }
+.st-more { gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
