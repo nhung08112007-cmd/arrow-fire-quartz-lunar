@@ -96,7 +96,7 @@ const Home = {
 
       <section class="band b3">
         <div class="band-name">Tầng 3 · Học đường</div>
-        ${room({ href: '#/ngoai-ngu', label: 'Lớp Ngoại Ngữ', sub: 'từ vựng · ôn lặp lại · nghe chép · trò chơi · ngữ pháp', color: '#b8f0a0', cls: 'big',
+        ${room({ href: '#/ngoai-ngu', label: 'Lớp Ngoại Ngữ', sub: 'hành trình nhiệm vụ · học & ôn · nghe chép video · ngữ pháp', color: '#b8f0a0', cls: 'big',
           scene: `<span class="sc-a">${Art.deco.board(170)}</span><span class="sc-b bob">${Art.creature('prof', { size: 84 })}</span><span class="sc-c bob d3">${Art.creature('fish', { size: 56, mood: 'joy' })}</span>`,
           stat: `${Store.list('courses').length} ngôn ngữ · ${cards.length} thẻ · ${due} đến hạn` })}
         ${room({ href: '#/thu', label: 'Thùng Thư', sub: 'góp ý & thư tương lai', color: '#ffc0b0',

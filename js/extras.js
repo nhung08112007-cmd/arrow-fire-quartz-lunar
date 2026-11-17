@@ -339,8 +339,7 @@ const Settings = {
       <header class="page-hero" style="--hc:#e3d4ff"><div class="ph-art scene">${Art.scene('settings')}</div>
         <div class="ph-txt"><div class="kicker">Phòng máy</div><h1>Cài đặt</h1><p>Mọi dữ liệu được lưu ngay trong trình duyệt của bạn (IndexedDB). Hãy xuất bản sao lưu thường xuyên.</p></div></header>
       <section class="set-sec"><h2>👤 Bạn</h2><label class="lbl">Tên gọi</label><input class="inp" id="sName" value="${esc(S.name)}">
-        <label class="row"><input type="checkbox" id="sGate" ${S.showGate ? 'checked' : ''}> Hiện cảnh “máy trứng” mỗi lần mở trang</label>
-        <label class="row"><input type="checkbox" id="sLowFx" ${S.lowFx ? 'checked' : ''}> Giảm hiệu ứng nét vẽ tay (bật nếu máy chạy chậm)</label></section>
+        <label class="row"><input type="checkbox" id="sGate" ${S.showGate ? 'checked' : ''}> Hiện cảnh “máy trứng” mỗi lần mở trang</label></section>
       <section class="set-sec"><h2>✦ Trợ lý AI</h2>
         <p class="muted">Thêm key của một hoặc nhiều nơi. Khi một nơi lỗi, hết hạn mức hay quá tải, app <b>tự chuyển sang nơi tiếp theo</b> trong danh sách. Key chỉ lưu trên máy này.</p>
         <div class="ai-tip">${Art.creature('prof', { size: 54 })}<div><b>Gợi ý miễn phí:</b> tạo key <b>Gemini</b> và <b>Groq</b> (đều không cần thẻ), thêm <b>OpenRouter</b> làm dự phòng. Gói ChatGPT Plus <b>không</b> kèm tiền dùng API nên không dùng được ở đây.</div></div>
@@ -409,7 +408,6 @@ const Settings = {
         b.disabled = false;
       }
     });
-    $('#sLowFx').onchange = e => { S.lowFx = e.target.checked; Store.save('settings'); document.body.classList.toggle('reduce-fx', S.lowFx); };
     $$('#sName,#sGate,#sBase,#sOaiBase', view).forEach(i => i.addEventListener('change', () => { save(); toast('Đã lưu cài đặt'); }));
     $('#sTest').onclick = async e => {
       save(); $('#sTestOut').textContent = '';

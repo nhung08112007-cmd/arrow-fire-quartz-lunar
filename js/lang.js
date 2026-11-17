@@ -154,11 +154,12 @@ const Lang = {
   },
 
   /* ---------- không gian một lớp ---------- */
-  course(view, cid, tab = 'tu-vung') {
+  course(view, cid, tab = 'hanh-trinh') {
+    if (tab === 'on-tap') tab = 'hoc';
     const c = Store.find('courses', cid); if (!c) return Router.go('/ngoai-ngu');
     const sc = this.scope[cid] = this.scope[cid] || {};
     view.classList.add('full');
-    const TABS = [['tu-vung', '🃏 Từ vựng'], ['on-tap', '🔁 Ôn tập'], ['nghe-chep', '🎧 Nghe chép'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
+    const TABS = [['hanh-trinh', '🗺 Hành trình'], ['hoc', '🧠 Học & ôn'], ['tu-vung', '🃏 Thẻ từ'], ['nghe-chep', '🎧 Nghe chép'], ['video', '🎬 Video'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
     view.innerHTML = `
     <div class="lang-ws" style="--cc:${c.color}">
       <aside class="ws-tree">
@@ -215,13 +216,13 @@ const Lang = {
       $('#today').innerHTML = `<div class="td-ring" style="--p:${pct}"><b>${pct}%</b><small>hôm nay</small></div>
         <div class="td-txt"><b>${due + fresh ? `Hôm nay: ${due} thẻ đến hạn + ${fresh} thẻ mới · khoảng ${mins} phút` : 'Đã ôn xong mọi thẻ đến hạn hôm nay 🎉'}</b>
         <span class="muted">Đã ôn ${doneToday} lượt · chuỗi ${Activity.streak()} ngày 🔥${isJa(c) ? ` · <label><input type="checkbox" id="tdFuri" ${S.furigana !== false ? 'checked' : ''}> hiện furigana</label>` : ''}</span></div>
-        <a class="btn pri" href="#/ngoai-ngu/${cid}/on-tap">▶ Bắt đầu ôn</a>`;
+        <a class="btn pri" href="#/ngoai-ngu/${cid}/hoc">▶ Vào học</a>`;
       $('#tdFuri') && ($('#tdFuri').onchange = e => { S.furigana = e.target.checked; Store.save('settings'); render(); });
     };
     const body = $('#wsBody');
     const render = () => {
       drawTree(); drawToday();
-      const fn = { 'tu-vung': 'vocab', 'on-tap': 'review', 'nghe-chep': 'dictation', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'vocab';
+      const fn = { 'hanh-trinh': 'journey', 'hoc': 'study', 'video': 'videos', 'tu-vung': 'vocab', 'nghe-chep': 'dictation', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'journey';
       this[fn](body, c, sc, render);
     };
     render();
@@ -272,7 +273,8 @@ const Lang = {
   },
 
   cardForm(c, sc, card, after, pre = {}) {
-    const x = card || { id: uid(), courseId: c.id, bookId: sc.bookId, unitId: sc.unitId, part: sc.part, word: pre.word || '', ipa: '', pos: '', meaning: '', def: '', usage: '', examples: pre.sentence ? [{ s: pre.sentence, t: '' }] : [], syn: '', ant: '', coll: '', family: '', tags: [], note: '' };
+    if (!card && this._mineNext) { pre.mined = true; this._mineNext = false; }
+    const x = card || { id: uid(), courseId: c.id, bookId: sc.bookId, unitId: sc.unitId, part: sc.part, word: pre.word || '', ipa: '', pos: '', meaning: '', def: '', usage: '', examples: pre.sentence ? [{ s: pre.sentence, t: '' }] : [], syn: '', ant: '', coll: '', family: '', tags: [], note: '', source: pre.source || '' };
     const tb = Store.list('tbooks').filter(b => b.courseId === c.id);
     modal({
       title: card ? '✎ Sửa thẻ' : '🃏 Thẻ từ mới', full: true, cls: 'card-modal',
@@ -287,7 +289,9 @@ const Lang = {
           <label class="lbl">Ví dụ <small class="muted">(mỗi dòng: câu | dịch)</small></label><textarea class="inp" id="fex" rows="4">${esc((x.examples || []).map(e => e.s + (e.t ? ' | ' + e.t : '')).join('\n'))}</textarea>
           <div class="row2"><div><label class="lbl">≈ Đồng nghĩa</label><input class="inp" id="fsyn" value="${esc(x.syn)}"></div><div><label class="lbl">≠ Trái nghĩa</label><input class="inp" id="fant" value="${esc(x.ant)}"></div></div>
           <div class="row2"><div><label class="lbl">Kết hợp từ (collocation)</label><input class="inp" id="fcoll" value="${esc(x.coll || '')}"></div><div><label class="lbl">Họ từ</label><input class="inp" id="ffam" value="${esc(x.family || '')}"></div></div>
-          <label class="lbl">Ghi chú riêng / mẹo nhớ</label><textarea class="inp" id="fnote" rows="2">${esc(x.note || '')}</textarea>
+          <label class="lbl">💡 Mẹo nhớ <small class="muted">(liên tưởng âm thanh, hình ảnh, câu chuyện)</small></label><textarea class="inp" id="fnote" rows="2">${esc(x.note || '')}</textarea>
+          <div class="row2"><div><label class="lbl">🖼 Hình gợi nhớ <small class="muted">(emoji hoặc ảnh)</small></label><div class="row"><input class="inp" id="femo" value="${esc(x.emoji || '')}" placeholder="vd: 🌸" style="width:90px"><button class="btn sm" id="fimg">📁 Ảnh</button><button class="btn sm" id="fimgX" ${x.img ? '' : 'hidden'}>✕ bỏ ảnh</button></div></div>
+          <div><label class="lbl">Nguồn gặp từ</label><input class="inp" id="fsrc" value="${esc(x.source || '')}" placeholder="bài báo, video, sách…"></div></div>
           <div class="row2"><div><label class="lbl">Sách › Bài</label><select class="inp" id="fscope"><option value="">— không —</option>${tb.map(b => `<option value="${b.id}|" ${x.bookId === b.id && !x.unitId ? 'selected' : ''}>📘 ${esc(b.title)}</option>${(b.units || []).map(u => `<option value="${b.id}|${u.id}" ${x.unitId === u.id ? 'selected' : ''}>  📄 ${esc(b.title)} › ${esc(u.title)}</option>`).join('')}`).join('')}</select></div>
           <div><label class="lbl">Phần</label><input class="inp" id="fpart" value="${esc(x.part || '')}" list="partsList"><datalist id="partsList">${tb.flatMap(b => (b.units || []).flatMap(u => u.parts || [])).map(p => `<option>${esc(p)}</option>`).join('')}</datalist></div></div>
         </div>
@@ -300,6 +304,7 @@ const Lang = {
             word: $('#fw', w).value.trim(), ipa: $('#fipa', w).value.trim(), pos: $('#fpos', w).value, meaning: $('#fmean', w).value.trim(), def: $('#fdef', w).value.trim(),
             usage: $('#fuse', w).value.trim(), examples: $('#fex', w).value.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const [s, t] = l.split('|'); return { s: s.trim(), t: (t || '').trim() }; }),
             syn: $('#fsyn', w).value.trim(), ant: $('#fant', w).value.trim(), coll: $('#fcoll', w).value.trim(), family: $('#ffam', w).value.trim(), note: $('#fnote', w).value.trim(),
+            emoji: $('#femo', w).value.trim(), source: $('#fsrc', w).value.trim(),
             bookId: b || undefined, unitId: u || undefined, part: $('#fpart', w).value.trim() || undefined
           });
         };
@@ -308,6 +313,8 @@ const Lang = {
         w.addEventListener('input', debounce(prev, 200));
         $('#fprev', w).onclick = () => $('.flip', w)?.classList.toggle('flipped');
         $('#fsay', w).onclick = () => Speech.speak($('#fw', w).value, c.lang);
+        $('#fimg', w).onclick = async () => { const f = await pickFile(); if (f) { x.img = await fileToDataURL(f, 320); $('#fimgX', w).hidden = false; prev(); } };
+        $('#fimgX', w).onclick = () => { x.img = ''; $('#fimgX', w).hidden = true; prev(); };
         $('#fai', w).onclick = async e => {
           const word = $('#fw', w).value.trim(); if (!word) return toast('Nhập từ trước đã', 'err');
           const ex = $('#fex', w).value.trim();
@@ -344,15 +351,15 @@ const Lang = {
       actions: [
         ...(card ? [{ label: '🗑 Xoá', cls: 'danger', onClick: async () => { if (await confirmBox('Xoá thẻ này?')) { Store.remove('cards', x.id); after && after(); } } }] : []),
         { label: 'Huỷ' },
-        ...(!card ? [{ label: 'Lưu & thêm tiếp', onClick: () => { const v = this._readCard(); if (!v.word) return false; Store.upsert('cards', v); Activity.add('card'); after && after(); setTimeout(() => this.cardForm(c, sc, null, after), 250); } }] : []),
-        { label: '💾 Lưu thẻ', cls: 'pri', onClick: () => { const v = this._readCard(); if (!v.word) { toast('Cần nhập từ', 'err'); return false; } Store.upsert('cards', v); if (!card) Activity.add('card'); toast('Đã lưu thẻ 🃏'); after && after(); } }
+        ...(!card ? [{ label: 'Lưu & thêm tiếp', onClick: () => { const v = this._readCard(); if (!v.word) return false; Store.upsert('cards', v); Activity.add('card'); this.track(c.id, 'cards'); if (pre.mined) this.track(c.id, 'mined'); after && after(); setTimeout(() => this.cardForm(c, sc, null, after), 250); } }] : []),
+        { label: '💾 Lưu thẻ', cls: 'pri', onClick: () => { const v = this._readCard(); if (!v.word) { toast('Cần nhập từ', 'err'); return false; } Store.upsert('cards', v); if (!card) { Activity.add('card'); this.track(c.id, 'cards'); if (pre.mined) this.track(c.id, 'mined'); } toast('Đã lưu thẻ 🃏'); after && after(); } }
       ]
     });
   },
 
   cardFace(x, c, preview = false) {
     return `<div class="flip ${preview ? 'pv' : ''}"><div class="flip-in">
-      <div class="face front"><span class="fc-cre">${Art.creature('fish', { size: 40, mood: 'joy' })}</span>
+      <div class="face front"><span class="fc-cre">${x.img ? `<img class="fc-img" src="${esc(x.img)}" alt="">` : x.emoji ? `<span class="fc-emo">${esc(x.emoji)}</span>` : Art.creature('fish', { size: 40, mood: 'joy' })}</span>
         <div class="fc-word">${rubyWord(x, c)}</div>${x.ipa && !(isJa(c) && hasKanji(x.word) && Store.settings().furigana !== false) ? `<div class="fc-ipa">${esc(x.ipa)}</div>` : ''}${x.pos ? `<div class="fc-pos">${esc(x.pos)} · ${POS_VI[x.pos] || ''}</div>` : ''}<div class="fc-hint">bấm / Space để lật</div></div>
       <div class="face back">
         <div class="fb-head"><b>${rubyWord(x, c)}</b> <span class="fc-pos">${esc(x.pos || '')}</span> <span class="muted">${esc(x.ipa || '')}</span></div>
@@ -415,7 +422,7 @@ const Lang = {
           let arr;
           try { arr = JSON.parse(raw); } catch (e) { toast('JSON chưa đúng: ' + e.message, 'err', 5000); return false; }
           arr.forEach(o => Store.list('cards').unshift({ id: uid(), courseId: c.id, bookId: sc.bookId, unitId: sc.unitId, part: sc.part, created: Date.now(), tags: o.tags || [], word: o.word || '', ipa: o.ipa || '', pos: o.pos || '', meaning: o.meaning || '', def: o.def || '', usage: o.usage || '', examples: o.examples || [], syn: o.syn || '', ant: o.ant || '', coll: o.coll || '', family: o.family || '', note: o.note || '' }));
-          Store.save('cards'); Activity.add('card', arr.length);
+          Store.save('cards'); Activity.add('card', arr.length); this.track(c.id, 'cards', arr.length);
           toast(`Đã thêm ${arr.length} thẻ 🃏`); after && after();
           return;
         }
@@ -448,7 +455,7 @@ const Lang = {
           }
         }
         items.forEach(it => Store.list('cards').unshift({ ...it, created: Date.now() }));
-        Store.save('cards'); Activity.add('card', items.length);
+        Store.save('cards'); Activity.add('card', items.length); this.track(c.id, 'cards', items.length);
         toast(`Đã thêm ${items.length} thẻ 🃏`); after && after();
       } }]
     });
@@ -588,7 +595,7 @@ const Lang = {
         const a = norm(it.t).split(' '), b = norm($('#dIn').value).split(' ');
         let ok = 0;
         const html = a.map((w, k) => { const hit = b[k] === w || b.includes(w); if (hit) ok++; return `<span class="${hit ? 'd-ok' : 'd-bad'}">${esc(w)}</span>`; }).join(' ');
-        const pct = Math.round(ok / a.length * 100); score += pct; Activity.add('dictation');
+        const pct = Math.round(ok / a.length * 100); score += pct; Activity.add('dictation'); if (pct >= 80) Lang.track(c.id, 'dict');
         $('#dRes').innerHTML = `<div class="d-res"><div class="d-score ${pct >= 80 ? 'good' : ''}">${pct}%</div><div><div>${html}</div><div class="muted">Bạn gõ: ${esc($('#dIn').value)}</div>${it.hint ? `<div class="muted">Nghĩa: ${esc(it.hint)}</div>` : ''}</div></div><button class="btn pri" id="dNext">Tiếp ›</button>`;
         $('#dNext').onclick = () => { i++; show(); };
       };
@@ -613,7 +620,7 @@ const Lang = {
       this._gameStop && this._gameStop(); this._gameStop = null;
       ({ match, quiz, scramble, rain })[b.dataset.g]();
     });
-    const win = (msg, n = 3) => { Sfx.jingle(); Activity.add('game', n); stage.innerHTML = `<div class="empty big">${Art.creature('tomato', { size: 110, mood: 'star' })}<h2>${msg}</h2><p>Chọn trò khác hoặc chơi lại nhé!</p></div>`; };
+    const win = (msg, n = 3) => { Sfx.jingle(); Activity.add('game', n); Lang.track(c.id, 'games'); stage.innerHTML = `<div class="empty big">${Art.creature('tomato', { size: 110, mood: 'star' })}<h2>${msg}</h2><p>Chọn trò khác hoặc chơi lại nhé!</p></div>`; };
 
     function match() {
       const pick = shuffle(cs).slice(0, 6);
@@ -750,7 +757,7 @@ const Lang = {
     const m = modal({ title: '📝 Luyện: ' + esc(g.title), wide: true, body: '<div id="px"></div>', actions: [{ label: '↻ Soạn bộ mới (AI)', onClick: () => { g.exercises = []; this.practice(c, g); } }] });
     const show = () => {
       const box = $('#px', m.el); if (!box) return;
-      if (i >= g.exercises.length) { box.innerHTML = `<div class="empty">${Art.creature('prof', { size: 90 })}<h2>${right}/${g.exercises.length} câu đúng</h2></div>`; Activity.add('grammar', right); return; }
+      if (i >= g.exercises.length) { box.innerHTML = `<div class="empty">${Art.creature('prof', { size: 90 })}<h2>${right}/${g.exercises.length} câu đúng</h2></div>`; Activity.add('grammar', right); Lang.track(c.id, 'grammar', right); return; }
       const x = g.exercises[i];
       box.innerHTML = `<div class="g-info">Câu ${i + 1}/${g.exercises.length} · <span class="tag">${x.type}</span></div><div class="px-q">${esc(x.q)}</div>
         ${x.type === 'choose' ? `<div class="quiz-opts">${(x.options || []).map(o => `<button>${esc(o)}</button>`).join('')}</div>` : `<textarea class="inp" id="pxIn" rows="2" placeholder="Câu trả lời…"></textarea><button class="btn pri" id="pxC">Kiểm tra</button>`}

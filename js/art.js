@@ -316,14 +316,12 @@ Art.scene = (() => {
         <pattern id="${id}p" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="2.6" fill="#fff" opacity=".7"/></pattern>
         <marker id="${id}a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="${INK}" stroke-width="1.8"/></marker></defs>
       <g clip-path="url(#${id}c)">
-        <rect x="14" y="14" width="452" height="272" fill="${S.wall}"/><rect x="14" y="14" width="452" height="272" fill="url(#${id}p)"/>
+        <rect x="14" y="14" width="452" height="272" fill="${S.wall}"/><rect x="14" y="14" width="452" height="90" fill="#fff" opacity=".28"/>
         <rect x="14" y="222" width="452" height="64" fill="${S.floor}"/><path d="M14 222 h452" stroke="${INK}" stroke-width="4"/>
         ${[...Array(12)].map((_, i) => `<path d="M${30 + i * 40} 236 l14 10" stroke="${INK}" stroke-width="2" opacity=".25"/>`).join('')}
         ${S.items.map(([x, y, svg, r]) => put(x, y, svg, r || 0)).join('')}
       </g>
       <rect x="14" y="14" width="452" height="272" rx="46" fill="none" stroke="${INK}" stroke-width="6"/>
-      ${lab}
-      ${S.sfx.map(([x, y, t, r, c]) => `<text x="${x}" y="${y}" class="sc-jp ${c || ''}" transform="rotate(${r} ${x} ${y})">${t}</text>`).join('')}
     </svg>`;
   };
 })();

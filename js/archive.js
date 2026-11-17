@@ -14,20 +14,21 @@ const Archive = {
     const S = Store.settings(); S.arcView = S.arcView || 'drawer';
     let q = '', type = '', status = '', tag = '';
     view.innerHTML = `
-    <div class="page arc-page">
+    <div class="page arc-page ${S.arcFit ? 'fit' : ''}" id="arcPage">
       <header class="page-hero" style="--hc:#9fdcff">
         <div class="ph-art scene">${Art.scene('archive')}</div>
         <div class="ph-txt">
           <div class="kicker">Tầng 2 · Kho Lưu Trữ</div>
           <h1>Tủ hồ sơ không đáy</h1>
           <p>Cất mọi bài viết tham khảo từ báo, sách, nghiên cứu, video, podcast… Mỗi tài liệu đều mở được ở chế độ đọc với đầy đủ công cụ ghi chú.</p>
-          <div class="row"><button class="btn pri big" id="addArc">＋ Cất tài liệu mới</button><a class="btn big" href="#/luu-tru/trich-dan">❝ Sổ trích dẫn</a></div>
+          <div class="row"><button class="btn hot big" id="pasteArc">📋 Dán bài báo &amp; ghi chú</button><button class="btn pri big" id="addArc">＋ Cất tài liệu mới</button><a class="btn big" href="#/luu-tru/trich-dan">❝ Sổ trích dẫn</a></div>
         </div>
       </header>
       <div class="filter-row">
         <input class="inp" id="aq" placeholder="🔍 Tìm tiêu đề, tác giả, nguồn, nội dung…">
         <select class="inp sel" id="atype"><option value="">Mọi loại</option>${ARC_TYPES.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('')}</select>
         <select class="inp sel" id="astatus"><option value="">Mọi trạng thái</option>${ARC_STATUS.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('')}</select>
+        <button class="btn sm" id="arcFit" title="Đổi bố cục trang">${S.arcFit ? '⇥⇤ Gọn giữa' : '↔ Vừa khung'}</button>
         <div class="seg" id="aview">${[['drawer', '🗄️ Ngăn kéo'], ['grid', '▦ Thẻ'], ['table', '☰ Bảng']].map(v => `<button data-v="${v[0]}" class="${S.arcView === v[0] ? 'on' : ''}">${v[1]}</button>`).join('')}</div>
       </div>
       <div class="tag-cloud" id="atags"></div>
@@ -70,7 +71,56 @@ const Archive = {
     $('#atags').onclick = e => { const t = e.target.dataset.t; if (t === undefined) return; tag = tag === t ? '' : t; draw(); };
     $$('#aview button').forEach(b => b.onclick = () => { S.arcView = b.dataset.v; Store.save('settings'); $$('#aview button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
     $('#addArc').onclick = () => this.form(null, draw);
+    $('#pasteArc').onclick = () => this.pasteNew();
+    $('#arcFit').onclick = e => { S.arcFit = !S.arcFit; Store.save('settings'); $('#arcPage').classList.toggle('fit', S.arcFit); e.target.textContent = S.arcFit ? '⇥⇤ Gọn giữa' : '↔ Vừa khung'; };
+    // dán thẳng (Ctrl+V) ở bất kỳ đâu trên trang Lưu trữ → tạo tài liệu và mở để ghi chú
+    const onPaste = e => {
+      if (e.target.closest('input,textarea,[contenteditable]') || document.querySelector('.modal-wrap')) return;
+      const html = e.clipboardData?.getData('text/html'), txt = e.clipboardData?.getData('text/plain');
+      if (!(html || txt) || (txt || '').trim().length < 80) return;
+      e.preventDefault(); this.quickSave(html, txt);
+    };
+    document.addEventListener('paste', onPaste);
+    return () => document.removeEventListener('paste', onPaste);
     $('#alist').addEventListener('click', e => { const id = e.target.dataset.edit; if (id) this.form(Store.find('archive', id), draw); });
+  },
+
+  /** tạo tài liệu từ nội dung dán, đoán tiêu đề/tác giả/nguồn rồi mở chế độ đọc + ghi chú */
+  quickSave(html, txt, url = '') {
+    let content = html ? Editor.cleanPaste(html) : (txt || '').split(/\n{2,}/).map(p => `<p>${esc(p.trim()).replace(/\n/g, '<br>')}</p>`).join('');
+    const d = document.createElement('div'); d.innerHTML = content;
+    const h = d.querySelector('h1,h2');
+    let title = (h?.textContent || '').trim();
+    if (h && title) h.remove();
+    if (!title) title = (d.textContent || txt || '').trim().split(/\n|(?<=[.!?。])\s/)[0].slice(0, 110) || 'Bài báo dán ' + fmtDate(Date.now());
+    const plain = (() => { const t = document.createElement('div'); t.innerHTML = d.innerHTML.replace(/<\/(p|div|h\d|li|tr)>/g, '$&\n'); return t.textContent; })();
+    const by = (plain.match(/(?:^|\n)\s*(?:By|Bởi|Tác giả:?)\s+((?:[A-ZÀ-Ỹ][\p{L}.'-]*\s?){1,4})\s*(?:\n|$)/u) || [])[1] || '';
+    let source = ''; try { if (url) source = new URL(url).hostname.replace(/^www\./, ''); } catch (_) { }
+    const words = wordCount(d.textContent || '');
+    const a = Store.upsert('archive', { id: uid(), title, url, author: by.trim(), source, type: 'article', status: 'reading', tags: [], rating: 0, content: d.innerHTML, summary: '', notes: [] });
+    Activity.add('archive', 2);
+    toast(`Đã cất “${title.slice(0, 40)}” (${words.toLocaleString('vi')} chữ). Bôi đen để tô & ghi chú.`, 'ok', 4000);
+    Router.go('/doc/luu/' + a.id);
+  },
+  pasteNew() {
+    modal({
+      title: '📋 Dán bài báo để đọc & ghi chú', wide: true,
+      body: `<p class="muted">Mở bài báo trên web, bôi đen toàn bộ bài (Ctrl+A rồi bỏ phần thừa) và chép (Ctrl+C), rồi dán vào ô dưới. App giữ tiêu đề, đoạn, ảnh, bảng và bỏ quảng cáo, kiểu chữ lạ.<br>Mẹo: ở trang Lưu trữ, chỉ cần bấm <kbd>Ctrl</kbd>+<kbd>V</kbd> là tạo luôn.</p>
+        <label class="lbl" for="pUrl">Link bài (không bắt buộc)</label><input class="inp" id="pUrl" placeholder="https://…">
+        <div class="paste-zone" id="pZone" contenteditable="true" data-ph="Dán bài vào đây (Ctrl+V)…"></div>`,
+      onOpen: w => {
+        const z = $('#pZone', w); z.focus();
+        z.addEventListener('paste', e => {
+          const html = e.clipboardData.getData('text/html'), txt = e.clipboardData.getData('text/plain');
+          e.preventDefault();
+          z.innerHTML = html ? Editor.cleanPaste(html) : txt.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('');
+        });
+      },
+      actions: [{ label: 'Huỷ' }, { label: '📖 Cất & mở để ghi chú', cls: 'pri', onClick: w => {
+        const z = $('#pZone', w); if (!z.textContent.trim()) { toast('Chưa dán gì cả', 'err'); return false; }
+        this.quickSave(z.innerHTML, z.textContent, $('#pUrl', w).value.trim());
+      } }]
+    });
   },
 
   form(item, after) {

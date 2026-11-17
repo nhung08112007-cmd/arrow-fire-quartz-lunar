@@ -17,6 +17,9 @@ const Reader = {
     const S = Store.settings();
     S.reader = S.reader || { size: 19, width: 760, theme: 'paper', font: 'Lora', lh: 1.85, focus: false };
     const R = S.reader;
+    R.w = R.w || {}; R.nt = R.nt || {};
+    if (R.w[kind] === undefined) R.w[kind] = kind === 'archive' ? 0 : 760;
+    if (R.nt[kind] === undefined) R.nt[kind] = kind === 'archive';
     doc.notes = doc.notes || []; doc.pen = doc.pen || []; doc.marks = doc.marks || []; doc.general = doc.general || '';
     view.classList.add('full');
     view.innerHTML = `
@@ -30,7 +33,7 @@ const Reader = {
           <span class="sep"></span>
           <button class="rbtn" data-r="smaller" title="Chữ nhỏ">A−</button><button class="rbtn" data-r="bigger" title="Chữ to">A+</button>
           <select class="rsel" data-r="font">${[['Lora', 'Lora'], ['EB Garamond', 'Garamond'], ['Noto Serif', 'Noto Serif'], ['Nunito', 'Nunito'], ['Patrick Hand', 'Viết tay']].map(f => `<option value="${f[0]}" ${R.font === f[0] ? 'selected' : ''}>${f[1]}</option>`).join('')}</select>
-          <select class="rsel" data-r="width">${[[600, 'Hẹp'], [760, 'Vừa'], [960, 'Rộng'], [1240, 'Rất rộng'], [0, 'Tràn']].map(w => `<option value="${w[0]}" ${R.width == w[0] ? 'selected' : ''}>${w[1]}</option>`).join('')}</select>
+          <select class="rsel" data-r="width" title="Bố cục trang đọc">${[[0, '↔ Vừa khung'], [1240, 'Rất rộng'], [960, 'Rộng'], [760, 'Vừa'], [600, 'Hẹp']].map(w => `<option value="${w[0]}" ${R.w[kind] == w[0] ? 'selected' : ''}>${w[1]}</option>`).join('')}</select>
           <select class="rsel" data-r="lh">${[1.5, 1.7, 1.85, 2.1, 2.4].map(v => `<option ${R.lh == v ? 'selected' : ''}>${v}</option>`).join('')}</select>
           <select class="rsel" data-r="theme">${[['paper', '📄 Giấy'], ['sepia', '📜 Cổ'], ['mint', '🌿 Bạc hà'], ['grid', '▦ Sổ chấm'], ['night', '🌙 Đêm']].map(t => `<option value="${t[0]}" ${R.theme === t[0] ? 'selected' : ''}>${t[1]}</option>`).join('')}</select>
           <span class="sep"></span>
@@ -69,7 +72,7 @@ const Reader = {
             <canvas class="rd-canvas" id="rdCanvas"></canvas>
           </div>
         </div>
-        <aside class="rd-notes" id="rdNotes" hidden>
+        <aside class="rd-notes" id="rdNotes" ${R.nt[kind] ? '' : 'hidden'}>
           <div class="nt-head">
             <b>Sổ ghi chú</b>
             <div class="nt-tools"><button class="rbtn" id="ntExport" title="Xuất Markdown">⇩ .md</button><button class="rbtn" id="ntSum" title="AI tóm tắt">✦ Tóm tắt</button><button class="rbtn" id="ntClose">✕</button></div>
@@ -102,7 +105,8 @@ const Reader = {
       page.style.setProperty('--rs', R.size + 'px');
       page.style.setProperty('--rlh', R.lh);
       page.style.setProperty('--rf', `'${R.font}'`);
-      page.style.maxWidth = R.width ? R.width + 'px' : 'none';
+      page.style.maxWidth = R.w[kind] ? R.w[kind] + 'px' : 'none';
+      page.classList.toggle('fit', !R.w[kind]);
       Store.save('settings');
       setTimeout(redrawPen, 50);
     };
@@ -282,7 +286,7 @@ const Reader = {
     $$('.nt-legend .lg', rd).forEach(b => b.onclick = () => { $$('.nt-legend .lg', rd).forEach(x => x.classList.remove('on')); b.classList.add('on'); filter = b.dataset.f; renderNotes(); });
     $('#ntSearch').oninput = renderNotes;
     $('#ntGeneral').oninput = debounce(e => { doc.general = e.target.value; persist(); }, 400);
-    $('#ntClose').onclick = () => { $('#rdNotes').hidden = true; setTimeout(redrawPen, 50); };
+    $('#ntClose').onclick = () => { $('#rdNotes').hidden = true; R.nt[kind] = false; Store.save('settings'); setTimeout(redrawPen, 50); };
     $('#ntExport').onclick = () => {
       let md = `# ${doc.title}\n\n> Xuất ngày ${fmtDate(Date.now())}\n\n`;
       if (doc.general) md += `## Ghi chú chung\n\n${doc.general}\n\n`;
@@ -303,7 +307,7 @@ const Reader = {
       if (k === 'bigger') { R.size = clamp(R.size + 1, 13, 34); applyR(); }
       if (k === 'smaller') { R.size = clamp(R.size - 1, 13, 34); applyR(); }
       if (k === 'toc') { $('#rdToc').hidden = !$('#rdToc').hidden; setTimeout(redrawPen, 50); }
-      if (k === 'notes') { $('#rdNotes').hidden = !$('#rdNotes').hidden; setTimeout(redrawPen, 50); }
+      if (k === 'notes') { $('#rdNotes').hidden = !$('#rdNotes').hidden; R.nt[kind] = !$('#rdNotes').hidden; Store.save('settings'); setTimeout(redrawPen, 50); }
       if (k === 'focus') { R.focus = !R.focus; applyR(); }
       if (k === 'fs') { document.fullscreenElement ? document.exitFullscreen() : rd.requestFullscreen?.(); }
       if (k === 'pen') { penOn = !penOn; rd.classList.toggle('pen-on', penOn); $('#penBar').hidden = !penOn; b.classList.toggle('on', penOn); redrawPen(); }
@@ -329,7 +333,7 @@ const Reader = {
     });
     $('.rd-ctrl', rd).addEventListener('change', e => {
       const k = e.target.dataset.r, v = e.target.value;
-      if (k === 'font') R.font = v; if (k === 'width') R.width = +v; if (k === 'lh') R.lh = +v; if (k === 'theme') R.theme = v;
+      if (k === 'font') R.font = v; if (k === 'width') R.w[kind] = +v; if (k === 'lh') R.lh = +v; if (k === 'theme') R.theme = v;
       applyR();
     });
 
