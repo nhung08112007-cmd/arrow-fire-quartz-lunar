@@ -259,3 +259,71 @@ const Art = (() => {
 
   return { creature, names, deco, pixel, SPR, palette, face, mini, svg };
 })();
+
+/* =========================================================
+   SCENES — mỗi trang một "căn phòng bổ đôi" vẽ tay, có chú thích
+   cam viết tay + mũi tên + chữ hiệu ứng tiếng Nhật (kiểu sách tranh 90s)
+   ========================================================= */
+Art.scene = (() => {
+  const put = (x, y, s, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})">${s}</g>`;
+  const lamp = `<path d="M30 0 v40" stroke="${INK}" stroke-width="3"/><path d="M8 40 h44 l-8 -14 h-28z" fill="#ff5a5a" stroke="${INK}" stroke-width="3"/><circle cx="30" cy="48" r="7" fill="#fff6a0" stroke="${INK}" stroke-width="2.5"/><path d="M14 62 l-6 10 M30 64 v12 M46 62 l6 10" stroke="#ffd23f" stroke-width="3"/>`;
+  const paper = (c = '#fff') => `<rect width="34" height="42" fill="${c}" stroke="${INK}" stroke-width="2.5"/><path d="M6 10 h22 M6 18 h18 M6 26 h22" stroke="#aab" stroke-width="2"/>`;
+  const books = n => [...Array(n)].map((_, i) => `<rect x="${i * 13}" y="${(i % 3) * 3}" width="12" height="${46 - (i % 3) * 3}" fill="${Art.palette[i % 10]}" stroke="${INK}" stroke-width="2.4"/>`).join('');
+  const box = (c = '#ffd39a') => `<path d="M0 14 l40 -12 l40 12 v40 l-40 12 l-40 -12z" fill="${c}" stroke="${INK}" stroke-width="3"/><path d="M0 14 l40 12 l40 -12 M40 26 v40" fill="none" stroke="${INK}" stroke-width="3"/>`;
+  const frame = (c = '#ffe14d') => `<rect width="60" height="46" rx="3" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="5" y="5" width="50" height="36" fill="${c}"/><path d="M10 36 l14 -16 l10 10 l8 -8 l12 14z" fill="#8fd16a" stroke="${INK}" stroke-width="2"/>`;
+  const env = (r = 0) => put(0, 0, Art.deco.envelope(44), r);
+  const SC = {
+    write: { wall: '#ffe0ee', floor: '#ffc98f', sfx: [[338, 64, 'ひらめいた!', -10, 'or'], [236, 96, 'カキカキ', 8]],
+      items: [[40, 34, lamp], [300, 40, Art.deco.shelf(120)], [96, 148, Art.deco.desk(200)], [168, 104, Art.creature('mascot', { size: 78, mood: 'joy' })], [300, 168, Art.creature('pencil', { size: 64, mood: 'wink' })], [380, 172, paper('#fff6d8'), -14], [404, 200, paper(), 10], [60, 112, paper('#e2f4ff'), -8]],
+      labels: [[22, 278, 'Bàn viết thần kỳ', 'viết bao nhiêu cũng không mỏi tay', [150, 196]], [440, 150, 'Kệ ý tưởng', 'đầy ắp đề bài', [380, 110], 'end']] },
+    archive: { wall: '#d9f0ff', floor: '#a9d6f5', sfx: [[300, 68, 'ゴソゴソ', -8], [262, 150, 'ヒュ〜', 10, 'or']],
+      items: [[44, 92, Art.deco.cabinet(130)], [168, 92, Art.deco.cabinet(130)], [312, 58, Art.creature('ghost', { size: 82, mood: 'joy' })], [330, 172, box()], [370, 196, box('#ffb3dd')], [300, 210, env(-12)]],
+      labels: [[440, 290, 'Ngăn kéo không đáy', 'cất bao nhiêu cũng vừa', [250, 200], 'end'], [22, 62, 'Bóng-tchi trông kho', '', [330, 90]]] },
+    books: { wall: '#fff1b8', floor: '#e8b07a', sfx: [[226, 58, 'ペラペラ', -6], [400, 112, 'ワクワク!', 10, 'or']],
+      items: [[34, 70, Art.deco.shelf(170)], [226, 130, Art.deco.globe(110)], [340, 150, Art.creature('booky', { size: 82, mood: 'joy' })], [214, 236, books(6)], [372, 70, frame()]],
+      labels: [[22, 286, 'Kệ sách 11 vùng đất', 'vuốt ngang để lướt', [110, 196]], [460, 270, 'Quả địa cầu biết nói', 'bấm vùng nào mở kệ vùng ấy', [290, 220], 'end']] },
+    lang: { wall: '#d8f5c8', floor: '#c9a27a', sfx: [[408, 80, 'なるほど!', 12, 'or'], [70, 262, 'ハイ!', -8]],
+      items: [[120, 40, Art.deco.board(220, 'あ · A · 字 · é')], [30, 150, Art.creature('prof', { size: 100 })], [330, 184, Art.creature('fish', { size: 60, mood: 'joy' })], [400, 170, Art.creature('tomato', { size: 56, mood: 'star' })], [210, 210, `<rect width="80" height="10" fill="#ffad4d" stroke="${INK}" stroke-width="3"/><path d="M8 10 v26 M72 10 v26" stroke="${INK}" stroke-width="4"/>`]],
+      labels: [[460, 290, 'Bảng đen biết đọc to', 'bấm 🔊 là nghe', [300, 120], 'end'], [22, 60, 'Thầy Ếch Kính', 'dạy 12 thứ tiếng', [80, 160]]] },
+    mail: { wall: '#ffe0d6', floor: '#f5b878', sfx: [[300, 64, 'ビューン', -12], [96, 262, 'とどいた!', 8, 'or']],
+      items: [[40, 110, Art.deco.mailbox(140)], [260, 78, Art.creature('cloud', { size: 84, mood: 'joy' })], [330, 150, env(14)], [380, 108, env(-10)], [230, 190, env(6)], [360, 196, Art.creature('tomato', { size: 56, mood: 'wink' })]],
+      labels: [[460, 286, 'Mây đưa thư', 'bay khắp hành tinh mỗi sáng', [300, 130], 'end'], [22, 62, 'Thùng thư', 'gửi được cả cho tương lai', [100, 130]]] },
+    stamps: { wall: '#ffd6e6', floor: '#f5b8c8', sfx: [[150, 70, 'ペタッ!', -10, 'or'], [380, 70, 'キラキラ', 8]],
+      items: [[60, 100, Art.deco.stamp('GIỎI!', '#e8475f', 100)], [180, 120, Art.deco.stamp('★', '#2f6fd6', 90)], [290, 96, Art.deco.stamp('✓', '#3aa35a', 96)], [80, 200, Art.creature('tomato', { size: 70, mood: 'star' })], [370, 180, Art.creature('star', { size: 76, mood: 'joy' })]],
+      labels: [[460, 290, 'Sổ tem quý', 'mỗi thói quen tốt một con dấu', [330, 200], 'end']] },
+    quotes: { wall: '#ffe9c8', floor: '#f2c48d', sfx: [[330, 60, 'キラキラ', 10, 'or']],
+      items: [[60, 60, `<rect width="110" height="70" fill="#fff6a0" stroke="${INK}" stroke-width="3" transform="rotate(-6)"/><path d="M14 22 h70 M14 36 h60 M14 50 h74" stroke="#aa9" stroke-width="3" transform="rotate(-6)"/>`], [190, 70, `<rect width="100" height="64" fill="#ffd0e6" stroke="${INK}" stroke-width="3" transform="rotate(5)"/><path d="M14 22 h64 M14 38 h52" stroke="#a89" stroke-width="3" transform="rotate(5)"/>`], [300, 120, Art.creature('star', { size: 96, mood: 'joy' })], [90, 170, Art.creature('booky', { size: 70, mood: 'calm' })]],
+      labels: [[460, 290, 'Câu hay nhặt được', 'bôi đen khi đọc rồi bấm ❝', [330, 190], 'end']] },
+    settings: { wall: '#e3d4ff', floor: '#c4b0f0', sfx: [[300, 60, 'カチャカチャ', -8]],
+      items: [[60, 70, Art.pixel('gear', { w: 110 })], [200, 120, Art.creature('mascot', { size: 96 })], [330, 150, box('#b8f0a0')], [340, 70, Art.pixel('clock', { w: 70 })]],
+      labels: [[460, 290, 'Phòng máy', 'chỉnh AI, sao lưu dữ liệu', [260, 200], 'end']] },
+    pet: { wall: '#fff4cf', floor: '#ffc98f', sfx: [[340, 70, 'すやすや', 8]],
+      items: [[60, 140, Art.creature('egg', {})], [200, 110, Art.creature('mascot', { size: 90, mood: 'sleep' })], [340, 160, Art.deco.flower(54, '#ff8fc8')]],
+      labels: [] }
+  };
+  return (kind, w = 480) => {
+    const S = SC[kind] || SC.write;
+    const id = 'sc' + Math.random().toString(36).slice(2, 7);
+    const lab = S.labels.map(([x, y, t, d, to, anchor = 'start']) => {
+      const ty = d ? y - 16 : y;
+      const sx = anchor === 'end' ? x - 4 : x + 4, sy = ty - 22;
+      const mx = (sx + to[0]) / 2 + (anchor === 'end' ? -20 : 20), my = (sy + to[1]) / 2 - 20;
+      return `<text x="${x}" y="${ty}" class="sc-t" text-anchor="${anchor}">${t}</text>${d ? `<text x="${x}" y="${y}" class="sc-d" text-anchor="${anchor}">${d}</text>` : ''}
+        <path d="M${sx} ${sy} Q${mx} ${my} ${to[0]} ${to[1]}" fill="none" stroke="${INK}" stroke-width="2" marker-end="url(#${id}a)"/>`;
+    }).join('');
+    return `<svg class="art scene-svg" viewBox="0 0 480 300" width="${w}" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+      <defs><clipPath id="${id}c"><rect x="14" y="14" width="452" height="272" rx="46"/></clipPath>
+        <pattern id="${id}p" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="2.6" fill="#fff" opacity=".7"/></pattern>
+        <marker id="${id}a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="${INK}" stroke-width="1.8"/></marker></defs>
+      <g clip-path="url(#${id}c)">
+        <rect x="14" y="14" width="452" height="272" fill="${S.wall}"/><rect x="14" y="14" width="452" height="272" fill="url(#${id}p)"/>
+        <rect x="14" y="222" width="452" height="64" fill="${S.floor}"/><path d="M14 222 h452" stroke="${INK}" stroke-width="4"/>
+        ${[...Array(12)].map((_, i) => `<path d="M${30 + i * 40} 236 l14 10" stroke="${INK}" stroke-width="2" opacity=".25"/>`).join('')}
+        ${S.items.map(([x, y, svg, r]) => put(x, y, svg, r || 0)).join('')}
+      </g>
+      <rect x="14" y="14" width="452" height="272" rx="46" fill="none" stroke="${INK}" stroke-width="6"/>
+      ${lab}
+      ${S.sfx.map(([x, y, t, r, c]) => `<text x="${x}" y="${y}" class="sc-jp ${c || ''}" transform="rotate(${r} ${x} ${y})">${t}</text>`).join('')}
+    </svg>`;
+  };
+})();

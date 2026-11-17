@@ -16,7 +16,7 @@ const Archive = {
     view.innerHTML = `
     <div class="page arc-page">
       <header class="page-hero" style="--hc:#9fdcff">
-        <div class="ph-art">${Art.deco.cabinet(150)}<span class="ph-cre bob">${Art.creature('ghost', { size: 90, mood: 'joy' })}</span><span class="ph-cre2">${Art.deco.envelope(60)}</span></div>
+        <div class="ph-art scene">${Art.scene('archive')}</div>
         <div class="ph-txt">
           <div class="kicker">Tầng 2 · Kho Lưu Trữ</div>
           <h1>Tủ hồ sơ không đáy</h1>
@@ -128,7 +128,7 @@ const Archive = {
     let q = '';
     view.innerHTML = `<div class="page">
       <header class="page-hero" style="--hc:#ffd9b0">
-        <div class="ph-art"><span class="ph-cre bob">${Art.creature('star', { size: 120, mood: 'joy' })}</span></div>
+        <div class="ph-art scene">${Art.scene('quotes')}</div>
         <div class="ph-txt"><div class="kicker">Tầng hầm · Sổ Trích Dẫn</div><h1>Những câu hay nhặt được</h1>
         <p>Bôi đen bất kỳ câu nào khi đọc rồi bấm ❝ để cất vào đây. Hoặc tự thêm tay.</p>
         <div class="row"><button class="btn pri" id="qAdd">＋ Thêm trích dẫn</button><button class="btn" id="qCard">🎴 Rút ngẫu nhiên</button><a class="btn" href="#/luu-tru">‹ Kho lưu trữ</a></div></div>

@@ -306,12 +306,84 @@ const Editor = {
         const bl = curBlock();
         if (bl && bl.tagName === 'P' && bl.textContent === '---') { e.preventDefault(); bl.outerHTML = Blocks.divider('stars'); changed(); }
       }
-      if (e.key === '/') {
-        const bl = curBlock();
-        if (bl && bl.textContent === '') { setTimeout(() => { $('.blocks-pop', tools).classList.add('open'); }, 0); }
+      if (pop.open) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); pop.move(e.key === 'ArrowDown' ? 1 : -1); }
+        else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); e.stopImmediatePropagation(); pop.choose(); }
+        else if (e.key === 'Escape') { e.preventDefault(); pop.close(); }
       }
+    }, true);
+    area.addEventListener('keyup', e => {
+      if (['ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape'].includes(e.key) && pop.open) return;
+      const sel = getSelection(); if (!sel.rangeCount) return;
+      const r = sel.getRangeAt(0); const bl = curBlock();
+      // menu "/" ngay tại con trỏ
+      const t = bl ? bl.textContent : '';
+      if (bl && /^\/[^\n]{0,24}$/.test(t) && !/\s{2}/.test(t)) return pop.show('slash', t.slice(1), bl);
+      // [[ liên kết tới bài khác
+      const n = r.startContainer;
+      if (n.nodeType === 3) {
+        const before = n.textContent.slice(0, r.startOffset);
+        const m = before.match(/\[\[([^\[\]]{0,30})$/);
+        if (m) return pop.show('wiki', m[1], null, { node: n, end: r.startOffset, len: m[0].length });
+      }
+      pop.close();
     });
+
+    /* ---- menu nổi tại con trỏ: "/" chèn khối, "[[" liên kết bài ---- */
+    const plain = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase();
+    const SLASH = [
+      ['Tiêu đề lớn', 'h1 heading tieu de', 'fmt:h1'], ['Tiêu đề vừa', 'h2 heading', 'fmt:h2'], ['Tiêu đề nhỏ', 'h3 heading', 'fmt:h3'],
+      ['Đoạn văn', 'p paragraph thuong', 'fmt:p'], ['Trích dẫn', 'quote blockquote', 'fmt:blockquote'],
+      ['Danh sách chấm', 'list bullet ul', 'cmd:insertUnorderedList'], ['Danh sách số', 'list number ol', 'cmd:insertOrderedList'],
+      ['Ảnh', 'image anh hinh', 'x:image'], ['Nhúng YouTube / Spotify', 'embed video nhac', 'x:embed'], ['Liên kết tới bài khác', 'link wiki lien ket', 'x:wiki'],
+      ['Chú thích cuối trang', 'footnote', 'x:footnote'], ['Chữ cái đầu lớn', 'dropcap', 'x:dropcap'],
+      ...BLOCK_MENU.flatMap(([g, items]) => items.map(([l, v]) => [l.replace(/<svg[\s\S]*?<\/svg>/g, '').trim(), g, 'b:' + v]))
+    ];
+    const popEl = document.createElement('div'); popEl.className = 'caret-pop'; popEl.hidden = true; host.querySelector('.ed').appendChild(popEl);
+    const pop = {
+      open: false, items: [], i: 0, kind: '', block: null, wikiAt: null,
+      show(kind, q, block, wikiAt) {
+        this.kind = kind; this.block = block; this.wikiAt = wikiAt;
+        const pq = plain(q);
+        if (kind === 'slash') this.items = SLASH.filter(x => !pq || plain(x[0] + ' ' + x[1]).includes(pq)).slice(0, 9).map(x => ({ label: x[0], sub: x[1], act: x[2] }));
+        else {
+          const docs = [...Store.list('posts').map(p => ({ id: p.id, title: p.title || 'Không tiêu đề', href: '#/doc/bai/' + p.id, ic: '✎' })), ...Store.list('archive').map(a => ({ id: a.id, title: a.title, href: '#/doc/luu/' + a.id, ic: '🗄️' })), ...Store.list('books').map(b => ({ id: b.id, title: b.title, href: '#/sach/' + b.id, ic: '📚' }))];
+          this.items = docs.filter(d => !pq || plain(d.title).includes(pq)).slice(0, 8).map(d => ({ label: d.title, sub: d.ic, doc: d }));
+          if (q.trim()) this.items.push({ label: `Tạo bài mới “${q.trim()}”`, sub: '＋', newTitle: q.trim() });
+        }
+        if (!this.items.length) return this.close();
+        this.i = Math.min(this.i, this.items.length - 1);
+        popEl.innerHTML = `<div class="cp-h">${kind === 'slash' ? 'Chèn khối · gõ để lọc' : 'Liên kết tới…'}</div>` + this.items.map((x, i) => `<button class="${i === this.i ? 'on' : ''}" data-i="${i}"><span>${esc(x.label)}</span><small>${esc(x.sub)}</small></button>`).join('');
+        const rr = getSelection().getRangeAt(0).getBoundingClientRect(), hr = host.querySelector('.ed').getBoundingClientRect();
+        popEl.style.left = Math.max(0, Math.min(rr.left - hr.left, hr.width - 280)) + 'px';
+        popEl.style.top = (rr.bottom - hr.top + 6) + 'px';
+        popEl.hidden = false; this.open = true;
+      },
+      move(d) { this.i = (this.i + d + this.items.length) % this.items.length; $$('button', popEl).forEach((b, i) => b.classList.toggle('on', i === this.i)); $$('button', popEl)[this.i]?.scrollIntoView({ block: 'nearest' }); },
+      close() { popEl.hidden = true; this.open = false; this.i = 0; },
+      async choose(i = this.i) {
+        const it = this.items[i]; if (!it) return; const kind = this.kind, bl = this.block, w = this.wikiAt; this.close();
+        if (kind === 'slash') {
+          bl.innerHTML = '<br>'; const r = document.createRange(); r.setStart(bl, 0); r.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(r); save();
+          const [t, v] = it.act.split(/:(.*)/s);
+          if (t === 'fmt') exec('formatBlock', v);
+          else if (t === 'cmd') exec(v);
+          else if (t === 'b') { const [k, a] = v.split(':'); insert(Blocks[k](a)); }
+          else if (v === 'wiki') { document.execCommand('insertText', false, '[['); setTimeout(() => area.dispatchEvent(new KeyboardEvent('keyup', { key: '[' })), 0); }
+          else await extra(v);
+        } else {
+          let doc = it.doc;
+          if (it.newTitle) { const p = Store.upsert('posts', { id: uid(), title: it.newTitle, subtitle: '', cat: '', tags: [], content: '<p><br></p>', paper: 'plain', status: 'draft', words: 0 }); doc = { id: p.id, title: p.title, href: '#/doc/bai/' + p.id }; toast('Đã tạo bài nháp “' + it.newTitle + '”'); }
+          const r = document.createRange(); r.setStart(w.node, Math.max(0, w.end - w.len)); r.setEnd(w.node, w.end);
+          const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+          document.execCommand('insertHTML', false, `<a class="wiki" href="${doc.href}" data-id="${doc.id}">${esc(doc.title)}</a>&nbsp;`); changed();
+        }
+      }
+    };
+    popEl.addEventListener('mousedown', e => { e.preventDefault(); const b = e.target.closest('button'); if (b) pop.choose(+b.dataset.i); });
     area.addEventListener('click', e => {
+      const wl = e.target.closest('a.wiki');
+      if (wl && (e.ctrlKey || e.metaKey)) { e.preventDefault(); location.hash = wl.getAttribute('href'); return; }
       const li = e.target.closest('.checklist li');
       if (li && e.offsetX < 26) { li.dataset.done = li.dataset.done === '1' ? '0' : '1'; changed(); }
       const rt = e.target.closest('.blk.rating');
@@ -365,14 +437,30 @@ const Editor = {
       const img = [...(cd.items || [])].find(i => i.type.startsWith('image/'));
       if (img) { e.preventDefault(); fileToDataURL(img.getAsFile()).then(d => insert(`<figure class="fig" data-w="100"><img src="${d}"><figcaption>Chú thích…</figcaption></figure><p><br></p>`)); }
     });
-    document.addEventListener('mousedown', e => { if (!host.contains(e.target)) $$('.pop.open', tools).forEach(x => x.classList.remove('open')); });
+    const onDocDown = e => {
+      if (!document.body.contains(host)) return cleanup();
+      if (!host.contains(e.target)) { $$('.pop.open', tools).forEach(x => x.classList.remove('open')); pop.close(); }
+    };
+    const onSel = () => {
+      if (!document.body.contains(host)) return cleanup();
+      if (!edRoot.classList.contains('focus')) return;
+      const sel = getSelection(); if (!sel.rangeCount || !area.contains(sel.anchorNode)) return;
+      let n = sel.anchorNode; while (n && n.parentNode !== area) n = n.parentNode;
+      $$('.cur', area).forEach(x => x !== n && x.classList.remove('cur')); n?.classList?.add('cur');
+    };
+    const edRoot = host.querySelector('.ed');
+    const cleanup = () => { document.removeEventListener('mousedown', onDocDown); document.removeEventListener('selectionchange', onSel); };
+    document.addEventListener('mousedown', onDocDown);
+    document.addEventListener('selectionchange', onSel);
 
     return {
       el: area,
       getHTML: () => area.innerHTML,
       setHTML: h => { area.innerHTML = h; },
       insert,
-      text: () => area.innerText
+      text: () => area.innerText,
+      focusMode(on) { edRoot.classList.toggle('focus', on); if (!on) $$('.cur', area).forEach(x => x.classList.remove('cur')); else onSel(); },
+      destroy: cleanup
     };
   }
 };

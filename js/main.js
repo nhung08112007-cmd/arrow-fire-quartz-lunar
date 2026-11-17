@@ -43,6 +43,7 @@ ${Blocks.divider('eggs')}
   await Store.init();
   const S = Store.settings();
   document.body.dataset.theme = S.theme || 'day';
+  document.body.classList.toggle('reduce-fx', !!S.lowFx || matchMedia('(prefers-reduced-motion: reduce)').matches);
   Seed.run();
   Nav.render();
 
@@ -65,6 +66,8 @@ ${Blocks.divider('eggs')}
   Router.on(/^\/thu-cung$/, v => Pet.page(v));
   Router.on(/^\/cai-dat$/, v => Settings.page(v));
   window.addEventListener('hashchange', () => Router.resolve());
+  addEventListener('pagehide', () => Store.flush());
+  document.addEventListener('visibilitychange', () => { if (document.hidden) Store.flush(); });
 
   $('#btnSearch').onclick = () => Search.open();
   $('#btnMusic').onclick = () => Music.toggle();

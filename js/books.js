@@ -47,7 +47,7 @@ const Books = {
     view.innerHTML = `
     <div class="page lib-page">
       <header class="page-hero" style="--hc:#ffe680">
-        <div class="ph-art">${Art.deco.shelf(170)}<span class="ph-cre bob">${Art.creature('booky', { size: 96, mood: 'joy' })}</span><span class="ph-cre2">${Art.deco.globe(70)}</span></div>
+        <div class="ph-art scene">${Art.scene('books')}</div>
         <div class="ph-txt">
           <div class="kicker">Tầng 2 · Thư Viện Thế Giới</div>
           <h1>Đi vòng quanh thế giới bằng sách</h1>

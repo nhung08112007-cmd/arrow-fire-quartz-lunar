@@ -13,7 +13,7 @@ const HL = [
 ];
 
 const Reader = {
-  open(view, { doc, onSave, back, kind = 'post', meta = '' }) {
+  open(view, { doc, onSave, back, kind = 'post', meta = '', extra = '' }) {
     const S = Store.settings();
     S.reader = S.reader || { size: 19, width: 760, theme: 'paper', font: 'Lora', lh: 1.85, focus: false };
     const R = S.reader;
@@ -40,6 +40,7 @@ const Reader = {
           <button class="rbtn" data-r="speak" title="Đọc to">🔊</button>
           <button class="rbtn" data-r="ask" title="Hỏi AI về bài">✦</button>
           <button class="rbtn" data-r="fs" title="Toàn màn hình">⛶</button>
+          <button class="rbtn" data-r="print" title="In / lưu PDF">🖨</button>
           <button class="rbtn hot" data-r="notes" title="Bảng ghi chú">📝 <span id="ncount">${doc.notes.length}</span></button>
         </div>
       </div>
@@ -63,6 +64,7 @@ const Reader = {
             </header>
             <article class="rd-article prose" id="rdArt">${doc.content || '<p class="muted">Chưa có nội dung.</p>'}</article>
             <section class="rd-fns" id="rdFns"></section>
+            ${extra}
             <div class="rd-end">${Art.creature('mascot', { mood: 'joy', size: 70 })}<span>Hết rồi! Bạn đã đọc xong ♥</span></div>
             <canvas class="rd-canvas" id="rdCanvas"></canvas>
           </div>
@@ -323,6 +325,7 @@ const Reader = {
         go(0);
       }
       if (k === 'ask') askDoc();
+      if (k === 'print') window.print();
     });
     $('.rd-ctrl', rd).addEventListener('change', e => {
       const k = e.target.dataset.r, v = e.target.value;

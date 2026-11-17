@@ -191,7 +191,7 @@ const Stamps = {
     const cells = [...Array(weeks * 7)].map((_, i) => { const d = new Date(+start + i * DAY).toISOString().slice(0, 10); const v = Object.values(log[d] || {}).reduce((s, x) => s + x, 0); return `<i class="hm l${v ? Math.min(4, Math.ceil(Math.log2(v + 1))) : 0}" title="${d}: ${Math.round(v)}"></i>`; }).join('');
     const tot = k => Object.values(log).reduce((s, d) => s + (d[k] || 0), 0);
     view.innerHTML = `<div class="page stamps-page">
-      <header class="page-hero" style="--hc:#ffb3c8"><div class="ph-art"><span class="ph-cre bob">${Art.creature('tomato', { size: 110, mood: 'star' })}</span>${Art.deco.stamp('GIỎI!', '#e8475f', 100)}</div>
+      <header class="page-hero" style="--hc:#ffb3c8"><div class="ph-art scene">${Art.scene('stamps')}</div>
         <div class="ph-txt"><div class="kicker">Tầng hầm · Sổ Tem</div><h1>${got.length}/${this.list.length} con tem</h1><p>Mỗi thói quen tốt được đóng một con dấu. Chuỗi hiện tại: <b>${Activity.streak()} ngày 🔥</b></p></div></header>
       <h2>Bản đồ chăm chỉ (22 tuần)</h2><div class="heatmap">${cells}</div>
       <div class="st-eggs"><div>✎<b>${Math.round(tot('write')).toLocaleString('vi')}</b><small>chữ đã viết</small></div><div>🔁<b>${tot('review')}</b><small>lượt ôn</small></div><div>🖍<b>${tot('note')}</b><small>ghi chú</small></div><div>🎮<b>${tot('game')}</b><small>điểm game</small></div><div>⏱️<b>${tot('focus')}</b><small>phiên ấp trứng</small></div></div>
@@ -219,7 +219,7 @@ const Mail = {
   page(view) {
     let filter = '';
     view.innerHTML = `<div class="page mail-page">
-      <header class="page-hero" style="--hc:#ffc0b0"><div class="ph-art">${Art.deco.mailbox(150)}<span class="ph-cre2 floaty">${Art.creature('cloud', { size: 70, mood: 'joy' })}</span></div>
+      <header class="page-hero" style="--hc:#ffc0b0"><div class="ph-art scene">${Art.scene('mail')}</div>
         <div class="ph-txt"><div class="kicker">Tầng 3 · Thùng Thư</div><h1>Thùng thư nhỏ</h1><p>Góp ý cho hành tinh, viết nhật ký, gửi thư cho chính mình ở tương lai (khoá cho tới ngày mở), hay nháp một lá thư cho ai đó.</p>
         <button class="btn pri big" id="mNew">✎ Viết thư</button></div></header>
       <div class="cat-row">${[['', '✦ Tất cả'], ...LETTER_KINDS.map(k => [k[0], k[1]])].map(k => `<button class="cat ${filter === k[0] ? 'on' : ''}" data-k="${k[0]}">${k[1]}</button>`).join('')}</div>
@@ -336,62 +336,90 @@ const Settings = {
   page(view) {
     const S = Store.settings();
     view.innerHTML = `<div class="page settings-page">
-      <header class="page-hero" style="--hc:#e3d4ff"><div class="ph-art"><span class="ph-cre bob">${Art.creature('mascot', { size: 110 })}</span>${Art.pixel('gear', { w: 70 })}</div>
+      <header class="page-hero" style="--hc:#e3d4ff"><div class="ph-art scene">${Art.scene('settings')}</div>
         <div class="ph-txt"><div class="kicker">Phòng máy</div><h1>Cài đặt</h1><p>Mọi dữ liệu được lưu ngay trong trình duyệt của bạn (IndexedDB). Hãy xuất bản sao lưu thường xuyên.</p></div></header>
       <section class="set-sec"><h2>👤 Bạn</h2><label class="lbl">Tên gọi</label><input class="inp" id="sName" value="${esc(S.name)}">
-        <label class="row"><input type="checkbox" id="sGate" ${S.showGate ? 'checked' : ''}> Hiện cảnh “máy trứng” mỗi lần mở trang</label></section>
+        <label class="row"><input type="checkbox" id="sGate" ${S.showGate ? 'checked' : ''}> Hiện cảnh “máy trứng” mỗi lần mở trang</label>
+        <label class="row"><input type="checkbox" id="sLowFx" ${S.lowFx ? 'checked' : ''}> Giảm hiệu ứng nét vẽ tay (bật nếu máy chạy chậm)</label></section>
       <section class="set-sec"><h2>✦ Trợ lý AI</h2>
-        <p class="muted">Các nút ✦ gọi AI trực tiếp từ trình duyệt. Key chỉ lưu trên máy này, không nằm trong code hay trên trang web, nên chỉ nhập trên thiết bị của bạn.</p>
-        <label class="lbl">Nhà cung cấp</label>
-        <div class="seg" id="sProv"><button data-p="gemini" class="${S.provider === 'gemini' ? 'on' : ''}">Gemini (Google, có gói miễn phí)</button><button data-p="claude" class="${S.provider === 'claude' ? 'on' : ''}">Claude (Anthropic)</button></div>
-        <div id="pGemini" ${S.provider === 'gemini' ? '' : 'hidden'}>
-          <label class="lbl" for="sGKey">Gemini API key <small class="muted">(lấy ở Google AI Studio, mục Get API key)</small></label>
-          <div class="row"><input class="inp grow" type="password" id="sGKey" value="${esc(S.geminiKey || '')}" placeholder="AIza…"><button class="btn" data-show="sGKey">👁</button></div>
-          <label class="lbl" for="sGModel">Model</label>
-          <div class="row"><select class="inp grow" id="sGModel"><option value="auto">Tự động chọn (khuyên dùng)</option>${(S.geminiList || []).map(m => `<option value="${m}" ${S.geminiModel === m ? 'selected' : ''}>${m}</option>`).join('')}</select><button class="btn" id="sGList">↻ Tải lại danh sách model</button></div>
-          <p class="muted sm" id="sGInfo">${S.geminiWorking ? `Model chạy được gần nhất: <b>${esc(S.geminiWorking)}</b>. ` : ''}Ở chế độ tự động, app ưu tiên các model Flash (có hạn mức miễn phí) và tự chuyển sang model khác khi một model bị ngừng, hết hạn mức hoặc quá tải.</p>
-        </div>
-        <div id="pClaude" ${S.provider === 'claude' ? '' : 'hidden'}>
-          <label class="lbl" for="sKey">Claude API key <small class="muted">(lấy ở Claude Console, mục API Keys)</small></label>
-          <div class="row"><input class="inp grow" type="password" id="sKey" value="${esc(S.apiKey)}" placeholder="sk-ant-…"><button class="btn" data-show="sKey">👁</button></div>
-          <label class="lbl" for="sModel">Model</label><select class="inp" id="sModel">${[['claude-haiku-5-5', 'Claude Haiku 5.5 (rẻ nhất, đủ cho thẻ từ và sửa lỗi)'], ['claude-sonnet-5-5', 'Claude Sonnet 5.5 (cân bằng)'], ['claude-opus-5-5', 'Claude Opus 5.5 (viết và phân tích sâu)']].map(m => `<option value="${m[0]}" ${S.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}</select>
-          <label class="lbl" for="sBase">Base URL <small class="muted">(chỉ đổi nếu bạn có proxy riêng)</small></label><input class="inp" id="sBase" value="${esc(S.baseUrl)}">
-        </div>
-        <div class="row"><button class="btn pri" id="sTest">✦ Thử kết nối</button><span class="muted sm" id="sTestOut"></span></div></section>
+        <p class="muted">Thêm key của một hoặc nhiều nơi. Khi một nơi lỗi, hết hạn mức hay quá tải, app <b>tự chuyển sang nơi tiếp theo</b> trong danh sách. Key chỉ lưu trên máy này.</p>
+        <div class="ai-tip">${Art.creature('prof', { size: 54 })}<div><b>Gợi ý miễn phí:</b> tạo key <b>Gemini</b> và <b>Groq</b> (đều không cần thẻ), thêm <b>OpenRouter</b> làm dự phòng. Gói ChatGPT Plus <b>không</b> kèm tiền dùng API nên không dùng được ở đây.</div></div>
+        <div id="aiList" class="ai-list"></div>
+        <div class="row"><button class="btn pri" id="sTest">✦ Thử cả chuỗi</button><span class="muted sm" id="sTestOut"></span></div>
+        <details class="ai-adv"><summary>Nâng cao: Claude Base URL, máy chủ tương thích OpenAI</summary>
+          <label class="lbl" for="sBase">Claude Base URL</label><input class="inp" id="sBase" value="${esc(S.baseUrl)}">
+          <label class="lbl" for="sOaiBase">Địa chỉ máy chủ “OpenAI / tương thích” (DeepSeek, Mistral, LM Studio…)</label><input class="inp" id="sOaiBase" value="${esc(S.oaiBase || 'https://api.openai.com/v1')}">
+        </details></section>
       <section class="set-sec"><h2>💾 Dữ liệu</h2>
         <div class="row"><button class="btn" id="sExp">⇩ Xuất bản sao lưu (.json)</button><button class="btn" id="sImp">⇧ Nhập bản sao lưu</button><button class="btn" id="sSeed">🌱 Nạp dữ liệu mẫu</button><button class="btn danger" id="sWipe">🗑 Xoá sạch</button></div>
         <p class="muted" id="sUsage"></p></section>
       <section class="set-sec"><h2>⌨️ Phím tắt</h2><ul class="tips"><li><kbd>Ctrl</kbd>+<kbd>K</kbd> tìm kiếm</li><li><kbd>Ctrl</kbd>+<kbd>S</kbd> lưu khi viết · <kbd>Ctrl</kbd>+<kbd>H</kbd> tìm & thay</li><li>Chế độ đọc: <kbd>N</kbd> ghi chú · <kbd>F</kbd> tập trung · <kbd>+</kbd>/<kbd>-</kbd> cỡ chữ</li><li>Ôn thẻ: <kbd>Space</kbd> lật · <kbd>1</kbd>–<kbd>4</kbd> chấm điểm</li><li>Lật thẻ: <kbd>←</kbd> <kbd>→</kbd> · <kbd>S</kbd> đọc to</li></ul></section>
     </div>`;
     AI.cfg();
+    const KEYLINK = { gemini: 'https://aistudio.google.com/apikey', openrouter: 'https://openrouter.ai/keys', groq: 'https://console.groq.com/keys', claude: 'https://console.anthropic.com/settings/keys', openai: 'https://platform.openai.com/api-keys' };
+    const NOTE = { gemini: 'Miễn phí có hạn mức theo ngày. Ưu tiên model Flash.', openrouter: 'Chỉ dùng các model đuôi :free. Hạn mức theo ngày, đôi khi chậm.', groq: 'Miễn phí, rất nhanh, giới hạn theo phút. Model Llama/Qwen/GPT-OSS.', claude: 'Trả phí theo token. Haiku rất rẻ.', openai: 'Trả phí theo token (không dùng gói ChatGPT Plus được).' };
     const save = () => {
       S.name = $('#sName').value; S.showGate = $('#sGate').checked;
-      S.geminiKey = $('#sGKey').value.trim(); S.geminiModel = $('#sGModel').value;
-      S.apiKey = $('#sKey').value.trim(); S.model = $('#sModel').value; S.baseUrl = $('#sBase').value.trim() || 'https://api.anthropic.com';
+      S.baseUrl = $('#sBase').value.trim() || 'https://api.anthropic.com'; S.oaiBase = $('#sOaiBase').value.trim();
       Store.save('settings');
     };
-    $$('input,select', view).forEach(i => i.addEventListener('change', () => { if (i.id === 'sGKey') { S.geminiList = []; AI._bad.clear(); } save(); toast('Đã lưu cài đặt'); }));
-    $$('[data-show]', view).forEach(b => b.onclick = () => { const i = $('#' + b.dataset.show); i.type = i.type === 'password' ? 'text' : 'password'; });
-    $$('#sProv button').forEach(b => b.onclick = () => { S.provider = b.dataset.p; $$('#sProv button').forEach(x => x.classList.toggle('on', x === b)); $('#pGemini').hidden = S.provider !== 'gemini'; $('#pClaude').hidden = S.provider !== 'claude'; save(); });
-    $('#sGList').onclick = async e => {
-      save(); if (!S.geminiKey) return toast('Nhập Gemini API key trước', 'err');
-      const btn = e.currentTarget; btn.disabled = true;
-      try {
-        const list = await AI.listGemini(true); AI._bad.clear();
-        $('#sGModel').innerHTML = '<option value="auto">Tự động chọn (khuyên dùng)</option>' + list.map(m => `<option value="${m}" ${S.geminiModel === m ? 'selected' : ''}>${m}</option>`).join('');
-        toast(`Tìm thấy ${list.length} model dùng được`);
-      } catch (err) { toast(err.message, 'err', 6000); }
-      btn.disabled = false;
+    const drawAI = () => {
+      const chain = AI.chain();
+      $('#aiList').innerHTML = S.aiOrder.map((k, i) => {
+        const P = AI_PROVIDERS[k], key = S[P.keyField] || '', on = !(S.aiOff || []).includes(k);
+        const models = k === 'gemini' ? (S.geminiList || []) : k === 'claude' ? ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'] : (S[k + 'List'] || []);
+        const cur = k === 'gemini' ? S.geminiModel : k === 'claude' ? S.model : (S[k + 'Model'] || 'auto');
+        const pos = chain.indexOf(k);
+        return `<div class="ai-card ${key ? 'has' : ''} ${on ? '' : 'off'}" data-k="${k}">
+          <div class="ai-top"><span class="ai-no">${pos >= 0 ? pos + 1 : '–'}</span><b>${P.name}</b>${P.free ? '<span class="tag free">có gói miễn phí</span>' : '<span class="tag">trả phí</span>'}
+            <span class="grow"></span><button class="mini-btn" data-mv="-1" ${i ? '' : 'disabled'} title="Ưu tiên hơn">↑</button><button class="mini-btn" data-mv="1" ${i < S.aiOrder.length - 1 ? '' : 'disabled'} title="Ưu tiên kém hơn">↓</button>
+            <label class="sw-tg"><input type="checkbox" data-on ${on ? 'checked' : ''}> bật</label></div>
+          <p class="muted sm">${NOTE[k]} <a href="${KEYLINK[k]}" target="_blank" rel="noopener">Lấy key ↗</a></p>
+          <div class="row"><input class="inp grow" type="password" data-key value="${esc(key)}" placeholder="Dán API key…" autocomplete="off"><button class="btn sm" data-show>👁</button></div>
+          <div class="row"><select class="inp grow sm" data-model>${k === 'claude' ? '' : '<option value="auto">Tự động chọn model (khuyên dùng)</option>'}${models.map(m => `<option value="${esc(m)}" ${cur === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
+            ${k === 'claude' ? '' : '<button class="btn sm" data-list>↻ Danh sách model</button>'}<button class="btn sm" data-test>✦ Thử</button></div>
+          <div class="muted sm" data-out>${(k === 'gemini' ? S.geminiWorking : S[k + 'Working']) ? 'Model chạy được gần nhất: <b>' + esc(k === 'gemini' ? S.geminiWorking : S[k + 'Working']) + '</b>' : ''}</div>
+        </div>`;
+      }).join('');
     };
+    drawAI();
+    $('#aiList').addEventListener('change', e => {
+      const card = e.target.closest('.ai-card'); if (!card) return; const k = card.dataset.k, P = AI_PROVIDERS[k];
+      if (e.target.matches('[data-key]')) { S[P.keyField] = e.target.value.trim(); if (k === 'gemini') S.geminiList = []; else S[k + 'List'] = []; AI._bad.clear(); delete AI._cool[k]; }
+      if (e.target.matches('[data-model]')) { if (k === 'gemini') S.geminiModel = e.target.value; else if (k === 'claude') S.model = e.target.value; else S[k + 'Model'] = e.target.value; }
+      if (e.target.matches('[data-on]')) { S.aiOff = (S.aiOff || []).filter(x => x !== k); if (!e.target.checked) S.aiOff.push(k); }
+      Store.save('settings'); drawAI(); toast('Đã lưu');
+    });
+    $('#aiList').addEventListener('click', async e => {
+      const card = e.target.closest('.ai-card'); if (!card) return; const k = card.dataset.k;
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.mv) { const i = S.aiOrder.indexOf(k), j = i + +b.dataset.mv; [S.aiOrder[i], S.aiOrder[j]] = [S.aiOrder[j], S.aiOrder[i]]; Store.save('settings'); drawAI(); }
+      if (b.hasAttribute('data-show')) { const i = $('[data-key]', card); i.type = i.type === 'password' ? 'text' : 'password'; }
+      if (b.hasAttribute('data-list')) {
+        if (!(S[AI_PROVIDERS[k].keyField] || '').trim()) return toast('Dán key trước đã', 'err');
+        b.disabled = true;
+        try { const l = k === 'gemini' ? await AI.listGemini(true) : await AI.listCompat(k, true); AI._bad.clear(); drawAI(); toast(`Tìm thấy ${l.length} model dùng được`); }
+        catch (err) { toast(err.message, 'err', 6000); b.disabled = false; }
+      }
+      if (b.hasAttribute('data-test')) {
+        if (!(S[AI_PROVIDERS[k].keyField] || '').trim()) return toast('Dán key trước đã', 'err');
+        const out = $('[data-out]', card); out.textContent = 'Đang thử…'; b.disabled = true;
+        try { const o = await AI.ask({ prompt: 'Chào một câu thật dễ thương, xưng là Chữ-tchi, dưới 20 chữ.', maxTokens: 200 }, k); out.innerHTML = `✅ Chạy được qua <b>${esc(AI.lastModel)}</b>: “${esc(o)}”`; }
+        catch (err) { out.innerHTML = '❌ ' + err.message; }
+        b.disabled = false;
+      }
+    });
+    $('#sLowFx').onchange = e => { S.lowFx = e.target.checked; Store.save('settings'); document.body.classList.toggle('reduce-fx', S.lowFx); };
+    $$('#sName,#sGate,#sBase,#sOaiBase', view).forEach(i => i.addEventListener('change', () => { save(); toast('Đã lưu cài đặt'); }));
     $('#sTest').onclick = async e => {
       save(); $('#sTestOut').textContent = '';
-      const o = await AI.withSpinner(e.currentTarget, () => AI.ask({ prompt: 'Chào một câu thật dễ thương, xưng là Chữ-tchi, dưới 20 chữ.', maxTokens: 300 }));
-      if (o) { toast('✦ ' + o, 'ok', 5000); $('#sTestOut').innerHTML = `Kết nối được qua <b>${esc(AI.lastModel)}</b>.`; if (S.provider === 'gemini') $('#sGInfo').innerHTML = `Model chạy được gần nhất: <b>${esc(AI.lastModel)}</b>.`; }
+      const o = await AI.withSpinner(e.currentTarget, () => AI.ask({ prompt: 'Chào một câu thật dễ thương, xưng là Chữ-tchi, dưới 20 chữ.', maxTokens: 200 }));
+      if (o) { toast('✦ ' + o, 'ok', 5000); $('#sTestOut').innerHTML = `Chạy được qua <b>${esc(AI_PROVIDERS[AI.lastProvider].name)}</b> · ${esc(AI.lastModel)}`; drawAI(); }
     };
     $('#sExp').onclick = () => download(`chutchi-backup-${today()}.json`, JSON.stringify(Store.exportAll()), 'application/json');
-    $('#sImp').onclick = async () => { const f = await pickFile('.json,application/json'); if (!f) return; try { const o = JSON.parse(await f.text()); if (await confirmBox('Nhập sẽ GHI ĐÈ dữ liệu hiện tại. Tiếp tục?')) { Store.importAll(o); toast('Đã nhập xong'); location.reload(); } } catch (e) { toast('File không hợp lệ', 'err'); } };
+    $('#sImp').onclick = async () => { const f = await pickFile('.json,application/json'); if (!f) return; try { const o = JSON.parse(await f.text()); if (await confirmBox('Nhập sẽ GHI ĐÈ dữ liệu hiện tại. Tiếp tục?')) { Store.importAll(o); toast('Đã nhập xong'); setTimeout(() => location.reload(), 400); } } catch (e) { toast('File không hợp lệ', 'err'); } };
     $('#sSeed').onclick = () => { Seed.run(true); toast('Đã nạp dữ liệu mẫu 🌱'); };
-    $('#sWipe').onclick = async () => { if (await confirmBox('XOÁ SẠCH mọi dữ liệu? Không thể hoàn tác!') && await confirmBox('Thật sự chắc chứ? Hãy xuất sao lưu trước!')) { Store.keys.forEach(k => { if (k !== 'settings') { delete Store.data[k]; Store.save(k); } }); location.reload(); } };
+    $('#sWipe').onclick = async () => { if (await confirmBox('XOÁ SẠCH mọi dữ liệu? Không thể hoàn tác!') && await confirmBox('Thật sự chắc chứ? Hãy xuất sao lưu trước!')) { Store.keys.forEach(k => { if (k !== 'settings') { delete Store.data[k]; Store.saveNow(k); } }); setTimeout(() => location.reload(), 300); } };
     navigator.storage?.estimate?.().then(e => { $('#sUsage').textContent = `Đang dùng ~${(e.usage / 1048576).toFixed(1)} MB / ${(e.quota / 1048576).toFixed(0)} MB cho phép.`; });
   }
 };

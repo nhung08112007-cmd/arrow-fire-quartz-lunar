@@ -28,6 +28,58 @@ const TEMPLATES = {
   'ngon-ngu': [['Chuyện của một từ', `${Blocks.etym()}${Blocks.define()}<h2>Cách dùng</h2><p>…</p>${Blocks.bilingual()}`]],
 };
 
+
+/* đề bài gợi ý (không cần AI) */
+const PROMPTS = {
+  '': ['Viết về một buổi chiều bạn nhớ mãi, chỉ bằng âm thanh và mùi hương.', 'Một điều bạn từng tin chắc, giờ không còn tin nữa. Vì sao?', 'Thư gửi chính mình của 10 năm trước.', 'Mô tả căn phòng bạn đang ngồi như thể đây là cảnh mở đầu một cuốn tiểu thuyết.', 'Một từ bạn yêu, và câu chuyện đằng sau nó.'],
+  'van-hoc': ['Nhân vật phụ nào trong một cuốn sách bạn đọc đáng được kể lại câu chuyện của riêng họ?', 'So sánh cách hai nhà văn khác nhau viết về cái chết.', 'Viết lại đoạn kết của một truyện ngắn quen thuộc theo hướng khác.', 'Một câu văn mở đầu khiến bạn không thể bỏ sách xuống. Phân tích vì sao.', 'Phong cảnh trong tác phẩm nói gì về nội tâm nhân vật?'],
+  'triet-hoc': ['Hạnh phúc có phải là mục đích của đời sống không?', 'Nếu bạn biết mình sẽ sống lại đúng cuộc đời này vô số lần (Nietzsche), bạn sẽ thay đổi điều gì?', 'Tự do ý chí: bạn chọn bữa sáng nay, hay bữa sáng chọn bạn?', 'Đối thoại giữa Epictetus và một người dùng mạng xã hội.', 'Có nên nói dối để bảo vệ người khác không?'],
+  'am-nhac': ['Một bài hát gắn với một nơi chốn. Kể lại nơi ấy qua bài hát.', 'Vì sao một số giai điệu buồn lại khiến ta thấy dễ chịu?', 'Review album bạn nghe nhiều nhất năm nay, từng bài một.', 'So sánh bản gốc và một bản cover bạn thích hơn.', 'Âm nhạc của một thập niên kể gì về xã hội thời đó?'],
+  'hoi-hoa': ['Đứng trước một bức tranh 10 phút. Ghi lại mọi thứ bạn thấy theo thứ tự.', 'Màu sắc yêu thích của một hoạ sĩ và lý do có thể.', 'Một bức tranh tĩnh vật thực ra đang kể chuyện gì?', 'So sánh hai bức tranh cùng chủ đề ở hai thế kỷ khác nhau.', 'Viết như thể bạn là một nhân vật trong bức tranh.'],
+  'lich-su': ['Một quyết định nhỏ đã thay đổi lịch sử lớn.', 'Một ngày bình thường của một người dân thường ở một thời đại xa.', 'Lịch sử được kể bởi kẻ thắng. Hãy kể từ phía bên kia.', 'Điều gì thực sự dẫn tới sự sụp đổ của một đế chế?', 'So sánh hai cuộc cách mạng.'],
+  'van-hoa': ['Một món ăn và tất cả những ký ức đi kèm.', 'Phong tục nào ở quê bạn đang dần biến mất?', 'Một từ không thể dịch sang tiếng Việt, và thế giới quan đằng sau nó.', 'Lễ hội bạn muốn được tham dự nhất, và vì sao.', 'Hai nền văn hoá chào hỏi nhau như thế nào?'],
+  'ngon-ngu': ['Chuyện của một từ mượn trong tiếng Việt.', 'Ngôn ngữ thứ hai thay đổi cách bạn suy nghĩ ra sao?', 'Một lỗi sai ngoại ngữ đáng nhớ của bạn.', 'So sánh cách tiếng Việt và tiếng Nhật thể hiện sự lịch sự.', 'Từ nào bạn thấy đẹp nhất về âm thanh, ở bất kỳ ngôn ngữ nào?']
+};
+/* HTML → Markdown đơn giản để xuất bài */
+function htmlToMd(html) {
+  const d = document.createElement('div'); d.innerHTML = html;
+  const walk = (n, ctx = {}) => {
+    if (n.nodeType === 3) return n.nodeValue.replace(/\s+/g, ' ');
+    if (n.nodeType !== 1) return '';
+    const kids = () => [...n.childNodes].map(c => walk(c, ctx)).join('');
+    const t = n.tagName.toLowerCase();
+    if (/^h[1-6]$/.test(t)) return '\n\n' + '#'.repeat(+t[1]) + ' ' + kids().trim() + '\n\n';
+    if (t === 'p' || t === 'div' || t === 'figure' || t === 'aside' || t === 'nav' || t === 'details') return '\n\n' + kids().trim() + '\n\n';
+    if (t === 'br') return '  \n';
+    if (t === 'b' || t === 'strong') return '**' + kids() + '**';
+    if (t === 'i' || t === 'em') return '*' + kids() + '*';
+    if (t === 's' || t === 'strike') return '~~' + kids() + '~~';
+    if (t === 'code') return '`' + kids() + '`';
+    if (t === 'pre') return '\n\n```\n' + n.textContent + '\n```\n\n';
+    if (t === 'a') return `[${kids()}](${n.getAttribute('href') || ''})`;
+    if (t === 'img') return `![${n.alt || ''}](${(n.src || '').startsWith('data:') ? 'anh-nhung.png' : n.src})`;
+    if (t === 'blockquote') return '\n\n' + kids().trim().split('\n').map(l => '> ' + l).join('\n') + '\n\n';
+    if (t === 'ul' || t === 'ol') return '\n\n' + [...n.children].map((li, i) => (t === 'ol' ? (i + 1) + '. ' : (li.dataset.done ? (li.dataset.done === '1' ? '- [x] ' : '- [ ] ') : '- ')) + walk(li).trim()).join('\n') + '\n\n';
+    if (t === 'table') return '\n\n' + [...n.rows].map((r, i) => '| ' + [...r.cells].map(c => c.textContent.trim().replace(/\|/g, '\\|')).join(' | ') + ' |' + (i === 0 ? '\n|' + [...r.cells].map(() => ' --- |').join('') : '')).join('\n') + '\n\n';
+    if (t === 'sup' && n.classList.contains('fn')) return `[^${n.dataset.note}]`;
+    if (t === 'mark') return '==' + kids() + '==';
+    return kids();
+  };
+  return walk(d).replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+/* lịch sử phiên bản: lưu ảnh chụp bài theo thời gian */
+const Versions = {
+  list(id) { return Store.get('versions', {})[id] || []; },
+  snap(p, force = false) {
+    const all = Store.get('versions', {}); const v = all[p.id] = all[p.id] || [];
+    const last = v[0];
+    if (!force && last && (Date.now() - last.t < 5 * 60000 || last.content === p.content)) return;
+    v.unshift({ t: Date.now(), title: p.title, content: p.content, words: p.words || 0 });
+    if (v.length > 40) v.length = 40;
+    Store.save('versions');
+  }
+};
+
 const Write = {
   list(view, cat = '') {
     const S = Store.settings(); S.writeView = S.writeView || 'grid';
@@ -35,7 +87,7 @@ const Write = {
     view.innerHTML = `
     <div class="page write-page">
       <header class="page-hero" style="--hc:#ffb3dd">
-        <div class="ph-art">${Art.deco.desk(180)}<span class="ph-cre bob">${Art.creature('mascot', { size: 100, mood: 'wink' })}</span><span class="ph-cre2 bob d2">${Art.creature('pencil', { size: 64, mood: 'joy' })}</span></div>
+        <div class="ph-art scene">${Art.scene('write')}</div>
         <div class="ph-txt">
           <div class="kicker">Tầng 1 · Phòng Viết</div>
           <h1>Bàn viết của tôi</h1>
@@ -145,6 +197,9 @@ const Write = {
         <label class="rlbl">Khổ <select class="rsel" id="widthSel">${[[640, 'Hẹp'], [820, 'Vừa'], [1040, 'Rộng'], [1320, 'Rất rộng'], [0, 'Tràn màn hình']].map(w => `<option value="${w[0]}" ${S.ed.width == w[0] ? 'selected' : ''}>${w[1]}</option>`).join('')}</select></label>
         <label class="rlbl">Thu phóng <input type="range" min="60" max="200" step="10" value="${S.ed.zoom}" id="zoomR"><b id="zoomV">${S.ed.zoom}%</b></label>
         <button class="rbtn" id="typeW" title="Cuộn giữ dòng đang gõ ở giữa">⌨ Máy chữ</button>
+        <button class="rbtn" id="focusB" title="Làm mờ mọi đoạn trừ đoạn đang viết">◎ Tập trung</button>
+        <button class="rbtn" id="histB" title="Lịch sử phiên bản">🕓 Lịch sử</button>
+        <button class="rbtn" id="expB" title="Xuất bài">⇩ Xuất</button>
         <button class="rbtn" id="fsB" title="Toàn màn hình">⛶</button>
         <button class="rbtn" id="sideB" title="Bảng thông tin">◧</button>
         <a class="rbtn hot" href="#/doc/bai/${p.id}">👁 Đọc</a>
@@ -165,13 +220,15 @@ const Write = {
           <div class="side-sec"><div class="lbl">Thẻ</div><input class="inp sm" id="wtags" value="${esc((p.tags || []).join(', '))}" placeholder="cách nhau bởi dấu phẩy"><button class="btn sm" id="aiTags">✦ Gợi ý thẻ</button></div>
           <div class="side-sec"><div class="lbl">Ảnh bìa</div><div class="row"><button class="btn sm" id="coverF">📁 Tải ảnh</button><button class="btn sm" id="coverU">🔗 URL</button><button class="btn sm" id="coverX">✕</button></div></div>
           <div class="side-sec"><div class="lbl">Trạng thái</div><div class="seg" id="wst"><button data-s="draft" class="${p.status !== 'done' ? 'on' : ''}">Nháp</button><button data-s="done" class="${p.status === 'done' ? 'on' : ''}">Hoàn thành</button></div></div>
+          <div class="side-sec"><div class="lbl">Bí ý tưởng?</div><button class="btn sm wide" id="promptB">💡 Gợi ý một đề bài</button><div id="promptOut" class="prompt-out"></div></div>
+          <div class="side-sec"><div class="lbl">Liên kết</div><div id="wlinks" class="outline"></div><p class="muted sm">Gõ <code>[[</code> để liên kết tới bài, tài liệu hay sách khác. Ctrl + bấm để mở.</p></div>
           <div class="side-sec"><div class="lbl">Trợ lý AI</div>
             <button class="btn sm wide" id="aiTitle">✦ Gợi ý 5 tiêu đề</button>
             <button class="btn sm wide" id="aiSum">✦ Viết sapo</button>
             <button class="btn sm wide" id="aiReview">✦ Nhận xét cả bài</button></div>
           <div class="side-sec"><div class="lbl">Mục tiêu chữ</div><input class="inp sm" type="number" id="wgoal" value="${p.goal || 1000}"><div class="goal"><i id="goalBar"></i></div></div>
           <div class="side-sec"><div class="lbl">Dàn ý (tự động)</div><div class="outline" id="woutline"></div></div>
-          <div class="side-sec mascot-tip">${Art.creature(catOf(p.cat).c, { size: 54, mood: 'joy' })}<p id="tip">Gõ <code>/</code> ở dòng trống để chèn khối. Bôi đen chữ rồi bấm <b>✦ AI</b> để trau chuốt.</p></div>
+          <div class="side-sec mascot-tip">${Art.creature(catOf(p.cat).c, { size: 54, mood: 'joy' })}<p id="tip">Gõ <code>/</code> để chèn khối ngay tại chỗ, <code>[[</code> để liên kết bài khác. Bôi đen chữ rồi bấm <b>✦ AI</b> để trau chuốt.</p></div>
         </aside>
       </div>
     </div>`;
@@ -191,12 +248,16 @@ const Write = {
       p.words = wordCount(ed.text());
       if (p.words > lastWords) Activity.add('write', Math.min(50, p.words - lastWords)), lastWords = p.words;
       Store.upsert('posts', p);
+      Versions.snap(p);
       $('#saved').textContent = 'Đã lưu ✓ ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
       stats();
     };
     const stats = () => {
       const t = ed.text(); const w = wordCount(t);
-      $('#wc').textContent = `${w.toLocaleString('vi')} chữ · ${t.length.toLocaleString('vi')} ký tự · ~${Math.max(1, Math.round(w / 220))} phút đọc`;
+      const todayW = Math.round((Store.get('log', {})[today()] || {}).write || 0);
+      $('#wc').textContent = `${w.toLocaleString('vi')} chữ · ~${Math.max(1, Math.round(w / 220))} phút đọc · hôm nay +${todayW.toLocaleString('vi')} chữ`;
+      const links = $$('a.wiki', ed.el);
+      $('#wlinks').innerHTML = links.length ? links.map(a => `<a href="${a.getAttribute('href')}">↗ ${esc(a.textContent)}</a>`).join('') : '<span class="muted">Chưa có liên kết.</span>';
       const g = +$('#wgoal').value || 1000; $('#goalBar').style.width = Math.min(100, w / g * 100) + '%';
       const hs = $$('h1,h2,h3,h4', ed.el);
       $('#woutline').innerHTML = hs.length ? hs.map((h, i) => `<a data-i="${i}" class="lv${h.tagName[1]}">${esc(h.textContent || '…')}</a>`).join('') : '<span class="muted">Thêm tiêu đề mục để thấy dàn ý.</span>';
@@ -245,10 +306,50 @@ const Write = {
       const out = await AI.withSpinner(e.currentTarget, () => AI.ask({ prompt: `Đọc bài sau như một biên tập viên tạp chí văn hoá. Nhận xét: điểm mạnh, điểm cần sửa (cấu trúc, lập luận, câu chữ), 3 gợi ý cụ thể, và chấm điểm /10.\n"""${body()}"""`, effort: 'medium' }));
       if (out) modal({ title: '✦ Nhận xét của biên tập viên Chữ-tchi', wide: true, body: `<div class="ai-out">${esc(out).replace(/\n/g, '<br>')}</div>` });
     };
+    let focusOn = false;
+    $('#focusB').onclick = e => { focusOn = !focusOn; ed.focusMode(focusOn); e.target.classList.toggle('on', focusOn); };
+    $('#histB').onclick = () => {
+      saveNow(); Versions.snap(p, false);
+      const vs = Versions.list(p.id);
+      if (!vs.length) return toast('Chưa có phiên bản cũ. App tự lưu một phiên bản mỗi 5 phút khi bạn viết.');
+      modal({
+        title: '🕓 Lịch sử phiên bản', full: true,
+        body: `<div class="hist"><div class="hist-list">${vs.map((v, i) => `<button data-i="${i}" class="${i ? '' : 'on'}"><b>${new Date(v.t).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</b><small>${v.words.toLocaleString('vi')} chữ${i < vs.length - 1 ? ` · ${v.words - vs[i + 1].words >= 0 ? '+' : ''}${v.words - vs[i + 1].words}` : ''}</small></button>`).join('')}</div>
+          <div class="hist-view prose" id="histView"></div></div>`,
+        onOpen: w => {
+          let cur = 0;
+          const showV = i => { cur = i; $$('.hist-list button', w).forEach((b, j) => b.classList.toggle('on', j === i)); $('#histView', w).innerHTML = `<h1>${esc(vs[i].title || '')}</h1>` + vs[i].content; };
+          showV(0); $$('.hist-list button', w).forEach(b => b.onclick = () => showV(+b.dataset.i));
+          w._cur = () => cur;
+        },
+        actions: [{ label: 'Đóng' }, { label: '↺ Khôi phục bản này', cls: 'pri', onClick: async w => {
+          const v = vs[w._cur()]; Versions.snap(p, true);
+          p.title = v.title; p.content = v.content; $('#wtitle').value = v.title || ''; ed.setHTML(v.content); saveNow(); toast('Đã khôi phục. Bản hiện tại vẫn được giữ trong lịch sử.');
+        } }]
+      });
+    };
+    $('#expB').onclick = () => modal({
+      title: '⇩ Xuất bài', body: `<div class="menu-list"><button data-x="md">📝 Markdown (.md) — dán vào Notion, Obsidian…</button><button data-x="html">🌐 Trang HTML (.html)</button><button data-x="txt">📄 Văn bản thuần (.txt)</button><button data-x="print">🖨 In / lưu PDF</button><button data-x="copy">⧉ Chép Markdown vào bộ nhớ tạm</button></div>`,
+      onOpen: (w, close) => $$('[data-x]', w).forEach(b => b.onclick = () => {
+        saveNow(); const x = b.dataset.x, name = (p.title || 'bai-viet').slice(0, 60);
+        const md = `# ${p.title || ''}\n\n${p.subtitle ? '*' + p.subtitle + '*\n\n' : ''}` + htmlToMd(p.content);
+        if (x === 'md') download(name + '.md', md, 'text/markdown');
+        if (x === 'html') download(name + '.html', Write.exportHTML(p), 'text/html');
+        if (x === 'txt') download(name + '.txt', p.title + '\n\n' + stripHtml(p.content));
+        if (x === 'copy') navigator.clipboard?.writeText(md).then(() => toast('Đã chép Markdown'), () => toast('Trình duyệt không cho chép', 'err'));
+        if (x === 'print') { close(); location.hash = '/doc/bai/' + p.id; setTimeout(() => window.print(), 700); return; }
+        close();
+      })
+    });
+    $('#promptB').onclick = () => {
+      const list = PROMPTS[p.cat] || PROMPTS['']; const q = list[Math.floor(Math.random() * list.length)];
+      $('#promptOut').innerHTML = `<blockquote>${esc(q)}</blockquote><button class="btn sm" id="promptIns">＋ Chèn vào bài</button>`;
+      $('#promptIns').onclick = () => { ed.el.insertAdjacentHTML('afterbegin', `<div class="blk callout c-q"><span class="ci" contenteditable="false">💡</span><div><b>Đề bài:</b> ${esc(q)}</div></div>`); saveNow(); };
+    };
     const onKey = e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveNow(); toast('Đã lưu ✓'); } };
     document.addEventListener('keydown', onKey);
     if (!p.title) $('#wtitle').focus();
-    return () => { document.removeEventListener('keydown', onKey); saveNow(); };
+    return () => { document.removeEventListener('keydown', onKey); saveNow(); ed.destroy && ed.destroy(); };
   },
 
   read(view, id) {
@@ -257,7 +358,11 @@ const Write = {
     return Reader.open(view, {
       doc: p, back: '#/viet', kind: 'post',
       meta: `<span class="chip-c" style="--cc:${c.color}">${c.icon} ${c.name}</span> <span>${fmtDate(p.created)}</span> ${(p.tags || []).map(t => `<span class="tag">#${esc(t)}</span>`).join(' ')} <a class="mini-btn" href="#/viet/sua/${p.id}">✎ Sửa</a>`,
-      onSave: (d) => Store.upsert('posts', d)
+      onSave: (d) => Store.upsert('posts', d),
+      extra: (() => {
+        const back = [...Store.list('posts'), ...Store.list('archive')].filter(x => x.id !== p.id && (x.content || '').includes(`data-id="${p.id}"`));
+        return back.length ? `<section class="backlinks"><h4>🔗 Được nhắc tới trong</h4>${back.map(x => `<a href="#/doc/${x.cat !== undefined ? 'bai' : 'luu'}/${x.id}">${esc(x.title || 'Không tiêu đề')}</a>`).join('')}</section>` : '';
+      })()
     });
   },
 

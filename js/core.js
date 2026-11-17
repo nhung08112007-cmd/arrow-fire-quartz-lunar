@@ -20,7 +20,7 @@ const DAY = 86400000;
 const Store = {
   data: {},
   db: null,
-  keys: ['posts', 'archive', 'quotes', 'books', 'courses', 'tbooks', 'units', 'cards', 'grammar', 'letters', 'settings', 'pet', 'stamps', 'playlist', 'log', 'chat'],
+  keys: ['posts', 'archive', 'quotes', 'books', 'courses', 'tbooks', 'units', 'cards', 'grammar', 'letters', 'settings', 'pet', 'stamps', 'playlist', 'log', 'chat', 'versions'],
   async init() {
     try {
       this.db = await new Promise((res, rej) => {
@@ -41,7 +41,14 @@ const Store = {
   },
   get(k, def) { if (this.data[k] === undefined) this.data[k] = structuredClone(def); return this.data[k]; },
   list(k) { return this.get(k, []); },
+  _timers: {},
+  /** ghi dồn: nhiều lần save trong 250ms chỉ ghi 1 lần */
   save(k) {
+    clearTimeout(this._timers[k]);
+    this._timers[k] = setTimeout(() => { delete this._timers[k]; this.saveNow(k); }, 250);
+  },
+  flush() { Object.keys(this._timers).forEach(k => { clearTimeout(this._timers[k]); delete this._timers[k]; this.saveNow(k); }); },
+  saveNow(k) {
     const v = this.data[k];
     if (this.db) {
       try { this.db.transaction('kv', 'readwrite').objectStore('kv').put(v, k); }
@@ -62,12 +69,12 @@ const Store = {
   remove(k, id) { const arr = this.list(k); const i = arr.findIndex(x => x.id === id); if (i >= 0) arr.splice(i, 1); this.save(k); },
   settings() {
     return this.get('settings', {
-      provider: 'gemini', geminiKey: '', geminiModel: 'auto', apiKey: '', model: 'claude-opus-5-5', baseUrl: 'https://api.anthropic.com', showGate: true,
+      provider: 'gemini', geminiKey: '', geminiModel: 'auto', orKey: '', groqKey: '', oaiKey: '', apiKey: '', model: 'claude-opus-5-5', baseUrl: 'https://api.anthropic.com', showGate: true,
       theme: 'day', name: 'Bạn', yearGoal: 24
     });
   },
   exportAll() { const o = {}; this.keys.forEach(k => o[k] = this.data[k]); return o; },
-  importAll(o) { this.keys.forEach(k => { if (o[k] !== undefined) { this.data[k] = o[k]; this.save(k); } }); }
+  importAll(o) { this.keys.forEach(k => { if (o[k] !== undefined) { this.data[k] = o[k]; this.saveNow(k); } }); }
 };
 
 /* ---------- Toast ---------- */
@@ -170,6 +177,13 @@ const Activity = {
    Gemini: tự lấy danh sách model còn dùng được, tự chuyển model khi một model
    bị ngừng / hết hạn mức / quá tải, tự thử lại khi máy chủ bận. */
 const GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta';
+const AI_PROVIDERS = {
+  gemini: { name: 'Gemini (Google)', keyField: 'geminiKey', free: true },
+  openrouter: { name: 'OpenRouter (model :free)', keyField: 'orKey', free: true, base: 'https://openrouter.ai/api/v1' },
+  groq: { name: 'Groq', keyField: 'groqKey', free: true, base: 'https://api.groq.com/openai/v1' },
+  claude: { name: 'Claude (Anthropic)', keyField: 'apiKey' },
+  openai: { name: 'OpenAI / tương thích', keyField: 'oaiKey' }
+};
 const AI = {
   cfg() {
     const s = Store.settings();
@@ -180,22 +194,99 @@ const AI = {
       Store.save('settings');
     }
     s.geminiModel = s.geminiModel || 'auto';
+    if (!Array.isArray(s.aiOrder)) {
+      s.aiOrder = [s.provider, ...Object.keys(AI_PROVIDERS).filter(k => k !== s.provider)];
+      Store.save('settings');
+    }
+    Object.keys(AI_PROVIDERS).forEach(k => { if (!s.aiOrder.includes(k)) s.aiOrder.push(k); });
     return s;
   },
-  ready() { const s = this.cfg(); return s.provider === 'gemini' ? !!s.geminiKey : !!s.apiKey; },
+  /** các nhà cung cấp đã có key, theo thứ tự ưu tiên */
+  chain() { const s = this.cfg(); return s.aiOrder.filter(k => AI_PROVIDERS[k] && (s[AI_PROVIDERS[k].keyField] || '').trim() && !(s.aiOff || []).includes(k)); },
+  ready() { return this.chain().length > 0; },
   needKey() {
-    toast(`Cần nhập ${this.cfg().provider === 'gemini' ? 'Gemini' : 'Claude'} API key trong ⚙️ Cài đặt để dùng AI`, 'err', 3600);
+    toast('Chưa có API key nào. Vào ⚙️ Cài đặt → Trợ lý AI để thêm (Gemini, OpenRouter, Groq đều có gói miễn phí).', 'err', 5000);
     return false;
   },
   sleep: ms => new Promise(r => setTimeout(r, ms)),
   _bad: new Set(),          // model đã hỏng trong phiên này
-  lastModel: '',
+  _cool: {},                // nhà cung cấp tạm nghỉ (hết hạn mức) tới thời điểm…
+  lastModel: '', lastProvider: '',
 
-  /** messages: [{role, content}] hoặc prompt: string */
-  async ask(opts) {
+  /** messages: [{role, content}] hoặc prompt: string. Tự chuyển nhà cung cấp khi lỗi. */
+  async ask(opts, only) {
     const s = this.cfg();
-    if (!this.ready()) { this.needKey(); throw new Error('Chưa có API key'); }
-    return s.provider === 'gemini' ? this.askGemini(opts, s) : this.askClaude(opts, s);
+    const chain = only ? [only] : this.chain();
+    if (!chain.length) { this.needKey(); throw new Error('Chưa có API key'); }
+    const errs = [];
+    for (const p of chain) {
+      if (!only && this._cool[p] > Date.now()) { errs.push(`${AI_PROVIDERS[p].name}: đang tạm nghỉ vì vừa hết hạn mức`); continue; }
+      try {
+        const out = p === 'gemini' ? await this.askGemini(opts, s)
+          : p === 'claude' ? await this.askClaude(opts, s)
+          : await this.askCompat(p, opts, s);
+        this.lastProvider = p;
+        return out;
+      } catch (e) {
+        console.warn('[AI]', p, e.message);
+        errs.push(`${AI_PROVIDERS[p].name}: ${e.message}`);
+        if (/hạn mức|quota|quá nhiều/i.test(e.message)) this._cool[p] = Date.now() + 10 * 60000;
+        if (/từ chối/.test(e.message) && !only) continue;
+      }
+    }
+    throw new Error(errs.length > 1 ? 'đã thử ' + errs.length + ' nơi, đều lỗi:<br>• ' + errs.join('<br>• ') : errs[0]);
+  },
+
+  /* ===== OpenRouter / Groq / OpenAI (chuẩn chat/completions) ===== */
+  compatBase(p, s) { return p === 'openai' ? (s.oaiBase || 'https://api.openai.com/v1').replace(/\/$/, '') : AI_PROVIDERS[p].base; },
+  compatHeaders(p, s) {
+    const h = { 'content-type': 'application/json', authorization: 'Bearer ' + (s[AI_PROVIDERS[p].keyField] || '').trim() };
+    if (p === 'openrouter') { h['HTTP-Referer'] = location.origin; h['X-Title'] = 'Chu-tchi'; }
+    return h;
+  },
+  async listCompat(p, force = false) {
+    const s = this.cfg(); const ck = p + 'List', ct = p + 'ListAt';
+    if (!force && s[ck]?.length && Date.now() - (s[ct] || 0) < 12 * 3600000) return s[ck];
+    const res = await fetch(this.compatBase(p, s) + '/models', { headers: p === 'openrouter' ? {} : this.compatHeaders(p, s) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(this.explain(res.status, data?.error?.message || ''));
+    let ids = (data.data || []).map(m => m.id);
+    const pref = [/llama-3\.3-70b|llama-4/, /deepseek-(chat|v3|r1)/, /qwen.*(72b|235b|32b|max)/, /gemma-3-27b|gemma/, /gpt-oss/, /mistral|mixtral/, /gpt-4\.1-mini|gpt-4o-mini|mini/];
+    const score = id => { const i = pref.findIndex(r => r.test(id)); return i < 0 ? 99 : i; };
+    if (p === 'openrouter') ids = ids.filter(id => /:free$/.test(id) || id === 'openrouter/free');
+    ids = ids.filter(id => !/(whisper|tts|embed|guard|vision-only|image|audio|moderation|dall|realtime|transcribe|search)/i.test(id));
+    ids.sort((a, b) => score(a) - score(b) || a.localeCompare(b));
+    s[ck] = ids; s[ct] = Date.now(); Store.save('settings');
+    return ids;
+  },
+  async askCompat(p, { system = '', prompt, messages, maxTokens = 3000 }, s) {
+    const msgs = [{ role: 'system', content: (system ? system + '\n' : '') + 'Luôn trả lời bằng tiếng Việt trừ khi được yêu cầu khác. Không dùng markdown thừa.' },
+      ...(messages || [{ role: 'user', content: prompt }]).map(m => ({ role: m.role, content: m.content }))];
+    const pick = s[p + 'Model'] && s[p + 'Model'] !== 'auto' ? s[p + 'Model'] : '';
+    let list = [];
+    try { list = await this.listCompat(p); } catch (e) { if (!pick) throw e; }
+    const order = [...new Set([pick, s[p + 'Working'], ...list].filter(Boolean))].filter(m => !this._bad.has(p + ':' + m)).slice(0, 5);
+    if (!order.length) throw new Error('không tìm thấy model nào dùng được với key này');
+    let lastErr = '';
+    for (const model of order) {
+      let res, data;
+      try {
+        res = await fetch(this.compatBase(p, s) + '/chat/completions', { method: 'POST', headers: this.compatHeaders(p, s), body: JSON.stringify({ model, messages: msgs, max_tokens: maxTokens, temperature: .7 }) });
+        data = await res.json().catch(() => ({}));
+      } catch (e) { lastErr = 'không kết nối được (mạng hoặc trình duyệt chặn)'; continue; }
+      if (res.ok) {
+        const text = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+        if (text) { if (s[p + 'Working'] !== model) { s[p + 'Working'] = model; Store.save('settings'); } this.lastModel = model; return text; }
+        lastErr = 'model trả về rỗng'; this._bad.add(p + ':' + model); continue;
+      }
+      const msg = data?.error?.message || '';
+      lastErr = this.explain(res.status, msg, model);
+      if (res.status === 401 || res.status === 403 && !/model/i.test(msg)) throw new Error(lastErr);
+      if (res.status === 402) throw new Error('hết credit / cần nạp tiền');
+      if (res.status === 429 || res.status === 404 || res.status === 400 || res.status >= 500) { this._bad.add(p + ':' + model); continue; }
+      break;
+    }
+    throw new Error(lastErr || 'không trả lời');
   },
 
   /* ===== GEMINI ===== */
@@ -378,21 +469,23 @@ function download(name, text, type = 'text/plain') {
 /* ---------- Kéo-vuốt ngang cho các kệ ---------- */
 function dragScroll(el) {
   let down = false, sx = 0, sl = 0, moved = 0, v = 0, lastX = 0, raf;
-  el.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'touch') return; // touch dùng cuộn gốc
-    down = true; moved = 0; sx = lastX = e.clientX; sl = el.scrollLeft; cancelAnimationFrame(raf);
-    el.classList.add('dragging');
-  });
-  window.addEventListener('pointermove', e => {
-    if (!down) return;
+  // chỉ gắn sự kiện lên window trong lúc đang kéo, tránh rò rỉ khi trang vẽ lại
+  const onMove = e => {
     const dx = e.clientX - sx; moved = Math.max(moved, Math.abs(dx));
     v = e.clientX - lastX; lastX = e.clientX;
     el.scrollLeft = sl - dx;
-  });
-  window.addEventListener('pointerup', () => {
-    if (!down) return; down = false; el.classList.remove('dragging');
-    const glide = () => { if (Math.abs(v) < .5) return; el.scrollLeft -= v; v *= .93; raf = requestAnimationFrame(glide); };
+  };
+  const onUp = () => {
+    down = false; el.classList.remove('dragging');
+    removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp);
+    const glide = () => { if (Math.abs(v) < .5 || !el.isConnected) return; el.scrollLeft -= v; v *= .93; raf = requestAnimationFrame(glide); };
     glide();
+  };
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch') return; // touch dùng cuộn gốc
+    down = true; moved = 0; v = 0; sx = lastX = e.clientX; sl = el.scrollLeft; cancelAnimationFrame(raf);
+    el.classList.add('dragging');
+    addEventListener('pointermove', onMove); addEventListener('pointerup', onUp);
   });
   el.addEventListener('click', e => { if (moved > 6) { e.stopPropagation(); e.preventDefault(); } }, true);
   el.addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { el.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
