@@ -49,6 +49,23 @@ const Home = {
         <div class="r2-body"><span class="r2-floor">${o.floor}</span><div class="r2-lbl">${o.label}</div><small>${o.sub}</small>
           <div class="r2-foot"><span class="room-stat">${o.stat}</span><span class="r2-go">Vào ›</span></div></div>
       </a>`;
+    const tc = Planner.todayCount();
+    const R = {
+      write: { k: 'write', href: '#/viet', name: 'Phòng Viết', stat: `${posts.length} bài · ${posts.reduce((s, p) => s + (p.words || 0), 0).toLocaleString('vi')} chữ`, c: '#ffb3dd' },
+      music: { k: 'music', href: 'javascript:Music.toggle()', name: 'Hộp Nhạc', stat: 'bấm để bật nhạc nền', c: '#c9b6ff' },
+      plan: { k: 'plan', href: '#/lich', name: 'Lịch Học', stat: tc.all ? `${tc.left}/${tc.all} việc còn lại` : 'chưa có việc hôm nay', c: '#ffe680' },
+      archive: { k: 'archive', href: '#/luu-tru', name: 'Kho Lưu Trữ', stat: `${arc.length} tài liệu`, c: '#9fdcff' },
+      books: { k: 'books', href: '#/sach', name: 'Thư Viện', stat: `${books.length} cuốn · ${books.filter(b => b.status === 'done').length} đã đọc`, c: '#ffe680' },
+      quotes: { k: 'quotes', href: '#/luu-tru/trich-dan', name: 'Sổ Trích Dẫn', stat: `${qs.length} câu hay`, c: '#ffd9b0' },
+      lang: { k: 'lang', href: '#/ngoai-ngu', name: 'Lớp Ngoại Ngữ', stat: `${cards.length} thẻ · ${due} đến hạn`, c: '#b8f0a0', hot: due },
+      mail: { k: 'mail', href: '#/thu', name: 'Thùng Thư', stat: `${letters.length} lá thư`, c: '#ffc0b0' },
+      stamps: { k: 'stamps', href: '#/so-tem', name: 'Sổ Tem', stat: `${Stamps.earned().length}/${Stamps.list.length} tem`, c: '#ffb3c8' },
+      pet: { k: 'pet', href: '#/thu-cung', name: 'Phòng Thú Cưng', stat: Pet.stageName(), c: '#fff4cf' },
+      settings: { k: 'settings', href: '#/cai-dat', name: 'Phòng Máy', stat: 'cài đặt · AI · sao lưu', c: '#e3d4ff' },
+    };
+    const roomCell = (r, cls = '') => `<a class="hroom ${cls}" href="${r.href}" style="--rc:${r.c}">${cls === 'wide' ? Art.scene(r.k, { bare: true }).replace('xMidYMid slice', 'xMidYMax slice') : Art.scene(r.k, { bare: true })}
+      <span class="hr-plate">${r.name}${r.hot ? `<b>${r.hot}</b>` : ''}</span><span class="hr-stat">${r.stat}</span></a>`;
+    const floorRow = (n, left, right) => `<div class="hfloor" data-f="${n}"><span class="hf-no">${n}F</span>${left.map(r => roomCell(r)).join('')}<div class="shaft"><i></i></div>${roomCell(right)}</div>`;
     view.innerHTML = `
     <div class="hub">
       
@@ -74,22 +91,49 @@ const Home = {
         <figure class="qotd"><span class="qq">❝</span><blockquote>${esc(q[0])}</blockquote><figcaption>— ${esc(q[1] || '')}</figcaption></figure>
       </section>
 
-      <section class="rooms-grid">
-        ${room({ href: '#/viet', floor: 'Tầng 1 · Sáng tác', label: 'Phòng Viết', sub: 'văn học · triết học · âm nhạc · hội hoạ · lịch sử', color: '#ffb3dd', scene: Art.scene('write'),
-          stat: `${posts.length} bài · ${posts.reduce((s, p) => s + (p.words || 0), 0).toLocaleString('vi')} chữ` })}
-        ${room({ href: 'javascript:Music.toggle()', floor: 'Tầng 1 · Sáng tác', label: 'Hộp Nhạc', sub: 'lên dây cót, nghe nhạc nền', color: '#c9b6ff', scene: Art.scene('music'), stat: 'giai điệu · âm thanh nền · playlist' })}
-        ${room({ href: '#/lich', floor: 'Tầng 1 · Sáng tác', label: 'Lịch Học', sub: 'việc hôm nay · tuần · tháng', color: '#ffe680', scene: Art.scene('settings'),
-          stat: (() => { const t = Planner.todayCount(); return t.all ? `${t.left}/${t.all} việc còn lại hôm nay` : 'chưa có việc hôm nay'; })() })}
-        ${room({ href: '#/luu-tru', floor: 'Tầng 2 · Tàng thư', label: 'Kho Lưu Trữ', sub: 'tủ hồ sơ không đáy', color: '#9fdcff', scene: Art.scene('archive'), stat: `${arc.length} tài liệu` })}
-        ${room({ href: '#/sach', floor: 'Tầng 2 · Tàng thư', label: 'Thư Viện Thế Giới', sub: '11 vùng đất, một kệ sách vuốt', color: '#ffe680', scene: Art.scene('books'),
-          stat: `${books.length} cuốn · ${books.filter(b => b.status === 'done').length} đã đọc` })}
-        ${room({ href: '#/luu-tru/trich-dan', floor: 'Tầng 2 · Tàng thư', label: 'Sổ Trích Dẫn', sub: 'câu hay nhặt được khi đọc', color: '#ffd9b0', scene: Art.scene('quotes'), stat: `${qs.length} câu` })}
-        ${room({ href: '#/ngoai-ngu', floor: 'Tầng 3 · Học đường', label: 'Lớp Ngoại Ngữ', sub: 'học & ôn · nghe chép · ngữ pháp', color: '#b8f0a0', scene: Art.scene('lang'),
-          stat: `${cards.length} thẻ · ${due} đến hạn` })}
-        ${room({ href: '#/thu', floor: 'Tầng 3 · Học đường', label: 'Thùng Thư', sub: 'góp ý & thư tương lai', color: '#ffc0b0', scene: Art.scene('mail'), stat: `${letters.length} lá thư` })}
-        ${room({ href: '#/so-tem', floor: 'Tầng 3 · Học đường', label: 'Sổ Tem', sub: 'huy hiệu & thống kê', color: '#ffb3c8', scene: Art.scene('stamps'), stat: `${Stamps.earned().length}/${Stamps.list.length} tem` })}
+      <section class="house-wrap">
+        <div class="house" id="house">
+          <div class="roof">
+            <svg class="roof-shape" viewBox="0 0 1000 150" preserveAspectRatio="none"><path d="M10 150 L120 8 H880 L990 150Z" fill="#ff7a6b" stroke="#2a2346" stroke-width="5" vector-effect="non-scaling-stroke"/>
+              ${[34, 62, 90, 118].map((y, i) => `<path d="M${120 - y * .78 + 4} ${y + 8} H${880 + y * .78 - 4}" stroke="#2a2346" stroke-width="2" opacity=".35" vector-effect="non-scaling-stroke"/>`).join('')}</svg>
+            <div class="chimney"></div>
+            <div class="antenna">${Art.pixel('heart', { w: 22, c: '#ff4f98' })}</div>
+            <div class="roof-sign"><span>Chữ-tchi</span><small>nhà của những con chữ</small></div>
+            <div class="roof-cre">${Art.creature('cloud', { size: 64, mood: 'joy' })}</div>
+          </div>
+          <div class="floors">
+            ${floorRow(3, [R.lang, R.mail], R.stamps)}
+            ${floorRow(2, [R.archive, R.books], R.quotes)}
+            ${floorRow(1, [R.write, R.music], R.plan)}
+          </div>
+          <div class="ground"><svg viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0 40 V14 ${[...Array(40)].map((_, i) => `q12.5 -14 25 0`).join(' ')} V40Z" fill="#8fd16a" stroke="#2a2346" stroke-width="4" vector-effect="non-scaling-stroke"/></svg>
+            ${[6, 22, 41, 63, 80, 94].map((x, i) => `<span class="flower" style="left:${x}%">${Art.deco.flower(30, ['#ffd23f', '#ff8fc8', '#fff', '#9fdcff'][i % 4])}</span>`).join('')}</div>
+          <div class="hfloor basement" data-f="0">
+            <span class="hf-no">B1</span>
+            ${roomCell(R.pet, 'wide')}
+            <div class="shaft"><i></i></div>
+            ${roomCell(R.settings)}
+          </div>
+          <div class="lift" id="lift"><div class="lift-car">${Art.creature('mascot', { size: 52, mood: 'joy' })}</div></div>
+        </div>
       </section>
-      <a class="pet-strip" href="#/thu-cung">${Art.scene('pet')}<div><b>Phòng Thú Cưng</b><span>${esc(Pet.stageName())} · Chữ-tchi lớn lên nhờ bạn chăm học</span></div><span class="room-go">Vào phòng ›</span></a>
     </div>`;
+    this.lift();
+  },
+  lift() {
+    const house = $('#house'), lift = $('#lift'); if (!house || !lift) return;
+    const go = fl => {
+      const sh = $('.shaft', fl); if (!sh) return;
+      const hb = house.getBoundingClientRect(), sb = sh.getBoundingClientRect();
+      lift.style.left = (sb.left - hb.left) + 'px'; lift.style.width = sb.width + 'px';
+      lift.style.top = (sb.top - hb.top) + 'px'; lift.style.height = sb.height + 'px';
+      const ft = $('.floors', house).getBoundingClientRect().top; lift.style.setProperty('--cab', Math.max(0, sb.top - ft) + 'px');
+    };
+    const floors = $$('.hfloor', house);
+    let cur = floors[floors.length - 2] || floors[0];
+    requestAnimationFrame(() => { lift.classList.add('instant'); go(cur); requestAnimationFrame(() => lift.classList.remove('instant')); });
+    floors.forEach(fl => fl.addEventListener('mouseenter', () => { if (fl !== cur) { cur = fl; go(fl); } }));
+    const onR = () => { if (!document.body.contains(house)) return removeEventListener('resize', onR); go(cur); };
+    addEventListener('resize', onR);
   }
 };

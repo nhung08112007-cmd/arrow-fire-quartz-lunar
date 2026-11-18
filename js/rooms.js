@@ -69,8 +69,16 @@
   const stamp = (x, y, c, t, r = 0) => `<g transform="rotate(${r} ${x + 22} ${y + 26})"><path d="M${x} ${y} h44 v52 h-44z" fill="#fff" ${S(2.6)} stroke-dasharray="4 3"/><rect x="${x + 6}" y="${y + 6}" width="32" height="40" fill="${c}" ${S(2)}/><text x="${x + 22}" y="${y + 33}" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="16" fill="#fff" stroke="${K}" stroke-width=".8">${t}</text></g>`;
 
   /* ---------- khung chung ---------- */
+  let BARE = false;   // bản không viền: ghép liền nhau trong ngôi nhà ở Sảnh
   function room(wall, floor, inner, rugC) {
     const id = 'rm' + Math.random().toString(36).slice(2, 7);
+    if (BARE) return `<svg class="art scene-svg bare" viewBox="40 14 400 272" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
+      <defs><pattern id="${id}s" width="28" height="10" patternUnits="userSpaceOnUse"><rect width="14" height="10" fill="#fff" opacity=".28"/></pattern></defs>
+      <rect x="0" y="0" width="480" height="${FL}" fill="${wall}"/><rect x="0" y="0" width="480" height="${FL}" fill="url(#${id}s)"/>
+      <rect x="0" y="${FL}" width="480" height="${300 - FL}" fill="${floor}"/>
+      ${[FL + 20, FL + 44, FL + 70].map(y => `<path d="M0 ${y} h480" stroke="${K}" stroke-width="1.6" opacity=".14"/>`).join('')}
+      <rect x="0" y="${FL - 10}" width="480" height="12" fill="#fff" opacity=".55"/><path d="M0 ${FL - 10} h480 M0 ${FL + 2} h480" stroke="${K}" stroke-width="3"/>
+      ${rugC ? rug(250, 230, rugC) : ''}${inner}</svg>`;
     return `<svg class="art scene-svg" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
       <defs><clipPath id="${id}"><rect x="14" y="14" width="452" height="272" rx="40"/></clipPath>
         <pattern id="${id}s" width="28" height="10" patternUnits="userSpaceOnUse"><rect width="14" height="10" fill="#fff" opacity=".28"/></pattern></defs>
@@ -212,5 +220,20 @@
     ${who('egg', 350, FL + 36, .62)}
     ${plant(440, FL + 40, .9)}`, '#ffe0b0');
 
-  Art.scene = (kind, w) => (ROOMS[kind] || ROOMS.write)();
+  /* Lịch học: lịch treo tường lớn, bàn có sổ kế hoạch & đồng hồ báo thức */
+  ROOMS.plan = () => room('#fff3c4', '#f2c48d', `
+    <rect x="60" y="34" width="170" height="134" rx="6" fill="#fff" ${S()}/>
+    <rect x="60" y="34" width="170" height="30" rx="6" fill="#ff6fae" ${S()}/>
+    <text x="145" y="56" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="17" fill="#fff">THÁNG NÀY</text>
+    ${[...Array(20)].map((_, i) => { const x = 70 + (i % 5) * 31, y = 72 + Math.floor(i / 5) * 23; return `<rect x="${x}" y="${y}" width="26" height="18" rx="3" fill="${[3, 8, 14].includes(i) ? '#ffd23f' : i === 11 ? '#8fd3ff' : '#fff8e6'}" stroke="${K}" stroke-width="1.6"/>${[3, 8].includes(i) ? `<path d="M${x + 6} ${y + 9} l4 4 l9 -9" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/>` : ''}`; }).join('')}
+    <circle cx="100" cy="34" r="4" fill="${K}"/><circle cx="190" cy="34" r="4" fill="${K}"/>
+    ${note(270, 60, '#ddf3cc', 6)}${note(318, 50, '#ffd3e6', -5)}
+    ${clock(410, 70, 20)}
+    ${desk(250, FL + 40, 180, '#8fd3ff', `
+      <path d="M276 ${FL - 22} l4 -14 h58 l4 14z" fill="#ff9fc8" ${S(3)}/><path d="M309 ${FL - 36} v14" ${S(2)}/>
+      <circle cx="384" cy="${FL - 36}" r="13" fill="#ffd23f" ${S(3)}/><circle cx="384" cy="${FL - 36}" r="8" fill="#fff" ${S(2)}/><path d="M384 ${FL - 36} v-5 M384 ${FL - 36} h4" ${S(1.8)}/>
+      <path d="M374 ${FL - 50} l-4 -4 M394 ${FL - 50} l4 -4 M376 ${FL - 24} l-3 3 M392 ${FL - 24} l3 3" ${S(3)}/>`)}
+    ${who('star', 150, FL + 44, .78, 'joy')}`, '#fff3c4');
+
+  Art.scene = (kind, o = {}) => { BARE = !!(o && o.bare); try { return (ROOMS[kind] || ROOMS.write)(); } finally { BARE = false; } };
 })();
