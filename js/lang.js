@@ -135,36 +135,8 @@ function charDiff(typed, target) {
   }
   return out.join('');
 }
-/** câu ví dụ thật (không phải câu tự viết) để làm bài dịch / xếp câu */
+/** câu ví dụ thật (không phải câu tự viết) */
 const exOf = x => { const l = (x.examples || []).filter(e => e.s && e.t && e.t !== '(câu của tôi)'); return l.length ? l[Math.floor(Math.random() * l.length)] : null; };
-/** tách câu thành mảnh để xếp: theo dấu cách nếu có, không thì theo từ (Intl.Segmenter) */
-function chunksOf(s, lang) {
-  let parts = s.trim().split(/\s+/);
-  if (parts.length < 3 && window.Intl && Intl.Segmenter) {
-    const seg = [...new Intl.Segmenter(lang || 'ja', { granularity: 'word' }).segment(s.replace(/\s+/g, ''))];
-    parts = []; seg.forEach(g => { if (!g.isWordLike && parts.length) parts[parts.length - 1] += g.segment; else parts.push(g.segment); });
-  }
-  return parts.filter(Boolean);
-}
-const PARTICLES = ['は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も', 'の', 'から', 'まで', 'や', 'か', 'より'];
-/** bài điền trợ từ tiếng Nhật: tìm một mảnh kết thúc bằng trợ từ */
-function particleOf(e) {
-  const parts = e.s.trim().split(/\s+/); const cand = [];
-  parts.forEach((p, i) => { const core = p.replace(/[。、！？!?]+$/, ''); const pt = ['から', 'まで', 'より'].find(q => core.endsWith(q) && core.length > q.length) || (core.length > 1 && PARTICLES.includes(core.slice(-1)) && !/(です|ます|でした|ました|ません|ませんでした)$/.test(core.slice(0, -1)) ? core.slice(-1) : null); if (pt && i < parts.length - 1) cand.push({ i, pt, core }); });
-  if (!cand.length) return null;
-  const c = cand[Math.floor(Math.random() * cand.length)];
-  const before = parts.slice(0, c.i).join(' ') + (c.i ? ' ' : '') + c.core.slice(0, -c.pt.length);
-  const after = parts[c.i].slice(c.core.length) + ' ' + parts.slice(c.i + 1).join(' ');
-  return { before, after, pt: c.pt, t: e.t, s: e.s };
-}
-/** giống nhau bao nhiêu % (dùng cho luyện nói) */
-function similarity(a, b) {
-  a = normAns(a); b = normAns(b); if (!a || !b) return 0; if (a === b) return 100;
-  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...new Array(b.length).fill(0)]);
-  for (let j = 1; j <= b.length; j++) dp[0][j] = j;
-  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-  return Math.max(0, Math.round(100 * (1 - dp[a.length][b.length] / Math.max(a.length, b.length))));
-}
 /** câu ví dụ có chứa từ, để làm bài điền chỗ trống */
 function clozeOf(x) {
   const forms = [x.word, ...(x.ipa || '').split(/[\/／,、]/)].map(t => t.trim()).filter(t => t.length > 0);

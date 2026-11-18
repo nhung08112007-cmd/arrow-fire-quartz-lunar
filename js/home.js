@@ -5,7 +5,7 @@
 const Nav = {
   items: [
     ['home', '#/', 'Sảnh'], ['pen', '#/viet', 'Viết'], ['box', '#/luu-tru', 'Lưu trữ'], ['book', '#/sach', 'Sách'],
-    ['abc', '#/ngoai-ngu', 'Ngoại ngữ'], ['mail', '#/thu', 'Thùng thư'], ['star', '#/so-tem', 'Sổ tem'], ['pet', '#/thu-cung', 'Thú cưng'],
+    ['abc', '#/ngoai-ngu', 'Ngoại ngữ'], ['cal', '#/lich', 'Lịch học'], ['mail', '#/thu', 'Thùng thư'], ['star', '#/so-tem', 'Sổ tem'], ['pet', '#/thu-cung', 'Thú cưng'],
   ],
   render() {
     $('#iconbar').innerHTML = this.items.map(([ic, href, l]) => `<a href="${href}" class="ib" data-h="${href}" title="${l}">${Art.pixel(ic, { w: 22 })}<span>${l}</span></a>`).join('');
@@ -65,6 +65,7 @@ const Home = {
             <div class="hb-t">${greet}, ${esc(name)}!</div>
             <div class="hb-s">Hôm nay là ${new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' })} · chuỗi ${Activity.streak()} ngày 🔥</div>
             <div class="hb-todo">
+              ${(() => { const t = Planner.todayCount(); return `<a href="#/lich" class="todo ${t.all && !t.left ? 'ok' : ''}">📅 ${t.all ? (t.left ? `${t.left}/${t.all} việc hôm nay` : 'Xong hết việc hôm nay ✓') : 'Lên lịch hôm nay'}</a>`; })()}
               ${due ? `<a href="#/ngoai-ngu" class="todo">🃏 ${due} thẻ đến hạn ôn</a>` : '<span class="todo ok">🃏 Không có thẻ đến hạn</span>'}
               ${reading.length ? `<a href="#/sach/${reading[0].id}" class="todo">📖 Đang đọc: ${esc(reading[0].title)}</a>` : ''}
               ${posts[0] ? `<a href="#/viet/sua/${posts[0].id}" class="todo">✎ Viết tiếp: ${esc(posts[0].title || 'bài nháp')}</a>` : '<a href="#/viet" class="todo">✎ Viết bài đầu tiên</a>'}

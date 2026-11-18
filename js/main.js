@@ -61,10 +61,12 @@ ${Blocks.divider('eggs')}
   Router.on(/^\/ngoai-ngu$/, v => Lang.home(v));
   Router.on(/^\/ngoai-ngu\/(\w+)$/, (v, id) => Lang.course(v, id));
   Router.on(/^\/ngoai-ngu\/(\w+)\/([\w-]+)$/, (v, id, t) => Lang.course(v, id, t));
+  Router.on(/^\/lich$/, v => Planner.page(v));
   Router.on(/^\/thu$/, v => Mail.page(v));
   Router.on(/^\/so-tem$/, v => Stamps.page(v));
   Router.on(/^\/thu-cung$/, v => Pet.page(v));
   Router.on(/^\/cai-dat$/, v => Settings.page(v));
+  Planner.remind();
   window.addEventListener('hashchange', () => Router.resolve());
   addEventListener('pagehide', () => Store.flush());
   document.addEventListener('visibilitychange', () => { if (document.hidden) Store.flush(); });
