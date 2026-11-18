@@ -313,17 +313,16 @@ Art.scene = (() => {
         <path d="M${sx} ${sy} Q${mx} ${my} ${to[0]} ${to[1]}" fill="none" stroke="${INK}" stroke-width="2" marker-end="url(#${id}a)"/>`;
     }).join('');
     return `<svg class="art scene-svg" viewBox="0 0 480 300" width="${w}" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round">
-      <defs><clipPath id="${id}c"><rect x="14" y="14" width="452" height="272" rx="6"/></clipPath>
+      <defs><clipPath id="${id}c"><rect x="14" y="14" width="452" height="272" rx="46"/></clipPath>
         <pattern id="${id}p" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="2.6" fill="#fff" opacity=".7"/></pattern>
         <marker id="${id}a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="${INK}" stroke-width="1.8"/></marker></defs>
       <g clip-path="url(#${id}c)">
-        <rect x="14" y="14" width="452" height="272" fill="${S.wall}"/>
-        <g opacity=".55">${[...Array(48)].map((_, i) => { const a = i * 7.5 * Math.PI / 180, r0 = 120 + (i % 3) * 18; return `<path d="M${(240 + Math.cos(a) * r0).toFixed(1)} ${(130 + Math.sin(a) * r0 * .7).toFixed(1)} L${(240 + Math.cos(a) * 420).toFixed(1)} ${(130 + Math.sin(a) * 300).toFixed(1)}" stroke="#fff" stroke-width="${i % 2 ? 2 : 4}"/>`; }).join('')}</g>
+        <rect x="14" y="14" width="452" height="272" fill="${S.wall}"/><rect x="14" y="14" width="452" height="90" fill="#fff" opacity=".28"/>
         <rect x="14" y="222" width="452" height="64" fill="${S.floor}"/><path d="M14 222 h452" stroke="${INK}" stroke-width="4"/>
-        ${[...Array(30)].map((_, i) => `<path d="M${14 + i * 16} 286 l40 -64" stroke="${INK}" stroke-width="1.6" opacity=".16"/>`).join('')}
+        ${[...Array(12)].map((_, i) => `<path d="M${30 + i * 40} 236 l14 10" stroke="${INK}" stroke-width="2" opacity=".25"/>`).join('')}
         ${S.items.map(([x, y, svg, r]) => put(x, y, svg, r || 0)).join('')}
       </g>
-      <rect x="14" y="14" width="452" height="272" rx="6" fill="none" stroke="${INK}" stroke-width="6"/>
+      <rect x="14" y="14" width="452" height="272" rx="46" fill="none" stroke="${INK}" stroke-width="6"/>
     </svg>`;
   };
 })();
