@@ -284,3 +284,23 @@ a.wiki::before { content: '⇢ '; font-size: .8em; }
 .tf-cl span { flex: 1; }
 @media (max-width: 1100px) { .pl-wrap { grid-template-columns: 1fr; } .pl-side { position: static; } .pl-week { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } .pl-day { min-height: 160px; } }
 @media (max-width: 700px) { .pl-dayv { grid-template-columns: 1fr; } .pl-mc { min-height: 70px; } .pl-mt { display: none; } }
+
+/* ================= SẢNH: lưới 9 phòng đều nhau ================= */
+.rooms-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; max-width: 1240px; margin: 30px auto 0; padding: 0 22px; }
+.room2 { display: flex; flex-direction: column; background: var(--card); border: 4px solid var(--ink); border-radius: 28px; box-shadow: 6px 6px 0 var(--ink); text-decoration: none; color: var(--text); overflow: hidden; transition: transform .15s, box-shadow .15s; }
+.room2:hover { transform: translateY(-4px); box-shadow: 8px 10px 0 var(--ink); }
+.r2-scene { background: color-mix(in srgb, var(--rc) 45%, var(--card)); padding: 10px 10px 0; }
+.r2-scene svg { display: block; width: 100%; height: auto; }
+.r2-body { padding: 10px 18px 14px; border-top: 3px solid var(--ink); display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.r2-floor { font-family: 'Itim', var(--fw); font-size: 14px; color: #e8475f; }
+.r2-lbl { font-family: var(--fh); font-weight: 800; font-size: 22px; line-height: 1.15; }
+.r2-body small { color: var(--muted); font-size: 13px; }
+.r2-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
+.r2-foot .room-stat { margin: 0; font-size: 13px; background: var(--rc); }
+.r2-go { font-family: var(--fh); font-weight: 800; border: 2.5px solid var(--ink); border-radius: 999px; padding: 2px 12px; background: var(--yellow); color: #2a2346; box-shadow: 2px 2px 0 var(--ink); white-space: nowrap; }
+.pet-strip { display: grid; grid-template-columns: 300px 1fr auto; align-items: center; gap: 22px; max-width: 1196px; margin: 26px auto 40px; padding: 12px 22px 12px 12px; background: #fff4cf; border: 4px solid var(--ink); border-radius: 28px; box-shadow: 6px 6px 0 var(--ink); text-decoration: none; color: #2a2346; }
+.pet-strip svg { width: 100%; height: auto; display: block; }
+.pet-strip b { display: block; font-family: var(--fh); font-size: 24px; }
+.pet-strip .room-go { position: static; }
+@media (max-width: 1000px) { .rooms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .rooms-grid { grid-template-columns: 1fr; padding: 0 14px; } .pet-strip { grid-template-columns: 1fr; margin: 22px 14px 40px; } }

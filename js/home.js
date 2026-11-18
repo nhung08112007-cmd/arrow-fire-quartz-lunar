@@ -14,7 +14,7 @@ const Nav = {
   mark(path) {
     $$('#iconbar .ib').forEach(a => {
       const h = a.dataset.h.slice(1);
-      a.classList.toggle('on', h === '/' ? path === '/' : path.startsWith(h));
+      a.classList.toggle('on', h === '/' ? path === '/' : path === h || path.startsWith(h + '/'));
     });
   }
 };
@@ -44,15 +44,14 @@ const Home = {
     const greet = h < 11 ? 'Chào buổi sáng' : h < 14 ? 'Trưa an lành' : h < 18 ? 'Chiều dịu dàng' : 'Tối ấm áp';
     const reading = books.filter(b => b.status === 'reading');
     const room = (o) => `
-      <a class="room ${o.cls || ''}" href="${o.href}" style="--rc:${o.color}">
-        <div class="room-lbl">${o.label}<small>${o.sub}</small></div>
-        <div class="room-scene">${o.scene}</div>
-        <div class="room-stat">${o.stat}</div>
-        <span class="room-go">Vào phòng ›</span>
+      <a class="room2" href="${o.href}" style="--rc:${o.color}">
+        <div class="r2-scene">${o.scene}</div>
+        <div class="r2-body"><span class="r2-floor">${o.floor}</span><div class="r2-lbl">${o.label}</div><small>${o.sub}</small>
+          <div class="r2-foot"><span class="room-stat">${o.stat}</span><span class="r2-go">Vào ›</span></div></div>
       </a>`;
     view.innerHTML = `
     <div class="hub">
-      <div class="tunnel"></div>
+      
       <section class="band sky">
         <div class="sky-deco">
           <span class="s-ufo">${Art.deco.ufo(130)}</span>
@@ -75,46 +74,22 @@ const Home = {
         <figure class="qotd"><span class="qq">❝</span><blockquote>${esc(q[0])}</blockquote><figcaption>— ${esc(q[1] || '')}</figcaption></figure>
       </section>
 
-      <section class="band b1">
-        <div class="band-name">Tầng 1 · Sáng tác</div>
-        ${room({ href: '#/viet', label: 'Phòng Viết', sub: 'văn học · triết học · âm nhạc · hội hoạ · lịch sử · văn hoá · ngôn ngữ', color: '#ffb3dd', cls: 'big',
-          scene: `<span class="sc-a">${Art.deco.desk(170)}</span><span class="sc-b bob">${Art.creature('pencil', { size: 70, mood: 'joy' })}</span><span class="sc-c bob d2">${Art.creature('mascot', { size: 86, mood: 'wink' })}</span><span class="sc-f">✎ Ꭺ a 字</span>`,
+      <section class="rooms-grid">
+        ${room({ href: '#/viet', floor: 'Tầng 1 · Sáng tác', label: 'Phòng Viết', sub: 'văn học · triết học · âm nhạc · hội hoạ · lịch sử', color: '#ffb3dd', scene: Art.scene('write'),
           stat: `${posts.length} bài · ${posts.reduce((s, p) => s + (p.words || 0), 0).toLocaleString('vi')} chữ` })}
-        ${room({ href: 'javascript:Music.toggle()', label: 'Hộp Nhạc', sub: 'lên dây cót', color: '#c9b6ff',
-          scene: `<span class="sc-a">${Art.deco.musicbox(130)}</span><span class="sc-b bob">${Art.creature('note', { size: 60, mood: 'joy' })}</span><span class="sc-n n1">${Art.deco.note(22)}</span><span class="sc-n n2">${Art.deco.note(18, '#ff8fc8')}</span>`,
-          stat: 'giai điệu · âm thanh nền · playlist' })}
-      </section>
-
-      <section class="band b2">
-        <div class="band-name">Tầng 2 · Tàng thư</div>
-        ${room({ href: '#/luu-tru', label: 'Kho Lưu Trữ', sub: 'tủ hồ sơ không đáy', color: '#9fdcff',
-          scene: `<span class="sc-a">${Art.deco.cabinet(110)}</span><span class="sc-b bob">${Art.creature('ghost', { size: 66, mood: 'joy' })}</span><span class="sc-c">${Art.deco.envelope(50)}</span>`,
-          stat: `${arc.length} tài liệu · ${qs.length} trích dẫn` })}
-        ${room({ href: '#/sach', label: 'Thư Viện Thế Giới', sub: '11 vùng đất, một kệ sách vuốt', color: '#ffe680',
-          scene: `<span class="sc-a">${Art.deco.shelf(150)}</span><span class="sc-b bob">${Art.creature('booky', { size: 70, mood: 'joy' })}</span><span class="sc-c">${Art.deco.globe(64)}</span>`,
+        ${room({ href: 'javascript:Music.toggle()', floor: 'Tầng 1 · Sáng tác', label: 'Hộp Nhạc', sub: 'lên dây cót, nghe nhạc nền', color: '#c9b6ff', scene: Art.scene('music'), stat: 'giai điệu · âm thanh nền · playlist' })}
+        ${room({ href: '#/lich', floor: 'Tầng 1 · Sáng tác', label: 'Lịch Học', sub: 'việc hôm nay · tuần · tháng', color: '#ffe680', scene: Art.scene('settings'),
+          stat: (() => { const t = Planner.todayCount(); return t.all ? `${t.left}/${t.all} việc còn lại hôm nay` : 'chưa có việc hôm nay'; })() })}
+        ${room({ href: '#/luu-tru', floor: 'Tầng 2 · Tàng thư', label: 'Kho Lưu Trữ', sub: 'tủ hồ sơ không đáy', color: '#9fdcff', scene: Art.scene('archive'), stat: `${arc.length} tài liệu` })}
+        ${room({ href: '#/sach', floor: 'Tầng 2 · Tàng thư', label: 'Thư Viện Thế Giới', sub: '11 vùng đất, một kệ sách vuốt', color: '#ffe680', scene: Art.scene('books'),
           stat: `${books.length} cuốn · ${books.filter(b => b.status === 'done').length} đã đọc` })}
+        ${room({ href: '#/luu-tru/trich-dan', floor: 'Tầng 2 · Tàng thư', label: 'Sổ Trích Dẫn', sub: 'câu hay nhặt được khi đọc', color: '#ffd9b0', scene: Art.scene('quotes'), stat: `${qs.length} câu` })}
+        ${room({ href: '#/ngoai-ngu', floor: 'Tầng 3 · Học đường', label: 'Lớp Ngoại Ngữ', sub: 'học & ôn · nghe chép · ngữ pháp', color: '#b8f0a0', scene: Art.scene('lang'),
+          stat: `${cards.length} thẻ · ${due} đến hạn` })}
+        ${room({ href: '#/thu', floor: 'Tầng 3 · Học đường', label: 'Thùng Thư', sub: 'góp ý & thư tương lai', color: '#ffc0b0', scene: Art.scene('mail'), stat: `${letters.length} lá thư` })}
+        ${room({ href: '#/so-tem', floor: 'Tầng 3 · Học đường', label: 'Sổ Tem', sub: 'huy hiệu & thống kê', color: '#ffb3c8', scene: Art.scene('stamps'), stat: `${Stamps.earned().length}/${Stamps.list.length} tem` })}
       </section>
-
-      <section class="band b3">
-        <div class="band-name">Tầng 3 · Học đường</div>
-        ${room({ href: '#/ngoai-ngu', label: 'Lớp Ngoại Ngữ', sub: 'hành trình nhiệm vụ · học & ôn · nghe chép video · ngữ pháp', color: '#b8f0a0', cls: 'big',
-          scene: `<span class="sc-a">${Art.deco.board(170)}</span><span class="sc-b bob">${Art.creature('prof', { size: 84 })}</span><span class="sc-c bob d3">${Art.creature('fish', { size: 56, mood: 'joy' })}</span>`,
-          stat: `${Store.list('courses').length} ngôn ngữ · ${cards.length} thẻ · ${due} đến hạn` })}
-        ${room({ href: '#/thu', label: 'Thùng Thư', sub: 'góp ý & thư tương lai', color: '#ffc0b0',
-          scene: `<span class="sc-a">${Art.deco.mailbox(110)}</span><span class="sc-b floaty">${Art.creature('cloud', { size: 56, mood: 'joy' })}</span>`,
-          stat: `${letters.length} lá thư` })}
-      </section>
-
-      <section class="band b4">
-        <div class="band-name">Tầng hầm · bí mật</div>
-        ${room({ href: '#/luu-tru/trich-dan', label: 'Sổ Trích Dẫn', sub: 'câu hay nhặt được khi đọc', color: '#ffd9b0',
-          scene: `<span class="sc-a bob">${Art.creature('star', { size: 80, mood: 'joy' })}</span><span class="sc-q">❝ ❞</span>`, stat: `${qs.length} câu` })}
-        ${room({ href: '#/so-tem', label: 'Sổ Tem', sub: 'huy hiệu & thống kê', color: '#ffb3c8',
-          scene: `<span class="sc-a">${Art.deco.stamp('GIỎI!', '#e8475f', 80)}</span><span class="sc-b bob">${Art.creature('tomato', { size: 60, mood: 'star' })}</span>`, stat: `${Stamps.earned().length}/${Stamps.list.length} tem` })}
-        ${room({ href: '#/thu-cung', label: 'Phòng Thú Cưng', sub: 'Chữ-tchi lớn lên nhờ bạn chăm học', color: '#fff4cf',
-          scene: `<span class="sc-a bob">${Art.creature(Pet.form(), { size: 90, mood: 'joy' })}</span>`, stat: Pet.stageName() })}
-        <div class="worm-run">${Art.deco.worm(70)}</div>
-      </section>
+      <a class="pet-strip" href="#/thu-cung">${Art.scene('pet')}<div><b>Phòng Thú Cưng</b><span>${esc(Pet.stageName())} · Chữ-tchi lớn lên nhờ bạn chăm học</span></div><span class="room-go">Vào phòng ›</span></a>
     </div>`;
   }
 };

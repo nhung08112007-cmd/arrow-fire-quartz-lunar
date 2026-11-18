@@ -151,7 +151,7 @@ const Art = (() => {
   };
 
   function creature(name, o = {}) {
-    const fn = C[name] || C.mascot;
+    const fn = (typeof TAMA !== 'undefined' && TAMA[name]) || C[name] || C.mascot;
     const anim = o.anim ? ` class="art bob-${o.anim}"` : '';
     return svg(fn(o), '0 0 100 100', o.size || 80, o.flip ? 'style="transform:scaleX(-1)"' : '').replace('class="art"', anim || 'class="art"');
   }
