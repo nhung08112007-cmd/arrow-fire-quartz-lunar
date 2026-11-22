@@ -147,7 +147,7 @@ Object.assign(Lang, {
   questHint(q, c) {
     if (!q) return '';
     const go = (tab, label) => `<a href="#/ngoai-ngu/${c.id}/${tab}">${label}</a>`;
-    return ({ cards: go('tu-vung', 'thêm thẻ ở tab Thẻ từ (có nút 📖 tra từ điển miễn phí)'), learned: go('hoc', 'vào Học & ôn để học từ mới'), reviews: go('hoc', 'vào Học & ôn'), dict: go('nghe-chep', 'tab Nghe chép'), listen: go('hoc', 'Học & ôn, chọn chế độ Nghe'), cloze: go('hoc', 'Học & ôn, chọn Điền chỗ trống'), sentences: go('hoc', 'khi học từ mới, viết một câu của riêng bạn'), mined: 'bôi đen một từ khi đọc bài trong Lưu trữ rồi bấm 🃏, hoặc bấm vào chữ sau khi chép video', speakOk: go('hoc', 'Học & ôn, chọn Luyện nói'), video: go('video', 'tab Video'), grammar: go('ngu-phap', 'luyện ở tab Ngữ pháp'), games: go('tro-choi', 'tab Trò chơi'), streak: 'học mỗi ngày một chút', mature: go('hoc', 'ôn đều mỗi ngày'), correct: go('hoc', 'Học & ôn') })[q.k] || '';
+    return ({ cards: go('tu-vung', 'thêm thẻ ở tab Thẻ từ (có nút 📖 tra từ điển miễn phí)'), learned: go('hoc', 'vào Học & ôn để học từ mới'), reviews: go('hoc', 'vào Học & ôn'), dict: go('nghe-chep', 'tab Nghe & nói'), listen: go('hoc', 'Học & ôn, chọn chế độ Nghe'), cloze: go('hoc', 'Học & ôn, chọn Điền chỗ trống'), sentences: go('hoc', 'khi học từ mới, viết một câu của riêng bạn'), mined: 'bôi đen một từ khi đọc bài trong Lưu trữ rồi bấm 🃏, hoặc bấm vào chữ sau khi chép video', speakOk: go('nghe-chep', 'tab Nghe & nói › Nhại & chấm nói'), video: go('nghe-chep', 'tab Nghe & nói › Video'), grammar: go('ngu-phap', 'luyện ở tab Ngữ pháp'), games: go('tro-choi', 'tab Trò chơi'), streak: 'học mỗi ngày một chút', mature: go('hoc', 'ôn đều mỗi ngày'), correct: go('hoc', 'Học & ôn') })[q.k] || '';
   },
 
   /* ---------- 🧠 PHIÊN HỌC THÔNG MINH ---------- */
@@ -170,6 +170,15 @@ Object.assign(Lang, {
       <label class="rlbl">Từ mới mỗi ngày <input type="number" class="inp sm" id="stNew" value="${S.newPerDay}" min="0" max="500" style="width:80px"></label>
       <div class="row st-more"><span class="muted sm">Hôm nay đã học ${learnedToday} từ mới · còn ${unseen.length} từ chưa học.</span>${unseen.length > fresh.length ? `<button class="btn sm" data-more="10">＋ Học thêm 10 từ</button><button class="btn sm" data-more="20">＋ 20</button><button class="btn sm" data-more="50">＋ 50</button>` : ''}</div>
       <p class="muted sm">Từ mới sẽ được <b>giới thiệu</b> trước (nghe, xem ví dụ, tự đặt câu), rồi <b>kiểm tra lại sau vài thẻ</b>. Thẻ ôn được trộn nhiều dạng bài khác nhau.</p>
+      <details class="science st-sci"><summary>🧪 Vì sao học 1 tiếng vẫn quên — và app giúp bạn nhớ lâu thế nào</summary>
+        <div class="sci-grid">
+          <div><b>1. Nhớ lại, đừng đọc lại</b><span>Gõ ra từ trí nhớ (testing effect) giúp nhớ gấp nhiều lần so với lật thẻ nhìn đáp án. Phiên học ưu tiên gõ, điền câu, nghe-gõ, nói.</span></div>
+          <div><b>2. Học đến khi nhớ</b><span>Mỗi từ mới phải nhớ lại đúng 3 lần, cách nhau vài thẻ, khó dần. Sai thì học lại từ đầu (successive relearning).</span></div>
+          <div><b>3. Ít mà đều</b><span>10 từ mới/ngày, 15–25 phút, mỗi ngày đều đặn tốt hơn 1 tiếng dồn một lần (spacing). Học quá 25 phút app sẽ nhắc nghỉ.</span></div>
+          <div><b>4. Ôn đúng lúc sắp quên</b><span>Thuật toán FSRS tính độ bền trí nhớ của từng thẻ, hẹn ôn khi xác suất nhớ còn khoảng 90%.</span></div>
+          <div><b>5. Gắn nghĩa & hình ảnh</b><span>Tự đặt câu, dùng mẹo nhớ từ khoá (✦ Mẹo nhớ), emoji/hình trên thẻ — mã hoá kép nhớ lâu hơn.</span></div>
+          <div><b>6. Dùng thật</b><span>Bài tập AI, nghe chép, nhại theo giọng mẫu: đưa từ vào câu và vào tai, miệng — không chỉ nằm trên thẻ.</span></div>
+        </div></details>
       <div class="row"><button class="btn pri big" id="stGo" ${due.length + fresh.length ? '' : 'disabled'}>▶ Bắt đầu phiên học</button><button class="btn big" id="stPrac" title="Lấy ngẫu nhiên 15 thẻ trong phạm vi để luyện với dạng bài đã chọn, kể cả khi chưa đến hạn">🎯 Luyện thêm 15 thẻ</button></div>
       <p class="muted sm">Dạng bài bạn chọn được dùng cho cả bước kiểm tra từ mới lẫn thẻ ôn.</p>
       ${due.length + fresh.length ? '' : `<p class="ok">Hôm nay không còn gì để học ở phạm vi này 🎉 Thử <a href="#/ngoai-ngu/${c.id}/video">nghe chép video</a> hoặc <a href="#/luu-tru">đọc một bài báo</a> để đào thêm từ.</p>`}
@@ -207,7 +216,7 @@ Object.assign(Lang, {
     // xếp hàng: cứ 3 thẻ ôn thì chen một từ mới (giới thiệu)
     const q = []; const d = [...due], f = [...fresh];
     while (d.length || f.length) { for (let i = 0; i < 3 && d.length; i++) q.push({ x: d.shift(), ph: 'review' }); if (f.length) q.push({ x: f.shift(), ph: 'intro' }); }
-    const total = q.length; let n = 0, right = 0, wrong = [], learned = 0;
+    const total = q.length; let n = 0, right = 0, wrong = [], learned = 0, rested = false; const t0 = Date.now();
     el.innerHTML = `<div class="ss"><div class="ss-top"><div class="ss-bar"><i id="ssBar"></i></div><span id="ssCnt"></span><button class="btn sm" id="ssEnd">Kết thúc</button></div><div id="ssStage" class="ss-stage"></div></div>`;
     const stage = $('#ssStage');
     const later = (item, k) => q.splice(Math.min(q.length, k), 0, item);
@@ -217,9 +226,11 @@ Object.assign(Lang, {
         if (S.studyMode === 'cloze' && !clozeOf(x)) return 'type';
         return S.studyMode;
       }
-      const opts = ['flip', 'type', 'listen']; if (clozeOf(x)) opts.push('cloze', 'cloze');
-
-      if ((x.reps || 0) < 2) return Math.random() < .5 ? 'flip' : 'choose';
+      // nhớ lại chủ động (gõ ra từ trí nhớ) hiệu quả hơn nhận ra; lật thẻ chỉ thỉnh thoảng
+      const opts = ['type', 'type', 'listen', 'flip'];
+      if (clozeOf(x)) opts.push('cloze', 'cloze');
+      if (window.SpeechRecognition || window.webkitSpeechRecognition) opts.push('speak');
+      if ((x.reps || 0) < 2) return Math.random() < .65 ? 'type' : 'choose';
       return opts[Math.floor(Math.random() * opts.length)];
     };
     const progress = () => { $('#ssBar').style.width = (n / Math.max(1, n + q.length) * 100) + '%'; $('#ssCnt').textContent = `${n} xong · còn ${q.length}`; };
@@ -256,7 +267,8 @@ Object.assign(Lang, {
       if (!q.length) return finish();
       const it = q.shift(), x = it.x;
       if (it.ph === 'intro') return intro(it);
-      if (it.ph === 'test') { const m = testMode(x); return m ? review(it, m) : test(it); }
+      if (it.ph === 'test' || it.ph === 'step') return step({ ...it, ph: 'step', k: it.k || 1, err: it.err || 0 });
+      if (Date.now() - t0 > 25 * 60000 && !rested) { rested = true; toast('Bạn đã học 25 phút — nghỉ 5 phút rồi học tiếp sẽ nhớ tốt hơn 🍵', 'ok'); }
       return review(it, pickMode(x));
     };
     /* 1. giới thiệu từ mới: xem đủ thông tin, nghe, tự đặt câu */
@@ -273,11 +285,20 @@ Object.assign(Lang, {
           ${x.note ? `<div class="fb-note">💡 ${esc(x.note)}</div>` : ''}
           <label class="lbl">✍️ Đặt một câu của riêng bạn với từ này <small class="muted">(không bắt buộc, nhưng giúp nhớ lâu hơn hẳn)</small></label>
           <textarea class="inp" id="inMine" rows="2" placeholder="Câu của tôi… (viết tiếng ${esc(c.name)}, hoặc viết tiếng Việt rồi nhờ AI dịch)"></textarea>
-          <div class="row in-ai"><button class="btn sm" id="inFix">✦ AI sửa & dịch câu của tôi</button><button class="btn sm" id="inGen">✦ AI đặt thêm câu ví dụ</button></div><div id="inAI"></div>
+          <div class="row in-ai"><button class="btn sm" id="inFix">✦ AI sửa & dịch câu của tôi</button><button class="btn sm" id="inGen">✦ AI đặt thêm câu ví dụ</button><button class="btn sm" id="inMn">✦ Mẹo nhớ (AI)</button></div><div id="inAI"></div>
           <div class="row"><button class="btn pri big" id="inOk">Đã hiểu, kiểm tra sau ›</button><span class="muted sm">Enter để tiếp</span></div>
         </div></div>`;
       const say = () => Speech.speak(x.word, c.lang, .9); say(); $('#inSay').onclick = say;
       let fixed = null;
+      $('#inMn').onclick = async ev => {
+        const b = ev.target; b.disabled = true; b.textContent = '✦ Đang nghĩ…';
+        try {
+          const o = await AI.json({ maxTokens: 500, prompt: `Tạo mẹo nhớ kiểu "từ khoá" (keyword method) cho người Việt học ${c.name}: từ "${x.word}"${x.ipa ? ` đọc là "${x.ipa}"` : ''}, nghĩa "${x.meaning}". Tìm một từ/cụm tiếng Việt nghe giống cách đọc, rồi ghép với nghĩa thành một hình ảnh vui, dễ hình dung, ngắn gọn (1–2 câu).${hasKanji(x.word) ? ' Nếu có chữ Hán, thêm 1 câu mẹo nhớ theo bộ thủ/hình chữ.' : ''} Trả về JSON {"mnemonic":"mẹo nhớ"}` });
+          x.note = o.mnemonic || ''; Store.save('cards');
+          $('#inAI').innerHTML = `<div class="fb-note">💡 ${esc(x.note)}</div><small class="muted">Đã lưu vào thẻ. Nhắm mắt hình dung cảnh đó 3 giây nhé.</small>`;
+        } catch (er) { $('#inAI').innerHTML = `<p class="bad">AI chưa trả lời được: ${esc(er.message || er)}</p>`; }
+        b.disabled = false; b.textContent = '✦ Mẹo nhớ (AI)';
+      };
       $('#inGen').onclick = ev => this.aiSentence(ev.target, x, c, e2 => { $('#inAI').innerHTML = `<div class="ai-fb">Đã thêm vào thẻ: <b>${esc(e2.s)}</b><br><small>${esc(e2.t)}</small></div>`; Speech.speak(e2.s, c.lang, .9); });
       $('#inFix').onclick = async ev => {
         const m = $('#inMine').value.trim(); if (!m) return toast('Viết một câu trước đã (tiếng Việt cũng được)');
@@ -294,13 +315,76 @@ Object.assign(Lang, {
         const m = $('#inMine').value.trim();
         if (fixed) { x.mine = [...(x.mine || []), fixed.s]; x.examples = [...(x.examples || []), { s: fixed.s, t: fixed.t, mine: true }]; Store.save('cards'); this.track(c.id, 'sentences'); Activity.add('note'); }
         else if (m) { x.mine = [...(x.mine || []), m]; x.examples = [...(x.examples || []), { s: m, t: '(câu của tôi)' }]; Store.save('cards'); this.track(c.id, 'sentences'); Activity.add('note'); }
-        later({ x, ph: 'test', tries: (it.tries || 0) }, 3); next();
+        later({ x, ph: 'step', k: 1, err: it.err || 0 }, 2); next();
       };
       $('#inOk').onclick = ok;
       $('#inMine').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ok(); } };
       onKeyAct = e => { if (e.key === 'Enter') ok(); };
     };
-    /* 2. kiểm tra từ vừa học: chọn đáp án hoặc gõ */
+    /* 2. HỌC ĐẾN KHI NHỚ: mỗi từ mới phải nhớ lại đúng 3 lần, cách quãng tăng dần, khó dần
+       bước 1: nhận ra (chọn từ đúng) · bước 2: nhớ lại (gõ ra từ nghĩa) · bước 3: dùng (điền vào câu / nghe rồi gõ)
+       sai ở bước nào → xem lại, rồi làm lại từ bước 1 (successive relearning) */
+    const STEP = { 1: 'Nhận ra', 2: 'Nhớ lại', 3: 'Dùng trong câu' };
+    const step = it => {
+      const x = it.x, k = it.k, m = S.studyMode;
+      let kind = k === 1 ? 'choose' : k === 2 ? (['type', 'speak'].includes(m) ? m : 'type') : (clozeOf(x) ? 'cloze' : 'dict');
+      if (kind === 'speak' && !(window.SpeechRecognition || window.webkitSpeechRecognition)) kind = 'type';
+      const pool = this.cardsIn(c.id, {}).filter(y => y.id !== x.id && (y.meaning || y.def));
+      if (kind === 'choose' && pool.length < 3) kind = 'type';
+      const head = `<div class="st-steps">${[1, 2, 3].map(i => `<i class="${i < k ? 'done' : i === k ? 'cur' : ''}">${i < k ? '✓' : i}</i>`).join('')}<span>Bước ${k}/3 · ${STEP[k]}</span></div>`;
+      const after = (ok, extra = '') => {
+        n++; this.track(c.id, 'reviews');
+        if (ok) {
+          right++; this.track(c.id, 'correct'); Sfx.beep(880 + k * 60, .07);
+          if (k < 3) later({ x, ph: 'step', k: k + 1, err: it.err }, k === 1 ? 4 : 6);
+          else { SRS.grade(x, it.err === 0 ? 4 : 3); learned++; this.track(c.id, 'learned'); toast(`Đã thuộc “${x.word}” ✓`, 'ok'); }
+        } else {
+          wrong.push(x); Sfx.beep(260, .15);
+          if (it.err >= 3) SRS.grade(x, 0);   // quá khó hôm nay: để FSRS đưa lại sớm
+          else later({ x, ph: 'step', k: 1, err: it.err + 1 }, 3);
+        }
+      };
+      const nextBtn = () => { const b = $('#stNext'); if (!b) return next(); b.hidden = false; b.focus(); b.onclick = next; onKeyAct = e => { if (e.key === 'Enter') next(); }; };
+      if (kind === 'choose') {
+        const opts = shuffle([x, ...shuffle(pool).slice(0, 3)]);
+        stage.innerHTML = `<div class="rv-q">${head}<div class="fc-word sm">${esc(x.meaning || x.def)}</div><div class="quiz-opts">${opts.map(o => `<button data-id="${o.id}">${rubyWord(o, c)}</button>`).join('')}</div><div id="rvRes"></div></div>`;
+        const pick = b => {
+          if (!b || stage.dataset.locked) return; stage.dataset.locked = 1;
+          const ok = b.dataset.id === x.id; b.classList.add(ok ? 'ok' : 'bad'); $(`.quiz-opts [data-id="${x.id}"]`, stage).classList.add('ok');
+          Speech.speak(x.word, c.lang); after(ok); setTimeout(() => { delete stage.dataset.locked; next(); }, ok ? 650 : 1600);
+        };
+        $$('.quiz-opts button', stage).forEach(b => b.onclick = () => pick(b));
+        onKeyAct = e => { const kk = +e.key; if (kk >= 1 && kk <= 4) pick($$('.quiz-opts button', stage)[kk - 1]); };
+        return;
+      }
+      if (kind === 'speak') {
+        stage.innerHTML = `<div class="rv-q">${head}<div class="fc-word sm">${esc(x.meaning || x.def)}</div><p class="muted">Nói to từ này (nhớ lại, chưa nghe mẫu).</p><div id="stSp"></div><button class="btn pri" id="stNext" hidden>Tiếp ↵</button></div>`;
+        let once = false;
+        this.speakPanel($('#stSp'), c, { text: x.word, forms: cardForms(x), note: x.ipa }, pct => { if (once) return; once = true; after(pct >= 75); nextBtn(); });
+        return;
+      }
+      const cz = kind === 'cloze' ? clozeOf(x) : null;
+      const q1 = kind === 'cloze' ? `<div class="cz-sent">${esc(cz.before)}<input class="cz-in" id="stIn" autocomplete="off" size="${Math.max(4, cz.hidden.length + 2)}" placeholder="?">${esc(cz.after)}</div>${cz.t && cz.t !== '(câu của tôi)' ? `<div class="muted">${esc(cz.t)}</div>` : ''}<div class="fc-pos">gợi ý: ${esc(x.meaning || '')}</div>`
+        : kind === 'dict' ? `<div class="row center"><button class="btn big" id="stPlay">🔊 Nghe lại</button></div><p class="muted center">Nghe rồi gõ lại từ vừa nghe.</p><input class="inp big-word" id="stIn" autocomplete="off" placeholder="Gõ từ bạn nghe được…">`
+        : `<div class="fc-word sm">${esc(x.meaning || x.def)}</div><input class="inp big-word" id="stIn" autocomplete="off" placeholder="Gõ từ (hoặc cách đọc)…">`;
+      stage.innerHTML = `<div class="rv-q">${head}${q1}<div class="row center"><button class="btn pri" id="stOk">Kiểm tra ↵</button><button class="btn" id="stIdk">Không nhớ</button></div><div id="rvRes"></div><button class="btn pri" id="stNext" hidden>Tiếp ↵</button></div>`;
+      if (kind === 'dict') { const pl = () => Speech.speak(x.word, c.lang, .85); pl(); $('#stPlay').onclick = pl; }
+      const inp = $('#stIn'); inp.focus();
+      const chk = idk => {
+        if (inp.readOnly) return;
+        const j = idk ? { ok: false, near: false } : judgeAns(inp.value, [...(cz ? [cz.hidden] : []), ...cardForms(x)]);
+        const ok = j.ok || j.near; inp.readOnly = true; inp.classList.add(j.ok ? 'ok' : j.near ? 'near' : 'bad');
+        $('#stOk').remove(); $('#stIdk').remove();
+        $('#rvRes').innerHTML = (j.ok ? '<b class="ok">✓ Chính xác!</b> ' : j.near ? `<b class="near">≈ Gần đúng (${j.pct}%)</b> ` : '<b class="bad">✗ Đáp án:</b> ') + `<b>${rubyWord(x, c)}</b> ${esc(x.ipa || '')} · ${esc(x.meaning || '')}${!ok && x.note ? `<div class="fb-note">💡 ${esc(x.note)}</div>` : ''}`;
+        if (cz) inp.value = cz.hidden;
+        Speech.speak(cz ? cz.before + cz.hidden + cz.after : x.word, c.lang, .95);
+        if (cz && ok) this.track(c.id, 'cloze');
+        after(ok); nextBtn();
+      };
+      $('#stOk').onclick = () => chk(false); $('#stIdk').onclick = () => chk(true);
+      inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); inp.readOnly ? next() : chk(false); } };
+    };
+    /* (giữ lại) kiểm tra nhanh kiểu cũ */
     const test = it => {
       const x = it.x; const pool = this.cardsIn(c.id, {}).filter(y => y.id !== x.id && (y.meaning || y.def));
       if (pool.length >= 3) {
@@ -367,24 +451,11 @@ Object.assign(Lang, {
         const reveal = () => { if (!$('.rv-btns', stage).hidden) return; $('#rvRes').innerHTML = this.cardFace(x, c); $('#rvRes .flip').classList.add('flipped'); this.track(c.id, 'listen'); show(); };
         $('#rvShow').onclick = reveal; onKeyAct = e => { if (e.key === ' ') { e.preventDefault(); reveal(); } };
       } else {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) return review(it, 'flip');
-        stage.innerHTML = head + `<div class="rv-q"><div class="fc-word">${rubyWord(x, c)}</div><div class="muted">${esc(x.meaning || '')}</div><div class="row center"><button class="btn" id="rvPlay">🔊 Nghe mẫu</button><button class="btn pri big" id="rvMic">🎙 Bấm rồi nói</button><button class="btn" id="rvSkip">Bỏ qua</button></div><div id="rvRes"></div></div><div class="rv-btns" hidden>${btns}</div>`;
-        $('#rvPlay').onclick = () => Speech.speak(x.word, c.lang, .85);
+        if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) return review(it, 'type');
+        stage.innerHTML = head + `<div class="rv-q"><div class="fc-word">${rubyWord(x, c)}</div><div class="muted">${esc(x.meaning || '')}</div><div id="rvSp"></div><div class="row center"><button class="btn sm" id="rvSkip">Bỏ qua, tự chấm</button></div></div><div class="rv-btns" hidden>${btns}</div>`;
         $('#rvSkip').onclick = () => show();
-        $('#rvMic').onclick = () => {
-          const r = new SR(); r.lang = c.lang; r.maxAlternatives = 5; $('#rvMic').disabled = true; $('#rvMic').textContent = '👂 Đang nghe…';
-          r.onresult = ev => {
-            const alts = [...ev.results[0]].map(a => a.transcript);
-            const best = Math.max(...alts.map(a => Math.max(similarity(a, x.word), ...(x.ipa || '').split(/[\/／,、]/).map(rd => similarity(a, rd)))));
-            if (best >= 80) this.track(c.id, 'speakOk');
-            $('#rvRes').innerHTML = `<div class="d-res"><div class="d-score ${best >= 80 ? 'good' : ''}">${best}%</div><div>Máy nghe được: <b>${esc(alts[0])}</b></div></div>`;
-            show(best >= 80 ? 'good' : best >= 50 ? 'hard' : 'again');
-          };
-          r.onerror = ev => { $('#rvRes').innerHTML = `<p class="bad">Không nghe được (${esc(ev.error)}).</p>`; show(); };
-          r.onend = () => { const m = $('#rvMic'); if (m) { m.disabled = false; m.textContent = '🎙 Nói lại'; } };
-          r.start();
-        };
+        let once = false;
+        this.speakPanel($('#rvSp'), c, { text: x.word, forms: cardForms(x), note: x.ipa }, pct => { if (once) return; once = true; show(pct >= 85 ? 'good' : pct >= 60 ? 'hard' : 'again'); });
       }
       $$('.rv-grade button', stage).forEach(b => b.onclick = () => grade(+b.dataset.q));
       const grade = g => {

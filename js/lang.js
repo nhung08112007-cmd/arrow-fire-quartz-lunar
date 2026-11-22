@@ -11,25 +11,61 @@ const LANGS = [
 const POS = ['noun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'pronoun', 'determiner', 'interjection', 'phrase', 'idiom', 'phrasal verb', 'particle', 'counter', 'other'];
 const POS_VI = { noun: 'danh từ', verb: 'động từ', adjective: 'tính từ', adverb: 'trạng từ', preposition: 'giới từ', conjunction: 'liên từ', pronoun: 'đại từ', determiner: 'hạn định từ', interjection: 'thán từ', phrase: 'cụm từ', idiom: 'thành ngữ', 'phrasal verb': 'cụm động từ', particle: 'trợ từ', counter: 'lượng từ', other: 'khác' };
 
-/* ---------- SRS (SM-2 rút gọn) ---------- */
+/* ---------- SRS: FSRS-4.5 (Free Spaced Repetition Scheduler) ----------
+   Mỗi thẻ có Độ bền trí nhớ S (số ngày để xác suất nhớ còn 90%) và Độ khó D (1–10).
+   Lịch ôn đặt đúng lúc xác suất nhớ R tụt về mức mục tiêu (mặc định 90%).
+   Thang chấm cũ 0/3/4/5 ↔ FSRS 1 Quên · 2 Khó · 3 Được · 4 Dễ. Thẻ SM-2 cũ được chuyển tự động. */
 const SRS = {
-  preview(c, q) {
-    let ef = c.ef || 2.5, iv = c.interval || 0, reps = c.reps || 0;
-    if (q < 3) return { iv: 0, label: '<10 phút' };
-    if (reps === 0) iv = q === 5 ? 4 : 1; else if (reps === 1) iv = q === 3 ? 3 : q === 5 ? 8 : 6;
-    else iv = Math.round(iv * ef * (q === 3 ? .8 : q === 5 ? 1.3 : 1));
-    return { iv, label: iv < 30 ? iv + ' ngày' : iv < 365 ? Math.round(iv / 30) + ' tháng' : (iv / 365).toFixed(1) + ' năm' };
+  W: [0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072, 0.0793, 0.3246, 1.587, 0.2272, 2.8755],
+  F: 19 / 81, DEC: -0.5,
+  target() { return Math.min(.97, Math.max(.7, Store.settings().retention || .9)); },
+  rating(q) { return q < 3 ? 1 : q === 3 ? 2 : q === 4 ? 3 : 4; },
+  clampD: d => Math.min(10, Math.max(1, d)),
+  R(t, S) { return Math.pow(1 + this.F * t / S, this.DEC); },
+  ivl(S) { return Math.max(1, Math.min(3650, Math.round(S / this.F * (Math.pow(this.target(), 1 / this.DEC) - 1)))); },
+  /* trạng thái hiện tại (tự chuyển từ SM-2) */
+  fs(c) {
+    if (c.fs) return c.fs;
+    if (!c.seen) return null;
+    const S = Math.max(.5, c.interval || 1), D = this.clampD(11 - ((c.ef || 2.5) - 1.3) * 4);
+    return { s: S, d: D, last: c.due ? c.due - (c.interval || 0) * DAY : Date.now() };
   },
+  next(c, G, now = Date.now()) {
+    const w = this.W, st = this.fs(c);
+    const D0 = g => this.clampD(w[4] - (g - 3) * w[5]);
+    if (!st) return { s: w[G - 1], d: D0(G), r: 1 };
+    const t = Math.max(0, (now - (st.last || now)) / DAY), R = this.R(t, st.s);
+    const d = this.clampD(w[7] * D0(3) + (1 - w[7]) * (st.d - w[6] * (G - 3)));
+    let S;
+    if (G === 1) S = Math.min(st.s, w[11] * Math.pow(st.d, -w[12]) * (Math.pow(st.s + 1, w[13]) - 1) * Math.exp(w[14] * (1 - R)));
+    else S = st.s * (1 + Math.exp(w[8]) * (11 - st.d) * Math.pow(st.s, -w[9]) * (Math.exp(w[10] * (1 - R)) - 1) * (G === 2 ? w[15] : 1) * (G === 4 ? w[16] : 1));
+    return { s: Math.max(.1, S), d, r: R };
+  },
+  label(iv) { return iv < 30 ? iv + ' ngày' : iv < 365 ? Math.round(iv / 30) + ' tháng' : (iv / 365).toFixed(1) + ' năm'; },
+  preview(c, q) {
+    const G = this.rating(q);
+    if (G === 1) return { iv: 0, label: '<10 phút' };
+    const iv = this.ivl(this.next(c, G).s);
+    return { iv, label: this.label(iv) };
+  },
+  /* chấm thẻ: q theo thang cũ (0/3/4/5) */
   grade(c, q) {
-    const p = this.preview(c, q);
-    c.ef = Math.max(1.3, (c.ef || 2.5) + (.1 - (5 - q) * (.08 + (5 - q) * .02)));
-    if (q < 3) { c.reps = 0; c.lapses = (c.lapses || 0) + 1; c.due = Date.now() + 10 * 60000; c.interval = 0; }
-    else { c.reps = (c.reps || 0) + 1; c.interval = p.iv; c.due = Date.now() + p.iv * DAY; }
-    c.history = c.history || []; c.history.push([Date.now(), q]);
+    const G = this.rating(q), now = Date.now(), nx = this.next(c, G, now);
+    c.fs = { s: nx.s, d: nx.d, last: now };
+    if (G === 1) { c.reps = 0; c.lapses = (c.lapses || 0) + 1; c.due = now + 10 * 60000; c.interval = 0; }
+    else {
+      let iv = this.ivl(nx.s);
+      if (iv > 2) iv = Math.max(1, Math.round(iv * (0.95 + Math.random() * .1)));   // xê dịch nhẹ để thẻ không dồn cùng ngày
+      c.reps = (c.reps || 0) + 1; c.interval = iv; c.due = now + iv * DAY;
+    }
+    c.ef = undefined;
+    c.history = c.history || []; c.history.push([now, q]);
     c.seen = true;
     Store.save('cards');
     Activity.add('review');
   },
+  /* xác suất còn nhớ lúc này (0–1) */
+  recall(c) { const st = this.fs(c); if (!st) return 0; return this.R(Math.max(0, (Date.now() - st.last) / DAY), st.s); },
   state(c) { if (!c.seen) return 'new'; if ((c.interval || 0) >= 21) return 'mature'; return 'learning'; }
 };
 
@@ -135,6 +171,14 @@ function charDiff(typed, target) {
   }
   return out.join('');
 }
+/** giống nhau bao nhiêu % (khoảng cách Levenshtein trên chữ đã chuẩn hoá) */
+function similarity(a, b) {
+  a = normAns(a); b = normAns(b); if (!a || !b) return 0; if (a === b) return 100;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...new Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return Math.max(0, Math.round(100 * (1 - dp[a.length][b.length] / Math.max(a.length, b.length))));
+}
 /** câu ví dụ thật (không phải câu tự viết) */
 const exOf = x => { const l = (x.examples || []).filter(e => e.s && e.t && e.t !== '(câu của tôi)'); return l.length ? l[Math.floor(Math.random() * l.length)] : null; };
 /** câu ví dụ có chứa từ, để làm bài điền chỗ trống */
@@ -194,10 +238,11 @@ const Lang = {
   /* ---------- không gian một lớp ---------- */
   course(view, cid, tab = 'hanh-trinh') {
     if (tab === 'on-tap') tab = 'hoc';
+    if (tab === 'video') { this._ls = 'video'; tab = 'nghe-chep'; }
     const c = Store.find('courses', cid); if (!c) return Router.go('/ngoai-ngu');
     const sc = this.scope[cid] = this.scope[cid] || {};
     view.classList.add('full');
-    const TABS = [['hanh-trinh', '🗺 Hành trình'], ['hoc', '🧠 Học & ôn'], ['tu-vung', '🃏 Thẻ từ'], ['nghe-chep', '🎧 Nghe chép'], ['video', '🎬 Video'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
+    const TABS = [['hanh-trinh', '🗺 Hành trình'], ['hoc', '🧠 Học & ôn'], ['tu-vung', '🃏 Thẻ từ'], ['nghe-chep', '🎧 Nghe & nói'], ['bai-tap', '✦ Bài tập AI'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
     view.innerHTML = `
     <div class="lang-ws" style="--cc:${c.color}">
       <aside class="ws-tree">
@@ -262,7 +307,7 @@ const Lang = {
     const body = $('#wsBody');
     const render = () => {
       drawTree(); drawToday();
-      const fn = { 'hanh-trinh': 'journey', 'hoc': 'study', 'video': 'videos', 'tu-vung': 'vocab', 'nghe-chep': 'dictation', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'journey';
+      const fn = { 'hanh-trinh': 'journey', 'hoc': 'study', 'tu-vung': 'vocab', 'nghe-chep': 'listenSpeak', 'bai-tap': 'aiExercises', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'journey';
       this[fn](body, c, sc, render);
     };
     render();
