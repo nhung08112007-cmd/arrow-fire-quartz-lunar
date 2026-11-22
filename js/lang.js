@@ -203,7 +203,7 @@ const Lang = {
         <div class="ph-art scene">${Art.scene('lang')}</div>
         <div class="ph-txt"><div class="kicker">Tầng 3 · Lớp Ngoại Ngữ</div><h1>Lớp học của thầy Ếch Kính</h1>
           <p>Mỗi ngôn ngữ là một lớp học. Bên trong chia theo <b>Sách › Bài › Phần</b>. Có flashcard đầy đủ, ôn lặp lại ngắt quãng, nghe chép, trò chơi, ngữ pháp và gia sư AI.</p>
-          <div class="row"><button class="btn pri big" id="addCourse">＋ Mở lớp ngôn ngữ mới</button><button class="btn big" id="addMinna">📚 Nạp giáo trình Minna no Nihongo N5</button></div></div>
+          <div class="lh-acts"><button class="btn pri big" id="addCourse">＋ Mở lớp ngôn ngữ mới</button><button class="btn big" id="addPack">📚 Thư viện giáo trình</button></div></div>
       </header>
       <div class="course-grid">${courses.map(c => {
         const cs = Store.list('cards').filter(x => x.courseId === c.id); const due = cs.filter(x => x.seen && (x.due || 0) <= Date.now()).length;
@@ -216,7 +216,7 @@ const Lang = {
       }).join('')}${courses.length ? '' : `<div class="empty big">${Art.creature('prof', { size: 110 })}<p>Chưa có lớp nào. Mở lớp đầu tiên nhé!</p></div>`}</div>
     </div>`;
     $('#addCourse').onclick = () => this.courseForm();
-    $('#addMinna').onclick = () => Minna.open();
+    $('#addPack').onclick = () => Packs.open();
   },
   courseForm(c) {
     const isNew = !c; c = c || { id: uid(), name: '', lang: 'en-US', flag: '🇬🇧', color: '#b8f0a0', native: 'vi' };
@@ -249,7 +249,7 @@ const Lang = {
         <div class="wt-head"><a href="#/ngoai-ngu" class="back">‹</a><span class="flag">${c.flag}</span><b>${esc(c.name)}</b><button class="mini-btn" id="cEdit">⚙</button></div>
         <div class="wt-body" id="tree"></div>
         <button class="btn sm wide" id="addTb">＋ Thêm sách / giáo trình</button>
-        ${isJa(c) ? '<button class="btn sm wide" id="addMinna">📚 Nạp Minna no Nihongo N5</button>' : ''}
+        <button class="btn sm wide" id="addPack">📚 Thư viện giáo trình</button>
         <div class="wt-cre">${Art.creature('prof', { size: 70 })}<small>Chọn phạm vi bên trên — mọi thẻ, bài ôn, trò chơi sẽ lấy theo phạm vi đó.</small></div>
       </aside>
       <section class="ws-main">
@@ -289,7 +289,7 @@ const Lang = {
       sc.bookId = n.dataset.b; sc.unitId = n.dataset.u; sc.part = n.dataset.p;
       drawTree(); render();
     });
-    if ($('#addMinna')) $('#addMinna').onclick = () => Minna.open(cid);
+    $('#addPack').onclick = () => Packs.open(cid);
     $('#addTb').onclick = async () => { const t = await promptBox('Tên sách / giáo trình', 'Sách ' + (tbs().length + 1)); if (t) { Store.upsert('tbooks', { id: uid(), courseId: cid, title: t, units: [] }); drawTree(); } };
     $('#cEdit').onclick = () => this.courseForm(c);
     const drawToday = () => {

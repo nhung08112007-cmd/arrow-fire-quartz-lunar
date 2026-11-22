@@ -464,3 +464,48 @@ body.reduce-fx .view.pg-in { animation: none; }
 .s-ufo, .tw, .roof-cre, .antenna svg { animation: none !important; }
 .s-ufo { display: none; }
 .house { contain: layout paint; }
+
+/* ================= Bài tập v2 ================= */
+.ax-modes { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.ax-mode { background: var(--card); border: 3px solid var(--ink); border-radius: 20px; padding: 14px 16px; box-shadow: var(--sh-s); display: flex; flex-direction: column; gap: 10px; }
+.ax-mode.rd { background: #fff8e6; }
+.ax-mh { display: flex; gap: 12px; align-items: center; } .ax-mh h3 { margin: 0 0 2px; } .ax-mh p { margin: 0; }
+.ax-mode .ax-opts { grid-template-columns: 90px minmax(0, 1.3fr) minmax(0, 1fr); }
+.ax-mode .ax-opts .btn { grid-column: 1 / -1; justify-content: center; }
+.ax-mode #rdGo { justify-content: center; }
+.ax-mode #rdOpt .inp { margin: 0; }
+@media (max-width: 1000px) { .ax-modes { grid-template-columns: 1fr; } }
+/* lựa chọn đáp án a b c d, 2 cột */
+.ax-opts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.ax-opts2.tf { grid-template-columns: 1fr 1fr; max-width: 420px; }
+.ax-op { display: flex; align-items: center; gap: 10px; text-align: left; border: 2.5px solid var(--ink); border-radius: 14px; background: var(--card); padding: 10px 14px; font-size: 17px; font-weight: 700; box-shadow: 2px 2px 0 var(--ink); cursor: pointer; color: var(--text); }
+.ax-op i { font-style: normal; flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink); display: grid; place-items: center; font-size: 14px; background: #fff; color: #2a2346; }
+.ax-op:hover:not(.locked) { background: #fff6c8; }
+.ax-op.on { background: #e5f2ff; } .ax-op.on i { background: var(--ink); color: #fff; }
+.ax-op.ok { background: #cff5c0 !important; } .ax-op.bad { background: #ffc6c6 !important; }
+.ax-op.locked { cursor: default; }
+@media (max-width: 640px) { .ax-opts2 { grid-template-columns: 1fr; } }
+/* đọc hiểu: đoạn văn bên trái, câu hỏi bên phải */
+.rd-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.rd-pass { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow: auto; background: #fffbe9; border: 3px solid var(--ink); border-radius: 18px; padding: 14px 18px; box-shadow: var(--sh-s); color: #2a2346; }
+.rd-ph { display: flex; align-items: center; gap: 10px; justify-content: space-between; } .rd-ph h3 { margin: 0; }
+.rd-text { font-size: 19px; line-height: 1.9; margin: 10px 0; font-family: 'Noto Serif', 'Lora', serif; }
+.rd-src a { color: inherit; }
+.rd-gl ul { margin: 6px 0; padding-left: 18px; line-height: 1.7; font-size: 14px; }
+.rd-qs { display: flex; flex-direction: column; gap: 12px; }
+.rd-q { background: var(--card); border: 2.5px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
+.rd-q.ok { border-color: #2f8f3a; } .rd-q.bad { border-color: #d6223b; } .rd-q.mid { border-color: #c07a00; }
+.rd-qn { display: flex; gap: 10px; align-items: baseline; } .rd-qn span { flex: 0 0 auto; background: #4a7fd6; color: #fff; border-radius: 8px; padding: 1px 8px; font-weight: 800; font-size: 14px; } .rd-qn b { font-size: 17px; }
+.rd-q textarea { margin-top: 8px; }
+.rd-fb { margin-top: 6px; font-size: 14px; line-height: 1.6; }
+@media (max-width: 900px) { .rd-wrap { grid-template-columns: 1fr; } .rd-pass { position: static; max-height: none; } }
+/* thư viện giáo trình */
+.lh-acts { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
+.lh-acts .btn { min-height: 54px; justify-content: center; }
+.pk-tabs { margin-bottom: 12px; }
+.pk-list { display: flex; flex-direction: column; gap: 10px; }
+.pk-item { display: flex; gap: 12px; align-items: center; background: var(--card); border: 2.5px solid var(--ink); border-radius: 16px; padding: 10px 14px; }
+.pk-item > div { flex: 1; } .pk-item b { display: block; font-size: 17px; } .pk-item small { color: var(--muted); } .pk-item p { margin: 4px 0 0; font-size: 13px; }
+.pk-flag { font-size: 34px; }
+.pk-steps { line-height: 1.7; padding-left: 20px; }
+.pk-body textarea { font-family: ui-monospace, monospace; font-size: 13px; }

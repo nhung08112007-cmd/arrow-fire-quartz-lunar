@@ -54,8 +54,8 @@ const Minna = {
       const L = MINNA_N5.lessons.find(l => l.n === n); if (!L) return;
       let u = book.units.find(x => x.mn === n);
       const parts = this.PART_ORDER.filter(p => L.rows.some(r => this.partOf(r[2]) === p));
-      if (!u) { u = { id: uid(), mn: n, title: `${L.title} · ${L.jp}`, parts }; book.units.push(u); }
-      else u.parts = [...new Set([...(u.parts || []), ...parts])];
+      if (!u) { u = { id: uid(), mn: n, title: `${L.title} · ${L.jp}`, sub: L.sub, parts }; book.units.push(u); }
+      else { u.parts = [...new Set([...(u.parts || []), ...parts])]; u.sub = u.sub || L.sub; }
       L.rows.forEach((r, i) => {
         const c = this.card(r, L, i);
         if (ids.has(c.id)) return;

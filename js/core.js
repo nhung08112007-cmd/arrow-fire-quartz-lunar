@@ -20,7 +20,7 @@ const DAY = 86400000;
 const Store = {
   data: {},
   db: null,
-  keys: ['posts', 'archive', 'quotes', 'books', 'courses', 'tbooks', 'units', 'cards', 'grammar', 'letters', 'settings', 'pet', 'stamps', 'playlist', 'log', 'chat', 'versions', 'lstats', 'videos', 'tasks', 'aiex'],
+  keys: ['posts', 'archive', 'quotes', 'books', 'courses', 'tbooks', 'units', 'cards', 'grammar', 'letters', 'settings', 'pet', 'stamps', 'playlist', 'log', 'chat', 'versions', 'lstats', 'videos', 'tasks', 'aiex', 'packs'],
   async init() {
     try {
       this.db = await new Promise((res, rej) => {
