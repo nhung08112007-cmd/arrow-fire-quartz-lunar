@@ -373,3 +373,14 @@ body[data-theme="night"] .house-wrap { background: linear-gradient(180deg, #2a2a
   .hello-bub::before { left: 26px; top: -16px; bottom: auto; border: 10px solid transparent; border-bottom: 14px solid var(--ink); }
   .hb-t { font-size: 24px; }
 }
+
+/* ================= Hiệu ứng (fx.js) ================= */
+@keyframes pgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.view.pg-in { animation: pgIn .38s cubic-bezier(.2, .8, .3, 1) both; }
+body.reduce-fx .view.pg-in { animation: none; }
+/* kệ sách Swiper */
+.shelf-track.swiper { display: block; overflow: hidden; padding: 20px 26px 0; cursor: grab; }
+.shelf-track.swiper .swiper-wrapper { align-items: flex-end; }
+.shelf-track .swiper-slide { width: auto; flex-shrink: 0; height: auto; }
+.shelf-track.swiper .book3d { scroll-snap-align: none; }
+.sh-arr.swiper-button-disabled { opacity: .35; cursor: default; }

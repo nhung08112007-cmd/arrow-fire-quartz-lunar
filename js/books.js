@@ -123,8 +123,12 @@ const Books = {
           </div>
           <div class="plank"></div>
         </section>`).join('');
-      $$('.shelf-track', el).forEach(dragScroll);
-      $$('.sh-arr', el).forEach(a => a.onclick = () => a.closest('.shelf').querySelector('.shelf-track').scrollBy({ left: +a.dataset.d * 480, behavior: 'smooth' }));
+      $$('.shelf', el).forEach(sh => {
+        const tr = $('.shelf-track', sh), [pv, nx] = $$('.sh-arr', sh);
+        if (FX.shelf(tr, pv, nx)) return;
+        dragScroll(tr);
+        [pv, nx].forEach(a => a.onclick = () => tr.scrollBy({ left: +a.dataset.d * 480, behavior: 'smooth' }));
+      });
     };
     const drawAll = () => { drawMap(); drawShelves(); };
     drawAll();

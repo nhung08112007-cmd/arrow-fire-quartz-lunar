@@ -145,6 +145,7 @@ const Router = {
         const r = fn(view, ...m.slice(1).map(decodeURIComponent));
         if (typeof r === 'function') this.cleanup = r;
         Nav.mark(path);
+        if (typeof FX !== 'undefined') FX.afterRoute(view);
         return;
       }
     }

@@ -45,6 +45,7 @@ ${Blocks.divider('eggs')}
   document.body.dataset.theme = S.theme || 'day';
   document.body.classList.toggle('reduce-fx', !!S.lowFx || matchMedia('(prefers-reduced-motion: reduce)').matches);
   Seed.run();
+  FX.init();
   Nav.render();
 
   Router.on(/^\/$/, v => Home.render(v));
