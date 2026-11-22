@@ -376,7 +376,7 @@ body[data-theme="night"] .house-wrap { background: linear-gradient(180deg, #2a2a
 
 /* ================= Hiệu ứng (fx.js) ================= */
 @keyframes pgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.view.pg-in { animation: pgIn .38s cubic-bezier(.2, .8, .3, 1) both; }
+.view.pg-in { animation: pgIn .22s cubic-bezier(.2, .8, .3, 1) both; }
 body.reduce-fx .view.pg-in { animation: none; }
 /* kệ sách Swiper */
 .shelf-track.swiper { display: block; overflow: hidden; padding: 20px 26px 0; cursor: grab; }
@@ -447,3 +447,20 @@ body.reduce-fx .view.pg-in { animation: none; }
 .ws-tabs { gap: 4px; }
 .ws-tabs a { flex: 1 1 0; min-width: 0; padding: 7px 4px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 900px) { .ws-tabs a { flex: 0 0 auto; padding: 6px 10px; } }
+
+/* thẻ ngữ pháp: công thức giữ xuống dòng */
+.gc-form { white-space: pre-line; }
+/* AI điền ô trống hàng loạt */
+.bf-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.bf-f { flex: 1 1 210px; display: flex; align-items: center; gap: 8px; border: 2.5px solid var(--ink); border-radius: 12px; padding: 8px 10px; background: var(--card); cursor: pointer; }
+.bf-f span { flex: 1; font-weight: 700; } .bf-f b { font-size: 12px; color: #e8475f; }
+.bf-f.full { opacity: .5; cursor: default; } .bf-f.full b { color: #2f8f3a; }
+.bf-f:has(input:checked) { background: #fff6c8; }
+.bf-prog { display: flex; gap: 10px; align-items: center; margin: 8px 0; } .bf-prog .ss-bar { flex: 1; }
+.bf-log { max-height: 180px; overflow: auto; font-size: 13px; line-height: 1.6; }
+/* giảm tải khi cuộn: bỏ phóng to cảnh phòng & các chuyển động trang trí chạy liên tục ở Sảnh */
+.hroom:hover svg.bare { transform: none; }
+.hroom svg.bare { transition: none; }
+.s-ufo, .tw, .roof-cre, .antenna svg { animation: none !important; }
+.s-ufo { display: none; }
+.house { contain: layout paint; }

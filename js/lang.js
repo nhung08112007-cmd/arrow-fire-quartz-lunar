@@ -325,6 +325,7 @@ const Lang = {
       <div class="filter-row">
         <button class="btn pri" id="vAdd">＋ Thêm từ</button>
         <button class="btn" id="vBulk">⚡ Thêm hàng loạt</button>
+        <button class="btn" id="vFill" title="AI điền các ô còn trống (cách đọc, ví dụ, đồng/trái nghĩa, mẹo nhớ…) cho mọi thẻ trong phạm vi">✦ AI điền ô trống</button>
         <button class="btn hot" id="vFlash">🃏 Lật thẻ</button>
         <input class="inp grow" id="vq" placeholder="🔍 Tìm từ, nghĩa, ví dụ…">
         <select class="inp sel" id="vst"><option value="">Mọi trạng thái</option><option value="new">🥚 Mới</option><option value="learning">🐣 Đang học</option><option value="mature">🐥 Thuộc</option><option value="leech">🐛 Hay quên</option><option value="due">⏰ Đến hạn</option></select>
@@ -345,6 +346,7 @@ const Lang = {
           : `<table><thead><tr><th></th><th>Từ</th><th>Từ loại</th><th>Nghĩa</th><th>Ví dụ</th><th>Đồng nghĩa</th><th>Trái nghĩa</th><th>Đến hạn</th></tr></thead><tbody>${cs.map(x => `<tr data-id="${x.id}"><td>${icon(x)}</td><td><b>${esc(x.word)}</b><br><small>${esc(x.ipa || '')}</small></td><td>${esc(x.pos || '')}</td><td>${esc(x.meaning || '')}<br><small class="muted">${esc(x.def || '')}</small></td><td><small>${esc(x.examples?.[0]?.s || '')}</small></td><td><small>${esc(x.syn || '')}</small></td><td><small>${esc(x.ant || '')}</small></td><td><small>${x.seen ? fmtDate(x.due) : '—'}</small></td></tr>`).join('')}</tbody></table>`;
     };
     draw();
+    $('#vFill').onclick = () => this.bulkFill(c, sc, draw);
     $('#vq').oninput = debounce(e => { q = e.target.value.toLowerCase(); draw(); }, 150);
     $('#vst').onchange = e => { st = e.target.value; draw(); };
     $$('#vview button').forEach(b => b.onclick = () => { S.vocabView = b.dataset.v; Store.save('settings'); $$('#vview button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
@@ -804,7 +806,7 @@ const Lang = {
   grammar(el, c, sc, rerender) {
     const list = Store.list('grammar').filter(g => g.courseId === c.id && (!sc.bookId || g.bookId === sc.bookId) && (!sc.unitId || g.unitId === sc.unitId) && (!sc.part || g.part === sc.part));
     el.innerHTML = `<div class="filter-row"><button class="btn pri" id="gAdd">＋ Điểm ngữ pháp mới</button><button class="btn" id="gAiNew">✦ AI soạn điểm ngữ pháp</button></div>
-      <div class="gram-list">${list.map(g => `<div class="gram-card" data-id="${g.id}"><div class="gc-title">${esc(g.title)}</div>${g.form ? `<div class="gc-form">${esc(g.form)}</div>` : ''}<p class="muted">${esc(stripHtml(g.content).slice(0, 140))}</p><div class="pc-foot"><span>${g.exercises?.length ? `📝 ${g.exercises.length} bài tập` : ''}</span><span class="grow"></span><button class="mini-btn" data-practice="${g.id}">Luyện</button></div></div>`).join('') || `<div class="empty big">${Art.creature('prof', { size: 100 })}<p>Chưa có điểm ngữ pháp nào trong phạm vi.</p></div>`}</div>`;
+      <div class="gram-list">${list.map(g => `<div class="gram-card" data-id="${g.id}"><div class="gc-title">${esc(g.title)}</div>${g.form ? `<div class="gc-form">${esc(g.form)}</div>` : ''}<p class="muted">${esc(stripHtml((g.content || '').replace(/<h\d[^>]*>[\s\S]*?<\/h\d>/gi, ' ').replace(/<\/(p|li|div|tr)>|<br\s*\/?>/gi, ' ')).replace(/\s+/g, ' ').trim().slice(0, 160))}…</p><div class="pc-foot"><span>${g.exercises?.length ? `📝 ${g.exercises.length} bài tập` : ''}</span><span class="grow"></span><button class="mini-btn" data-practice="${g.id}">Luyện</button></div></div>`).join('') || `<div class="empty big">${Art.creature('prof', { size: 100 })}<p>Chưa có điểm ngữ pháp nào trong phạm vi.</p></div>`}</div>`;
     $('#gAdd').onclick = () => this.gramForm(c, sc, null, rerender);
     $('#gAiNew').onclick = async e => {
       const topic = await promptBox('Chủ điểm ngữ pháp?', '', 'vd: thì hiện tại hoàn thành / ～てしまう / subjonctif'); if (!topic) return;

@@ -187,7 +187,7 @@ Object.assign(Lang, {
     $('#stNew').onchange = e => { S.newPerDay = +e.target.value; Store.save('settings'); this.study(el, c, sc); };
     $$('[data-more]', el).forEach(b => b.onclick = () => more(+b.dataset.more));
     $('#stGo').onclick = () => this.runSession(el, c, due, fresh, sc);
-    $('#stPrac').onclick = () => this.practice(el, c, sc);
+    $('#stPrac').onclick = () => this.practiceCards(el, c, sc);
   },
 
   /** AI đặt một câu ví dụ mới (kèm dịch), lưu vào thẻ, rồi gọi done(câu) */
@@ -204,7 +204,7 @@ Object.assign(Lang, {
   },
 
   /* luyện thêm: lấy ngẫu nhiên thẻ trong phạm vi (không cần đến hạn) để thử các dạng bài */
-  practice(el, c, sc, k = 15) {
+  practiceCards(el, c, sc, k = 15) {
     const all = this.cardsIn(c.id, sc || {});
     const seen = all.filter(x => x.seen), pool = seen.length >= 5 ? seen : all;
     if (!pool.length) return toast('Phạm vi này chưa có thẻ', 'err');
