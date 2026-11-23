@@ -36,7 +36,7 @@ const Packs = {
     const ex = a => (Array.isArray(a) ? a : []).filter(e => e && e.s).map(e => ({ s: s(e.s), t: s(e.t) }));
     const pack = {
       format: 'chutchi-pack@1', id: s(o.id) || ('p' + hashStr(s(o.title) + o.units.length).toString(36)), title: s(o.title) || 'Giáo trình mới',
-      lang: s(o.lang) || 'en-US', flag: s(o.flag) || '📘', desc: s(o.desc),
+      lang: s(o.lang) || 'en-US', flag: s(o.flag) || '📘', desc: s(o.desc), partOrder: Array.isArray(o.partOrder) ? o.partOrder.map(s) : undefined,
       units: o.units.map((u, i) => ({
         title: s(u.title) || `Bài ${i + 1}`, sub: s(u.sub),
         cards: (u.cards || []).filter(x => x && s(x.word) && s(x.meaning)).map(x => ({
@@ -56,14 +56,16 @@ const Packs = {
     if (!book) { book = { id: uid(), courseId: cid, src: 'pack:' + pack.id, title: pack.title, units: [] }; Store.list('tbooks').push(book); }
     const ids = new Set(Store.list('cards').map(c => c.id)), gids = new Set(Store.list('grammar').map(g => g.id));
     const fresh = [], now = Date.now(); let gAdded = 0;
+    const byId = new Map(Store.list('cards').map(c => [c.id, c]));
     idxs.sort((a, b) => a - b).forEach(i => {
       const U = pack.units[i]; if (!U) return;
-      const parts = [...new Set(U.cards.map(x => x.part).filter(Boolean))];
+      const parts = this.orderParts([...new Set(U.cards.map(x => x.part).filter(Boolean))], pack.partOrder);
       let u = book.units.find(x => x.pk === i);
       if (!u) { u = { id: uid(), pk: i, title: U.title, sub: U.sub, parts }; book.units.push(u); }
-      else { u.parts = [...new Set([...(u.parts || []), ...parts])]; u.sub = u.sub || U.sub; }
+      else { u.parts = parts; u.title = U.title; u.sub = U.sub || u.sub; }
       U.cards.forEach((x, j) => {
-        const id = `pk-${pack.id}-${i}-${j}`; if (ids.has(id)) return;
+        const id = `pk-${pack.id}-${i}-${j}`;
+        if (ids.has(id)) { const old = byId.get(id); if (old && x.part && old.part !== x.part) old.part = x.part; return; }   // giáo trình cập nhật: đổi nhóm, giữ tiến độ
         fresh.push({ ...x, id, courseId: cid, bookId: book.id, unitId: u.id, tags: [pack.title, U.title], source: `${pack.title} · ${U.title}`, created: now + fresh.length });
       });
       U.grammar.forEach((g, j) => {
@@ -76,6 +78,26 @@ const Packs = {
     Store.data.cards = [...Store.list('cards'), ...fresh];
     Store.save('tbooks'); Store.save('cards'); Store.save('grammar'); Store.flush();
     return { added: fresh.length, gAdded, book };
+  },
+
+  /* xếp nhóm trong bài theo thứ tự hợp lý (theo giáo trình, rồi theo từ loại) */
+  PART_ORDER: ['Danh từ', 'Động từ', 'Tính từ', 'Phó từ', 'Đại từ', 'Số từ & lượng từ', 'Hư từ', 'Cụm từ & câu giao tiếp', 'Từ khác'],
+  orderParts(parts, order) {
+    const o = [...(order || []), ...this.PART_ORDER];
+    const rank = p => { const k = o.indexOf(p); return k < 0 ? 999 : k; };
+    return [...parts].sort((a, b) => rank(a) - rank(b));
+  },
+  /* thẻ HSK nạp từ bản cũ (chia “Nhóm 1, 2…”) → chuyển sang chia theo từ loại, giữ nguyên tiến độ học */
+  migrate() {
+    const cards = Store.list('cards').filter(c => /^pk-hsk3-/.test(c.id) && /^Nhóm \d/.test(c.part || ''));
+    if (!cards.length) return;
+    const H = 'Hư từ';
+    const map = { noun: 'Danh từ', verb: 'Động từ', adjective: 'Tính từ', adverb: 'Phó từ', pronoun: 'Đại từ', counter: 'Số từ & lượng từ', particle: H, conjunction: H, preposition: H, interjection: H, phrase: 'Cụm từ & câu giao tiếp' };
+    cards.forEach(c => { c.part = map[c.pos] || (/Số từ/.test(c.usage || '') ? 'Số từ & lượng từ' : 'Từ khác'); });
+    Store.list('tbooks').filter(b => b.src === 'pack:hsk3').forEach(b => (b.units || []).forEach(u => {
+      u.parts = this.orderParts([...new Set(Store.list('cards').filter(c => c.unitId === u.id).map(c => c.part).filter(Boolean))]);
+    }));
+    Store.save('cards'); Store.save('tbooks');
   },
 
   /* lời nhắn mẫu để gửi Claude trong chat */
