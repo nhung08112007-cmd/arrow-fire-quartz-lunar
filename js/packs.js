@@ -43,7 +43,7 @@ const Packs = {
           word: s(x.word), ipa: s(x.ipa), pos: POS.includes(s(x.pos)) ? s(x.pos) : 'other', meaning: s(x.meaning), def: s(x.def), usage: s(x.usage),
           examples: ex(x.examples), syn: s(x.syn), ant: s(x.ant), coll: s(x.coll), family: s(x.family), note: s(x.note), part: s(x.part)
         })),
-        grammar: (u.grammar || []).filter(g => g && s(g.title)).map(g => ({ title: s(g.title), form: s(g.form), explain: s(g.explain), examples: ex(g.examples) }))
+        grammar: (u.grammar || []).filter(g => g && s(g.title)).map(g => ({ title: s(g.title), form: s(g.form), explain: s(g.explain), tip: s(g.tip), examples: ex(g.examples) }))
       }))
     };
     if (!pack.units.some(u => u.cards.length || u.grammar.length)) throw new Error('Giáo trình chưa có thẻ từ hay điểm ngữ pháp nào');
@@ -70,7 +70,7 @@ const Packs = {
       });
       U.grammar.forEach((g, j) => {
         const id = `pkg-${pack.id}-${i}-${j}`; if (gids.has(id)) return;
-        const content = `${g.explain ? `<h3>Giải thích</h3>${g.explain.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('')}` : ''}${g.examples.length ? `<h3>Ví dụ</h3><ul>${g.examples.map(e => `<li>${esc(e.s)}${e.t ? ` — <i>${esc(e.t)}</i>` : ''}</li>`).join('')}</ul>` : ''}`;
+        const content = `${g.explain ? `<h3>Giải thích</h3>${g.explain.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('')}` : ''}${g.examples.length ? `<h3>Ví dụ</h3><ul>${g.examples.map(e => `<li>${esc(e.s)}${e.t ? ` — <i>${esc(e.t)}</i>` : ''}</li>`).join('')}</ul>` : ''}${g.tip ? `<div class="blk callout c-warn"><span class="ci" contenteditable="false">⚠️</span><div><b>Lỗi hay gặp:</b> ${esc(g.tip)}</div></div>` : ''}`;
         Store.list('grammar').push({ id, courseId: cid, bookId: book.id, unitId: u.id, title: g.title, form: g.form, content, created: now }); gAdded++;
       });
     });
@@ -89,6 +89,7 @@ const Packs = {
   },
   /* thẻ HSK nạp từ bản cũ (chia “Nhóm 1, 2…”) → chuyển sang chia theo từ loại, giữ nguyên tiến độ học */
   migrate() {
+    this.migrateGrammar();
     const cards = Store.list('cards').filter(c => /^pk-hsk3-/.test(c.id) && /^Nhóm \d/.test(c.part || ''));
     if (!cards.length) return;
     const H = 'Hư từ';
@@ -98,6 +99,17 @@ const Packs = {
       u.parts = this.orderParts([...new Set(Store.list('cards').filter(c => c.unitId === u.id).map(c => c.part).filter(Boolean))]);
     }));
     Store.save('cards'); Store.save('tbooks');
+  },
+
+  /* lớp HSK đã nạp từ trước khi có ngữ pháp → tự bổ sung chủ điểm ngữ pháp cho các cấp đã nạp */
+  migrateGrammar() {
+    const gids = new Set(Store.list('grammar').map(g => g.id));
+    const need = Store.list('tbooks').filter(b => b.src === 'pack:hsk3').map(b => ({ cid: b.courseId, idx: (b.units || []).map(u => u.pk).filter(i => i != null && !gids.has(`pkg-hsk3-${i}-0`)) })).filter(x => x.idx.length);
+    if (!need.length) return;
+    this.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => {
+      let n = 0; need.forEach(x => { n += this.importPack(p, x.cid, x.idx).gAdded; });
+      if (n && typeof toast === 'function') toast(`📐 Đã thêm ${n} chủ điểm ngữ pháp HSK vào tab Ngữ pháp`);
+    }).catch(() => { });
   },
 
   /* lời nhắn mẫu để gửi Claude trong chat */
