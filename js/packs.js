@@ -54,6 +54,7 @@ const Packs = {
   importPack(pack, cid, idxs) {
     let book = Store.list('tbooks').find(b => b.courseId === cid && b.src === 'pack:' + pack.id);
     if (!book) { book = { id: uid(), courseId: cid, src: 'pack:' + pack.id, title: pack.title, units: [] }; Store.list('tbooks').push(book); }
+    if (pack.gv) book.gv = pack.gv;
     const ids = new Set(Store.list('cards').map(c => c.id)), gids = new Set(Store.list('grammar').map(g => g.id));
     const fresh = [], now = Date.now(); let gAdded = 0;
     const byId = new Map(Store.list('cards').map(c => [c.id, c]));
@@ -103,12 +104,22 @@ const Packs = {
 
   /* lớp HSK đã nạp từ trước khi có ngữ pháp → tự bổ sung chủ điểm ngữ pháp cho các cấp đã nạp */
   migrateGrammar() {
-    const gids = new Set(Store.list('grammar').map(g => g.id));
-    const need = Store.list('tbooks').filter(b => b.src === 'pack:hsk3').map(b => ({ cid: b.courseId, idx: (b.units || []).map(u => u.pk).filter(i => i != null && !gids.has(`pkg-hsk3-${i}-0`)) })).filter(x => x.idx.length);
-    if (!need.length) return;
+    const GV = 2;   // phiên bản ngữ pháp HSK hiện tại (đổi khi sắp xếp lại chủ điểm)
+    const books = Store.list('tbooks').filter(b => b.src === 'pack:hsk3' && (b.gv !== GV || (b.units || []).some(u => u.pk != null && !Store.list('grammar').some(g => g.id === `pkg-hsk3-${u.pk}-0`))));
+    if (!books.length) return;
     this.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => {
-      let n = 0; need.forEach(x => { n += this.importPack(p, x.cid, x.idx).gAdded; });
-      if (n && typeof toast === 'function') toast(`📐 Đã thêm ${n} chủ điểm ngữ pháp HSK vào tab Ngữ pháp`);
+      let n = 0;
+      books.forEach(b => {
+        const old = Store.list('grammar').filter(g => g.courseId === b.courseId && /^pkg-hsk3-/.test(g.id));
+        const keep = new Map(old.filter(g => g.exercises?.length).map(g => [g.title, g.exercises]));   // giữ bài tập đã tạo
+        Store.data.grammar = Store.list('grammar').filter(g => !old.includes(g));
+        const idx = (b.units || []).map(u => u.pk).filter(i => i != null);
+        n += this.importPack(p, b.courseId, idx).gAdded - old.length;
+        Store.list('grammar').forEach(g => { if (g.courseId === b.courseId && keep.has(g.title)) g.exercises = keep.get(g.title); });
+        b.gv = GV;
+      });
+      Store.save('grammar'); Store.save('tbooks'); Store.flush();
+      if (typeof toast === 'function') toast(n > 0 ? `📐 Đã thêm ${n} chủ điểm ngữ pháp HSK vào tab Ngữ pháp` : '📐 Đã cập nhật ngữ pháp HSK theo danh sách mới');
     }).catch(() => { });
   },
 
