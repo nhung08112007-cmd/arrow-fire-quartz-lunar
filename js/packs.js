@@ -11,8 +11,8 @@
 const Packs = {
   /* giáo trình có sẵn trong app (Claude thêm file vào js/data/ rồi khai báo ở đây) */
   builtin: [
-    { id: 'minna-n5', title: 'Minna no Nihongo I · JLPT N5', lang: 'ja-JP', flag: '🇯🇵', desc: 'Từ vựng Bài nhập môn – Bài 25: chữ Hán + cách đọc, nghĩa Việt/Anh, ví dụ có dịch, lưu ý dùng.', units: 26, cards: 1020, open: cid => Minna.open(cid) },
-    { id: 'hsk3', title: 'HSK 3.0 · Cấp 1–4', lang: 'zh-CN', flag: '🇨🇳', desc: 'Từ vựng HSK 3.0 cấp 1–4: chữ Hán, pinyin, nghĩa Việt, âm Hán Việt, nghĩa Anh, ví dụ có dịch. Mỗi cấp chia nhóm 25 từ.', units: 4, cards: 2000, open: cid => Packs.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được dữ liệu HSK', 'err')) },
+    { id: 'minna-n5', title: 'Minna no Nihongo I · JLPT N5', lang: 'ja-JP', flag: '🇯🇵', desc: 'Bài nhập môn – Bài 25: từ vựng chính + từ tham khảo của sách (chữ Hán, cách đọc, nghĩa Việt/Anh, ví dụ có dịch) và giải thích ngữ pháp từng bài.', units: 26, cards: 1502, grammarN: 150, open: cid => Minna.open(cid) },
+    { id: 'hsk3', title: 'HSK 3.0 · Cấp 1–4', lang: 'zh-CN', flag: '🇨🇳', desc: 'Từ vựng HSK 3.0 cấp 1–4 xếp theo từ loại: chữ Hán, pinyin, nghĩa Việt, âm Hán Việt, ví dụ có dịch; kèm 118 chủ điểm ngữ pháp.', units: 4, cards: 2000, grammarN: 118, open: cid => Packs.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được dữ liệu HSK', 'err')) },
   ],
   /* dữ liệu giáo trình lớn chỉ tải khi cần */
   _loaded: {},
