@@ -47,6 +47,7 @@ ${Blocks.divider('eggs')}
   Seed.run();
   try { Packs.migrate(); } catch (e) { }
   try { Minna.migrate(); } catch (e) { }
+  try { Sync.init(); } catch (e) { }
   FX.init();
   Nav.render();
 
