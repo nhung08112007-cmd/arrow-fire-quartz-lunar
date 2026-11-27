@@ -14,7 +14,7 @@ const Packs = {
     { id: 'minna-n5', title: 'Minna no Nihongo I · JLPT N5', lang: 'ja-JP', flag: '🇯🇵', desc: 'Bài nhập môn – Bài 25: từ vựng chính + từ tham khảo của sách (chữ Hán, cách đọc, nghĩa Việt/Anh, ví dụ có dịch) và giải thích ngữ pháp từng bài.', units: 26, cards: 1502, grammarN: 150, open: cid => Minna.open(cid) },
     { id: 'eng-b2c1', title: 'Ngữ pháp tiếng Anh B2 → C1', lang: 'en-GB', flag: '🇬🇧', desc: '51 chủ điểm ngữ pháp từ củng cố B2 đến nâng cao C1 (theo trình tự kiểu Advanced Grammar in Use): thì, modal, điều kiện, đảo ngữ, câu chẻ, mệnh đề phân từ… Giải thích tiếng Việt, ví dụ có dịch, ôn bằng câu đục lỗ.', units: 10, cards: 0, grammarN: 51, open: cid => Packs.loadBuiltin('js/data/eng-b2c1.js', 'ENG_B2C1_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được giáo trình', 'err')) },
     { id: 'awl', title: 'Tầng 1 · Academic Word List (AWL)', lang: 'en-GB', flag: '🇬🇧', desc: '570 từ gốc học thuật theo 10 sublist (sublist 1 hay gặp nhất) — xương sống cho Reading & Writing IELTS. Mỗi thẻ: phiên âm, nghĩa Việt, cả họ từ (analyse → analysis, analytical…), collocation học thuật, ví dụ có dịch.', units: 10, cards: 570, open: cid => Packs.loadBuiltin('js/data/awl.js', 'AWL_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được giáo trình', 'err')) },
-    { id: 'ielts-vocab', title: 'Từ vựng IELTS band 7–8 theo chủ đề', lang: 'en-GB', flag: '🇬🇧', desc: '279 từ & cụm từ cho Writing/Speaking band 7–8 trong 14 chủ đề (giáo dục, việc làm, công nghệ, môi trường, sức khoẻ…, kèm ngôn ngữ lập luận & mô tả số liệu Task 1): phiên âm, nghĩa Việt, collocation, từ đồng nghĩa để paraphrase, ví dụ có dịch.', units: 14, cards: 279, open: cid => Packs.loadBuiltin('js/data/ielts-vocab.js', 'IELTS_VOCAB_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được giáo trình', 'err')) },
+    { id: 'ielts-vocab', title: 'Tầng 2 · Từ vựng IELTS theo chủ đề', lang: 'en-GB', flag: '🇬🇧', desc: '938 từ & cụm từ trong 20 chủ đề Writing/Speaking (giáo dục, việc làm, công nghệ, môi trường, sức khoẻ, gia đình, ẩm thực, thể thao, nghệ thuật, giao thông, động vật…), mỗi chủ đề xếp theo cấp độ B2 → C1 → Band 8: phiên âm, nghĩa Việt, collocation, từ đồng nghĩa để paraphrase, ví dụ có dịch.', units: 20, cards: 938, open: cid => Packs.loadBuiltin('js/data/ielts-vocab.js', 'IELTS_VOCAB_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được giáo trình', 'err')) },
     { id: 'hsk3', title: 'HSK 3.0 · Cấp 1–4', lang: 'zh-CN', flag: '🇨🇳', desc: 'Từ vựng HSK 3.0 cấp 1–4 xếp theo từ loại: chữ Hán, pinyin, nghĩa Việt, âm Hán Việt, ví dụ có dịch; kèm 118 chủ điểm ngữ pháp.', units: 4, cards: 2000, grammarN: 118, open: cid => Packs.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được dữ liệu HSK', 'err')) },
   ],
   /* dữ liệu giáo trình lớn chỉ tải khi cần */
@@ -58,6 +58,7 @@ const Packs = {
     let book = Store.list('tbooks').find(b => b.courseId === cid && b.src === 'pack:' + pack.id);
     if (!book) { book = { id: uid(), courseId: cid, src: 'pack:' + pack.id, title: pack.title, units: [] }; Store.list('tbooks').push(book); }
     if (pack.gv) book.gv = pack.gv;
+    if (pack.version) book.pv = pack.version;
     const ids = new Set(Store.list('cards').map(c => c.id)), gids = new Set(Store.list('grammar').map(g => g.id));
     const fresh = [], now = Date.now(); let gAdded = 0;
     const byId = new Map(Store.list('cards').map(c => [c.id, c]));
@@ -94,6 +95,7 @@ const Packs = {
   /* thẻ HSK nạp từ bản cũ (chia “Nhóm 1, 2…”) → chuyển sang chia theo từ loại, giữ nguyên tiến độ học */
   migrate() {
     this.migrateGrammar();
+    this.migrateVersions();
     const cards = Store.list('cards').filter(c => /^pk-hsk3-/.test(c.id) && /^Nhóm \d/.test(c.part || ''));
     if (!cards.length) return;
     const H = 'Hư từ';
@@ -103,6 +105,21 @@ const Packs = {
       u.parts = this.orderParts([...new Set(Store.list('cards').filter(c => c.unitId === u.id).map(c => c.part).filter(Boolean))]);
     }));
     Store.save('cards'); Store.save('tbooks');
+  },
+
+  /* giáo trình có sẵn được cập nhật (thêm thẻ, chia lại nhóm) → tự bổ sung cho các bài đã nạp, giữ tiến độ */
+  UPDATES: [{ id: 'ielts-vocab', version: 2, src: 'js/data/ielts-vocab.js', name: 'IELTS_VOCAB_PACK' }],
+  migrateVersions() {
+    this.UPDATES.forEach(up => {
+      const books = Store.list('tbooks').filter(b => b.src === 'pack:' + up.id && (b.pv || 1) < up.version);
+      if (!books.length) return;
+      this.loadBuiltin(up.src, up.name).then(p => {
+        let n = 0;
+        books.forEach(b => { n += this.importPack(p, b.courseId, (b.units || []).map(u => u.pk).filter(i => i != null)).added; b.pv = up.version; });
+        Store.save('tbooks'); Store.flush();
+        if (n && typeof toast === 'function') toast(`📚 “${p.title}” vừa được mở rộng: thêm ${n} thẻ vào các bài bạn đã nạp`);
+      }).catch(() => { });
+    });
   },
 
   /* lớp HSK đã nạp từ trước khi có ngữ pháp → tự bổ sung chủ điểm ngữ pháp cho các cấp đã nạp */
