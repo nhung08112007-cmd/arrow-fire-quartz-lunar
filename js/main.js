@@ -66,6 +66,9 @@ ${Blocks.divider('eggs')}
   Router.on(/^\/ngoai-ngu$/, v => Lang.home(v));
   Router.on(/^\/ngoai-ngu\/(\w+)$/, (v, id) => Lang.course(v, id));
   Router.on(/^\/ngoai-ngu\/(\w+)\/([\w-]+)$/, (v, id, t) => Lang.course(v, id, t));
+  Router.on(/^\/hoc-vien$/, v => Academy.home(v));
+  Router.on(/^\/hoc-vien\/([\w-]+)$/, (v, id) => Academy.course(v, id));
+  Router.on(/^\/hoc-vien\/([\w-]+)\/([\w-]+)$/, (v, id, l) => Academy.lesson(v, id, l));
   Router.on(/^\/lich$/, v => Planner.page(v));
   Router.on(/^\/thu$/, v => Mail.page(v));
   Router.on(/^\/so-tem$/, v => Stamps.page(v));

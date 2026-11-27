@@ -5,7 +5,7 @@
 const Nav = {
   items: [
     ['home', '#/', 'Sảnh'], ['pen', '#/viet', 'Viết'], ['box', '#/luu-tru', 'Lưu trữ'], ['book', '#/sach', 'Sách'],
-    ['abc', '#/ngoai-ngu', 'Ngoại ngữ'], ['cal', '#/lich', 'Lịch học'], ['mail', '#/thu', 'Thùng thư'], ['star', '#/so-tem', 'Sổ tem'], ['pet', '#/thu-cung', 'Thú cưng'],
+    ['abc', '#/ngoai-ngu', 'Ngoại ngữ'], ['col', '#/hoc-vien', 'Học viện'], ['cal', '#/lich', 'Lịch học'], ['mail', '#/thu', 'Thùng thư'], ['star', '#/so-tem', 'Sổ tem'], ['pet', '#/thu-cung', 'Thú cưng'],
   ],
   render() {
     $('#iconbar').innerHTML = this.items.map(([ic, href, l]) => `<a href="${href}" class="ib" data-h="${href}" title="${l}">${Art.pixel(ic, { w: 22 })}<span>${l}</span></a>`).join('');
