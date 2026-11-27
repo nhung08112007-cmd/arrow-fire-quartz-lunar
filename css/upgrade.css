@@ -573,3 +573,20 @@ body.reduce-fx .view.pg-in { animation: none; }
 /* tab lớp học: luôn hiện đủ chữ; thiếu chỗ thì vuốt ngang thay vì cắt “…” */
 .ws-tabs { gap: 3px; overflow-x: auto; }
 .ws-tabs a { flex: 1 0 auto; min-width: auto; padding: 7px 6px; font-size: 13px; overflow: visible; text-overflow: clip; }
+
+/* ================= Đọc theo vốn từ ================= */
+.rk { border-radius: 4px; cursor: pointer; padding: 0 1px; }
+.rk.k-mat { background: #d5f5c6; box-shadow: inset 0 -2px 0 #6cc25a; }
+.rk.k-lrn { background: #fff1a6; box-shadow: inset 0 -2px 0 #e0b400; }
+.rk.k-new { background: #dceeff; box-shadow: inset 0 -2px 0 #5a9bea; }
+.rk-u { cursor: pointer; }
+.rk-u:hover, .rk:hover { outline: 2px solid var(--ink); }
+.rk-legend { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; margin-top: 6px; }
+.rk-legend .rk { cursor: default; padding: 0 6px; }
+.rk-cov { font-weight: 700; margin-right: 4px; }
+.rk-pop { position: absolute; z-index: 300; background: var(--card); border: var(--bd); border-radius: 14px; padding: 10px 12px; box-shadow: var(--sh); max-width: 300px; display: flex; flex-direction: column; gap: 6px; }
+.rk-w { font-size: 22px; font-weight: 800; }
+.rk-w small { font-size: 14px; font-weight: 400; color: var(--muted); }
+.rk-st { font-size: 12px; color: var(--muted); }
+.rk-tr { font-style: italic; }
+.rk-tr:empty { display: none; }

@@ -216,8 +216,10 @@ Trả về JSON {"score":0-10,"verdict":"đúng|gần đúng|sai","corrected":"b
       } else {
         S.rdTopic = ($('#rdTopic', el)?.value || '').trim(); Store.save('settings');
         busy('✦ AI đang viết bài đọc…');
-        const words = this.wordsFor(c, sc, 15), gram = await this.grammarCtx(c, sc);
-        const o = await AI.json({ maxTokens: 2500, prompt: `Viết một bài đọc ${c.name} (6–10 câu) cho người Việt trình độ ${S.exLevel || 'sơ cấp'}${S.rdTopic ? `, chủ đề "${S.rdTopic}"` : ''}, kiểu bài đọc trong sách luyện thi (thư, nhật ký, thông báo, đoạn hội thoại hoặc đoạn kể). Chỉ dùng từ vựng & ngữ pháp người học đã biết: ${words.map(x => x.word).join(', ')}; ngữ pháp: ${gram.join('; ') || 'cơ bản'}.${isJa(c) ? ' Viết như sách sơ cấp (có dấu cách giữa các cụm).' : ''} Trả về JSON {"title":"","text":""}` });
+        const pool = this.cardsIn(c.id, sc), gram = await this.grammarCtx(c, sc);
+        const knownW = shuffle(pool.filter(x => x.seen)).slice(0, 40), newW = pool.filter(x => !x.seen).slice(0, 4);
+        const words = knownW.length >= 6 ? knownW : this.wordsFor(c, sc, 15);
+        const o = await AI.json({ maxTokens: 2500, prompt: `Viết một bài đọc ${c.name} (6–10 câu) cho người Việt trình độ ${S.exLevel || 'sơ cấp'}${S.rdTopic ? `, chủ đề "${S.rdTopic}"` : ''}, kiểu bài đọc trong sách luyện thi (thư, nhật ký, thông báo, đoạn hội thoại hoặc đoạn kể). Dùng CHỦ YẾU các từ người học đã biết: ${words.map(x => x.word).join(', ')}${newW.length && knownW.length >= 6 ? `; lồng ghép tự nhiên thêm ${newW.length} từ mới sắp học: ${newW.map(x => x.word).join(', ')}` : ''}; ngữ pháp: ${gram.join('; ') || 'cơ bản'}. Hạn chế tối đa từ ngoài danh sách (≈95% từ trong bài phải là từ đã biết).${isJa(c) ? ' Viết như sách sơ cấp (có dấu cách giữa các cụm).' : ''} Trả về JSON {"title":"","text":""}` });
         passage = { title: o.title || 'Bài đọc', text: o.text || '', source: 'Bài đọc do AI viết theo trình độ của bạn' };
       }
       if (!passage || !passage.text) return fail('Không lấy được đoạn văn');
@@ -250,9 +252,11 @@ Trả về JSON {"glossary":[…],"questions":[…]}` });
   },
   readingRun(el, c, sc, P, qs, gl) {
     const sh = qs.map(q => q.type === 'mcq' && (q.options || []).length >= 2 ? this.shuffleOpts(q) : null);
+    const mk = this.vocabMarkup(c, P.text);
     el.innerHTML = `<div class="rd-wrap">
       <aside class="rd-pass"><div class="rd-ph"><h3>${esc(P.title)}</h3><button class="btn sm" id="rdSay">🔊 Đọc to</button></div>
-        <div class="rd-text">${esc(P.text).replace(/\n/g, '<br>')}</div>
+        <div class="rk-legend"><span class="rk-cov">Bạn đã học ~<b>${mk.pct}%</b> từ trong bài</span><span class="rk k-mat">thuộc lâu</span><span class="rk k-lrn">đang học</span><span class="rk k-new">có thẻ, chưa học</span><span class="muted sm">· bấm từ để xem nghĩa · bôi đen từ lạ để thêm thẻ</span></div>
+        <div class="rd-text">${mk.html}</div>
         <div class="muted sm rd-src">Nguồn: ${P.url ? `<a href="${esc(P.url)}" target="_blank" rel="noopener">${esc(P.source)}</a>` : esc(P.source)}</div>
         ${gl.length ? `<details class="rd-gl"><summary>📒 Từ khó (${gl.length})</summary><ul>${gl.map(g => `<li><b>${esc(g.w || '')}</b>${g.r && g.r !== g.w ? ` <small>${esc(g.r)}</small>` : ''} — ${esc(g.m || '')}</li>`).join('')}</ul></details>` : ''}</aside>
       <section class="rd-qs">${qs.map((q, i) => `<div class="rd-q" data-i="${i}"><div class="rd-qn"><span>問${String(i + 1).padStart(2, '0')}</span><b>${esc(q.q)}</b></div>
@@ -260,6 +264,7 @@ Trả về JSON {"glossary":[…],"questions":[…]}` });
         <div class="rd-fb"></div></div>`).join('')}
         <div class="row"><button class="btn pri big" id="rdSubmit">Nộp bài</button><button class="btn" id="rdBack">‹ Quay lại</button></div></section></div>`;
     $('#rdSay', el).onclick = () => Speech.speak(P.text, c.lang, .9);
+    this.bindMarkup($('.rd-text', el), c, P);
     $('#rdBack', el).onclick = () => this.aiExercises(el, c, sc);
     $$('.rd-q .ax-op', el).forEach(b => b.onclick = () => { if (el.dataset.done) return; $$('.ax-op', b.closest('.rd-q')).forEach(x => x.classList.toggle('on', x === b)); });
     $('#rdSubmit', el).onclick = async () => {
