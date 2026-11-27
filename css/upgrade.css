@@ -606,3 +606,20 @@ body.reduce-fx .view.pg-in { animation: none; }
 .lc-drill { max-width: 980px; margin: 14px auto 0; background: var(--card); border: var(--bd); border-radius: 20px; padding: 14px 18px; box-shadow: var(--sh-s); display: flex; flex-direction: column; gap: 8px; }
 .lc-drill .row .inp { flex: 1; }
 @media (max-width: 760px) { .lc-card { grid-template-columns: 1fr; } .lc-bar { flex-wrap: wrap; } }
+
+/* ================= Chọn thẻ ================= */
+.vcard.picking { cursor: pointer; position: relative; }
+.vcard.picking::after { content: ''; position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border: 3px solid var(--ink); border-radius: 7px; background: var(--card); }
+.vcard.sel { outline: 4px solid #5ab0ff; outline-offset: -2px; background: #e8f4ff; }
+.vcard.sel::after { content: '✓'; display: grid; place-items: center; font-weight: 900; background: #5ab0ff; color: #fff; }
+.vcard.picking .vc-say { margin-right: 28px; }
+.vtable tr.sel td { background: #e8f4ff; }
+#vPick.on { background: #5ab0ff; color: #fff; }
+.pk-bar { position: sticky; bottom: 12px; z-index: 20; margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--card); border: var(--bd); border-radius: 18px; padding: 10px 14px; box-shadow: var(--sh); }
+.pk-bar .btn.ok { background: #c9f2b8; }
+@media (max-width: 700px) { .pk-bar { bottom: 70px; } }
+.pk-bar { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
+.pk-bar .btn { flex: 0 0 auto; }
+@media (max-width: 1000px) { .pk-bar { flex-wrap: wrap; } }
+/* hàng công cụ thẻ từ: ô tìm kiếm tự co lại để các nút không rớt dòng */
+#vq { flex: 1 1 100px; min-width: 100px; }

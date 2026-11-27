@@ -321,39 +321,44 @@ const Lang = {
   /* ---------- TỪ VỰNG ---------- */
   vocab(el, c, sc, rerender) {
     const S = Store.settings(); S.vocabView = S.vocabView || 'grid';
-    let q = '', st = '';
+    let q = '', st = '', pick = null;
     el.innerHTML = `
       <div class="filter-row">
         <button class="btn pri" id="vAdd">＋ Thêm từ</button>
-        <button class="btn" id="vBulk">⚡ Thêm hàng loạt</button>
-        <button class="btn" id="vFill" title="AI điền các ô còn trống (cách đọc, ví dụ, đồng/trái nghĩa, mẹo nhớ…) cho mọi thẻ trong phạm vi">✦ AI điền ô trống</button>
-        <button class="btn hot" id="vFlash">🃏 Lật thẻ</button>${this.leeches(c, sc).length ? `<button class="btn" id="vLeech">🐛 Chữa ${this.leeches(c, sc).length} thẻ hay quên</button>` : ''}
-        <input class="inp grow" id="vq" placeholder="🔍 Tìm từ, nghĩa, ví dụ…">
+        <button class="btn" id="vBulk" title="Thêm nhiều thẻ cùng lúc">⚡ Hàng loạt</button>
+        <button class="btn" id="vFill" title="AI điền các ô còn trống (cách đọc, ví dụ, đồng/trái nghĩa, mẹo nhớ…) cho mọi thẻ trong phạm vi">✦ AI điền</button>
+        <button class="btn hot" id="vFlash">🃏 Lật thẻ</button><button class="btn" id="vPick" title="Chọn thẻ để đánh dấu đã biết, học ngay hoặc đặt lại">☑ Chọn</button>${this.leeches(c, sc).length ? `<button class="btn" id="vLeech">🐛 Chữa ${this.leeches(c, sc).length} thẻ hay quên</button>` : ''}
+        <input class="inp grow" id="vq" placeholder="🔍 Tìm từ…" title="Tìm theo từ, nghĩa hoặc câu ví dụ">
         <select class="inp sel" id="vst"><option value="">Mọi trạng thái</option><option value="new">🥚 Mới</option><option value="learning">🐣 Đang học</option><option value="mature">🐥 Thuộc</option><option value="leech">🐛 Hay quên</option><option value="due">⏰ Đến hạn</option></select>
         <div class="seg" id="vview">${[['grid', '▦'], ['table', '☰']].map(v => `<button data-v="${v[0]}" class="${S.vocabView === v[0] ? 'on' : ''}">${v[1]}</button>`).join('')}</div>
       </div>
       <div id="vlist"></div>`;
+    const visible = () => this.cardsIn(c.id, sc).filter(x => (!st || (st === 'leech' ? (x.lapses || 0) >= 3 : st === 'due' ? x.seen && (x.due || 0) <= Date.now() : SRS.state(x) === st)) && (!q || [x.word, x.meaning, x.def, (x.examples || []).map(e => e.s).join(' ')].join(' ').toLowerCase().includes(q)));
     const draw = () => {
       const cs = this.cardsIn(c.id, sc).filter(x => (!st || (st === 'leech' ? (x.lapses || 0) >= 3 : st === 'due' ? x.seen && (x.due || 0) <= Date.now() : SRS.state(x) === st)) && (!q || [x.word, x.meaning, x.def, (x.examples || []).map(e => e.s).join(' ')].join(' ').toLowerCase().includes(q)));
       const icon = x => ({ new: '🥚', learning: '🐣', mature: '🐥' }[SRS.state(x)]);
       $('#vlist').className = S.vocabView === 'grid' ? 'vgrid' : 'vtable';
       $('#vlist').innerHTML = !cs.length ? `<div class="empty big">${Art.creature('fish', { size: 100, mood: 'wow' })}<p>Chưa có từ nào trong phạm vi này.</p></div>` :
-        S.vocabView === 'grid' ? cs.map(x => `<div class="vcard" data-id="${x.id}">
+        S.vocabView === 'grid' ? cs.map(x => `<div class="vcard${pick ? ' picking' : ''}${pick?.has(x.id) ? ' sel' : ''}" data-id="${x.id}">
           <div class="vc-top"><span class="vc-st">${icon(x)}${(x.lapses || 0) >= 3 ? ' 🐛' : ''}</span><span class="vc-pos">${esc(x.pos || '')}</span><button class="vc-say" data-say="${esc(x.word)}">🔊</button></div>
           <div class="vc-word">${rubyWord(x, c)}</div>${x.ipa && !(isJa(c) && hasKanji(x.word)) ? `<div class="vc-ipa">${esc(x.ipa)}</div>` : ''}
           <div class="vc-mean">${esc(x.meaning || x.def || '')}</div>
           ${x.examples?.[0] ? `<div class="vc-ex">“${esc(x.examples[0].s)}”</div>` : ''}
           <div class="vc-due">${x.seen ? (x.due <= Date.now() ? '⏰ đến hạn' : 'ôn lại ' + fmtDate(x.due)) : 'chưa học'}</div></div>`).join('')
-          : `<table><thead><tr><th></th><th>Từ</th><th>Từ loại</th><th>Nghĩa</th><th>Ví dụ</th><th>Đồng nghĩa</th><th>Trái nghĩa</th><th>Đến hạn</th></tr></thead><tbody>${cs.map(x => `<tr data-id="${x.id}"><td>${icon(x)}</td><td><b>${esc(x.word)}</b><br><small>${esc(x.ipa || '')}</small></td><td>${esc(x.pos || '')}</td><td>${esc(x.meaning || '')}<br><small class="muted">${esc(x.def || '')}</small></td><td><small>${esc(x.examples?.[0]?.s || '')}</small></td><td><small>${esc(x.syn || '')}</small></td><td><small>${esc(x.ant || '')}</small></td><td><small>${x.seen ? fmtDate(x.due) : '—'}</small></td></tr>`).join('')}</tbody></table>`;
+          : `<table><thead><tr><th></th><th>Từ</th><th>Từ loại</th><th>Nghĩa</th><th>Ví dụ</th><th>Đồng nghĩa</th><th>Trái nghĩa</th><th>Đến hạn</th></tr></thead><tbody>${cs.map(x => `<tr data-id="${x.id}" class="${pick?.has(x.id) ? 'sel' : ''}"><td>${icon(x)}</td><td><b>${esc(x.word)}</b><br><small>${esc(x.ipa || '')}</small></td><td>${esc(x.pos || '')}</td><td>${esc(x.meaning || '')}<br><small class="muted">${esc(x.def || '')}</small></td><td><small>${esc(x.examples?.[0]?.s || '')}</small></td><td><small>${esc(x.syn || '')}</small></td><td><small>${esc(x.ant || '')}</small></td><td><small>${x.seen ? fmtDate(x.due) : '—'}</small></td></tr>`).join('')}</tbody></table>`;
     };
+    const redraw = () => { draw(); this.pickBar(el, c, sc, pick, visible, redraw, rerender); };
     draw();
+    $('#vPick').onclick = () => { pick = pick ? null : new Set(); $('#vPick').classList.toggle('on', !!pick); redraw(); };
     $('#vFill').onclick = () => this.bulkFill(c, sc, draw);
-    $('#vq').oninput = debounce(e => { q = e.target.value.toLowerCase(); draw(); }, 150);
-    $('#vst').onchange = e => { st = e.target.value; draw(); };
+    $('#vq').oninput = debounce(e => { q = e.target.value.toLowerCase(); redraw(); }, 150);
+    $('#vst').onchange = e => { st = e.target.value; redraw(); };
     $$('#vview button').forEach(b => b.onclick = () => { S.vocabView = b.dataset.v; Store.save('settings'); $$('#vview button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
     $('#vlist').addEventListener('click', e => {
       if (e.target.dataset.say) { e.stopPropagation(); return Speech.speak(e.target.dataset.say, c.lang); }
-      const id = e.target.closest('[data-id]')?.dataset.id; if (id) this.cardForm(c, sc, Store.find('cards', id), rerender);
+      const id = e.target.closest('[data-id]')?.dataset.id; if (!id) return;
+      if (pick) { pick.has(id) ? pick.delete(id) : pick.add(id); redraw(); return; }
+      this.cardForm(c, sc, Store.find('cards', id), rerender);
     });
     $('#vLeech') && ($('#vLeech').onclick = () => this.leechClinic(el, c, sc, rerender));
     $('#vAdd').onclick = () => this.cardForm(c, sc, null, rerender);

@@ -287,9 +287,10 @@ Object.assign(Lang, {
           <label class="lbl">✍️ Đặt một câu của riêng bạn với từ này <small class="muted">(không bắt buộc, nhưng giúp nhớ lâu hơn hẳn)</small></label>
           <textarea class="inp" id="inMine" rows="2" placeholder="Câu của tôi… (viết tiếng ${esc(c.name)}, hoặc viết tiếng Việt rồi nhờ AI dịch)"></textarea>
           <div class="row in-ai"><button class="btn sm" id="inFix">✦ AI sửa & dịch câu của tôi</button><button class="btn sm" id="inGen">✦ AI đặt thêm câu ví dụ</button><button class="btn sm" id="inMn">✦ Mẹo nhớ (AI)</button></div><div id="inAI"></div>
-          <div class="row"><button class="btn pri big" id="inOk">Đã hiểu, kiểm tra sau ›</button><span class="muted sm">Enter để tiếp</span></div>
+          <div class="row"><button class="btn pri big" id="inOk">Đã hiểu, kiểm tra sau ›</button><button class="btn" id="inKnown" title="Bỏ qua bước học, đưa thẳng vào lịch ôn">✓ Mình biết từ này rồi</button><span class="muted sm">Enter để tiếp</span></div>
         </div></div>`;
       const say = () => Speech.speak(x.word, c.lang, .9); say(); $('#inSay').onclick = say;
+      $('#inKnown').onclick = () => { this.markKnown([x]); toast(`✓ “${x.word}” chuyển sang ôn tập`, 'ok'); n++; next(); };
       let fixed = null;
       $('#inMn').onclick = async ev => {
         const b = ev.target; b.disabled = true; b.textContent = '✦ Đang nghĩ…';
