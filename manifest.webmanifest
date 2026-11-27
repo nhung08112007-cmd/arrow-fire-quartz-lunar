@@ -1,0 +1,17 @@
+{
+  "name": "Hành Tinh Chữ-tchi",
+  "short_name": "Chữ-tchi",
+  "description": "Viết bài, lưu trữ, đọc sách và học ngoại ngữ trên hành tinh trứng.",
+  "lang": "vi",
+  "start_url": "./#/",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf5ec",
+  "theme_color": "#ffe156",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

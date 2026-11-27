@@ -48,6 +48,7 @@ ${Blocks.divider('eggs')}
   try { Packs.migrate(); } catch (e) { }
   try { Minna.migrate(); } catch (e) { }
   try { Sync.init(); } catch (e) { }
+  try { PWA.init(); } catch (e) { }
   FX.init();
   Nav.render();
 

@@ -352,6 +352,7 @@ const Settings = {
       <section class="set-sec"><h2>💾 Dữ liệu</h2>
         <div class="row"><button class="btn" id="sExp">⇩ Xuất bản sao lưu (.json)</button><button class="btn" id="sImp">⇧ Nhập bản sao lưu</button><button class="btn" id="sSeed">🌱 Nạp dữ liệu mẫu</button><button class="btn danger" id="sWipe">🗑 Xoá sạch</button></div>
         <p class="muted" id="sUsage"></p></section>
+      ${PWA.section()}
       ${Sync.section()}
       <section class="set-sec"><h2>⌨️ Phím tắt</h2><ul class="tips"><li><kbd>Ctrl</kbd>+<kbd>K</kbd> tìm kiếm</li><li><kbd>Ctrl</kbd>+<kbd>S</kbd> lưu khi viết · <kbd>Ctrl</kbd>+<kbd>H</kbd> tìm & thay</li><li>Chế độ đọc: <kbd>N</kbd> ghi chú · <kbd>F</kbd> tập trung · <kbd>+</kbd>/<kbd>-</kbd> cỡ chữ</li><li>Ôn thẻ: <kbd>Space</kbd> lật · <kbd>1</kbd>–<kbd>4</kbd> chấm điểm</li><li>Lật thẻ: <kbd>←</kbd> <kbd>→</kbd> · <kbd>S</kbd> đọc to</li></ul></section>
     </div>`;
@@ -417,7 +418,7 @@ const Settings = {
     };
     $('#sExp').onclick = () => download(`chutchi-backup-${today()}.json`, JSON.stringify(Store.exportAll()), 'application/json');
     $('#sImp').onclick = async () => { const f = await pickFile('.json,application/json'); if (!f) return; try { const o = JSON.parse(await f.text()); if (await confirmBox('Nhập sẽ GHI ĐÈ dữ liệu hiện tại. Tiếp tục?')) { Store.importAll(o); toast('Đã nhập xong'); setTimeout(() => location.reload(), 400); } } catch (e) { toast('File không hợp lệ', 'err'); } };
-    Sync.bind(view);
+    Sync.bind(view); PWA.bind(view);
     $('#sSeed').onclick = () => { Seed.run(true); toast('Đã nạp dữ liệu mẫu 🌱'); };
     $('#sWipe').onclick = async () => { if (await confirmBox('XOÁ SẠCH mọi dữ liệu? Không thể hoàn tác!') && await confirmBox('Thật sự chắc chứ? Hãy xuất sao lưu trước!')) { Store.keys.forEach(k => { if (k !== 'settings') { delete Store.data[k]; Store.saveNow(k); } }); setTimeout(() => location.reload(), 300); } };
     navigator.storage?.estimate?.().then(e => { $('#sUsage').textContent = `Đang dùng ~${(e.usage / 1048576).toFixed(1)} MB / ${(e.quota / 1048576).toFixed(0)} MB cho phép.`; });
