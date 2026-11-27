@@ -712,3 +712,7 @@ body.reduce-fx .view.pg-in { animation: none; }
   .ac-head { flex-direction: column; gap: 6px; } .ac-bigq { font-size: 20px; }
   .ac-steps button small { font-size: 11px; } .ac-chat .msg { max-width: 96%; }
 }
+.ac-text blockquote.cjk { font-family: 'Noto Serif SC', 'Noto Serif JP', 'Songti SC', 'Yu Mincho', serif; font-size: 21px; letter-spacing: .04em; }
+.ac-reading { font-family: var(--fb); font-size: 15px; letter-spacing: 0; opacity: .8; font-style: italic; margin-top: 10px; padding-top: 8px; border-top: 1px dashed currentColor; }
+.ac-book { margin: 0 0 12px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 12px; background: #fff4cf; color: #2a2346; }
+.ac-book small { display: block; opacity: .75; margin-top: 2px; }

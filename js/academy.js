@@ -7,6 +7,7 @@
 const Academy = {
   builtin: [
     { id: 'philo-west', src: 'js/data/acad-philo.js', name: 'ACAD_PHILO', title: 'Nhập môn Triết học phương Tây', field: 'Triết học', icon: '🏛', color: '#c9b6ff', n: 6 },
+    { id: 'postmodern', src: 'js/data/acad-pomo.js', name: 'ACAD_POMO', title: 'Hiểu Hậu hiện đại', field: 'Lý luận văn hoá', icon: '🌀', color: '#9fdcff', n: 8 },
     { id: 'art-looking', src: 'js/data/acad-art.js', name: 'ACAD_ART', title: 'Cách xem một bức tranh', field: 'Nghệ thuật', icon: '🎨', color: '#ffd9b0', n: 3 },
   ],
   FIELDS: ['Đạo đức học', 'Triết học phương Đông', 'Lịch sử thế giới', 'Lịch sử Việt Nam', 'Văn học', 'Mỹ học', 'Âm nhạc', 'Kiến trúc', 'Tâm lý học', 'Xã hội học', 'Nhân học', 'Ngôn ngữ học', 'Chính trị học', 'Tôn giáo học', 'Logic & lập luận'],
@@ -120,7 +121,7 @@ const Academy = {
     }));
     const lab = (t, max = 21) => { t = t.replace(/\s*\(.*?\)\s*/g, ' ').trim(); return t.length > max ? t.slice(0, max - 1) + '…' : t; };
     return `<svg viewBox="0 0 ${W} ${H}" class="ac-svg" style="min-width:${Math.min(W, ls.length * 150)}px">${edges}
-      ${ls.map((l, i) => `<text x="${CW / 2 + i * CW + (W - ls.length * CW) / 2}" y="30" class="hub" fill="${col(i)}">${esc(lab(l.title.split(':')[0], 16))}</text>`).join('')}
+      ${ls.map((l, i) => `<text x="${CW / 2 + i * CW + (W - ls.length * CW) / 2}" y="30" class="hub" fill="${col(i)}">${esc(lab(l.short || l.title.split(':')[0], 16))}</text>`).join('')}
       ${nodes.map(n => { const on = Store.find('acad', `C:${cid}:${n.k.id}`); const t = lab(n.k.term); const w = Math.min(CW - 14, t.length * 6.4 + 18);
         return `<g data-k="${n.l.id}|${n.k.id}" class="nd ${on ? 'on' : ''}"><title>${esc(n.k.term)}</title><rect x="${n.x - w / 2}" y="${n.y - 13}" width="${w}" height="26" rx="13" style="--nc:${col(n.i)}"/><text x="${n.x}" y="${n.y + 4}">${esc(t)}</text></g>`; }).join('')}</svg>`;
   },
@@ -175,6 +176,7 @@ const Academy = {
     const art = l.kind === 'art';
     el.innerHTML = `<div class="ac-bigq">${esc(l.q)}</div>
       ${art ? `<p class="muted">Bối cảnh của tác phẩm sẽ mở ra <b>sau</b> khi bạn tự nhìn — để mắt mình đi trước kiến thức.</p>` : `<div class="rich ac-ctx">${l.context || ''}</div>`}
+      ${l.book ? `<div class="ac-book">📕 <b>Đọc kèm sách:</b> ${esc(l.book)}</div>` : ''}
       <h3>Câu trả lời đầu tiên của bạn</h3><p class="muted sm">Viết nhanh 2–3 câu, đúng sai không quan trọng. Cuối bài bạn sẽ đọc lại để thấy mình đã nghĩ khác đi thế nào.</p>
       ${this.ta(r, 'q0', art ? 'Ấn tượng đầu tiên khi nhìn tác phẩm…' : 'Theo mình thì…', 4)}`;
     if (art && l.look) el.insertAdjacentHTML('afterbegin', `<figure class="ac-fig sm">${this.img(l)}</figure>`);
@@ -185,20 +187,21 @@ const Academy = {
   },
 
   step_read(el, c, l, r) {
-    const t = l.text || {}, mode = r.lang || (t.en ? 'both' : 'vi');
+    const t = l.text || {}, orig = t.orig || t.en, ol = t.lang || 'en-GB', mode = r.lang || (orig ? 'both' : 'vi');
     const para = s => esc(s || '').split('\n').map(x => `<p>${x}</p>`).join('');
-    el.innerHTML = `<div class="ac-src">📜 ${esc(t.src || '')}</div>
-      ${t.en ? `<div class="seg sm" id="acLang">${[['both', 'Song ngữ'], ['en', 'English'], ['vi', 'Tiếng Việt']].map(([k, n]) => `<button data-l="${k}" class="${mode === k ? 'on' : ''}">${n}</button>`).join('')}</div>` : ''}
-      <div class="ac-text ${mode}">${t.en ? `<blockquote class="en" lang="en">${para(t.en)}<button class="btn sm" id="acSay" title="Đọc to">🔊</button></blockquote>` : ''}<blockquote class="vi">${para(t.vi)}</blockquote></div>
+    const oname = { en: 'English', zh: 'Nguyên văn 漢', ja: 'Nguyên văn 日本語', vi: 'Nguyên văn' }[ol.slice(0, 2)] || 'Nguyên văn';
+    el.innerHTML = `${l.book ? `<div class="ac-book">📕 <b>Đọc kèm sách:</b> ${esc(l.book)}<small>Đọc chương này trước hoặc song song, rồi làm các bước dưới đây. Ghi chép đoạn hay vào Kho lưu trữ.</small></div>` : ''}<div class="ac-src">📜 ${esc(t.src || '')}</div>
+      ${orig ? `<div class="seg sm" id="acLang">${[['both', 'Song ngữ'], ['en', oname], ['vi', 'Tiếng Việt']].map(([k, n]) => `<button data-l="${k}" class="${mode === k ? 'on' : ''}">${n}</button>`).join('')}</div>` : ''}
+      <div class="ac-text ${mode}">${orig ? `<blockquote class="en ${ol.slice(0, 2) === 'en' ? '' : 'cjk'}" lang="${esc(ol)}">${para(orig)}${t.reading ? `<div class="ac-reading">${para(t.reading)}</div>` : ''}<button class="btn sm" id="acSay" title="Đọc to">🔊</button></blockquote>` : ''}<blockquote class="vi">${para(t.vi)}</blockquote></div>
       <div class="row"><button class="btn sm" id="acArc">📥 Lưu đoạn trích vào Kho lưu trữ</button><span class="muted sm">để bôi đen, tô màu, ghi chú trong trình đọc</span></div>
       <h3>Đọc chậm với câu hỏi dẫn đường</h3>
       ${(t.guide || []).map((g, i) => `<div class="ac-guide"><b>${i + 1}. ${esc(g)}</b>${this.ta(r, 'g' + i, 'Ghi lại ý của bạn, trích câu trong văn bản làm bằng chứng…', 2)}</div>`).join('')}`;
     $$('#acLang button', el).forEach(b => b.onclick = () => { r.lang = b.dataset.l; this.save(); this.step_read(el, c, l, r); this.rebind(el, r); });
-    $('#acSay', el) && ($('#acSay', el).onclick = () => Speech.speak(t.en, 'en-GB', .9));
+    $('#acSay', el) && ($('#acSay', el).onclick = () => Speech.speak(orig, ol, .85));
     $('#acArc', el).onclick = () => {
       const id = 'acx-' + c.id + '-' + l.id;
       if (Store.find('archive', id)) { Router.go('/doc/luu/' + id); return; }
-      Store.upsert('archive', { id, title: `${l.title} — trích đoạn`, author: (l.who || '').split('·')[0].trim(), source: t.src || '', type: 'note', status: 'inbox', tags: [c.field || 'nhân văn', 'học viện'], rating: 0, summary: l.q, content: `${t.en ? `<blockquote>${para(t.en)}</blockquote>` : ''}<h2>Bản dịch</h2>${para(t.vi)}<h2>Câu hỏi dẫn đường</h2><ol>${(t.guide || []).map(g => `<li>${esc(g)}</li>`).join('')}</ol>`, notes: [] });
+      Store.upsert('archive', { id, title: `${l.title} — trích đoạn`, author: (l.who || '').split('·')[0].trim(), source: t.src || '', type: 'note', status: 'inbox', tags: [c.field || 'nhân văn', 'học viện'], rating: 0, summary: l.q, content: `${orig ? `<blockquote>${para(orig)}</blockquote>${t.reading ? para(t.reading) : ''}` : ''}<h2>Bản dịch</h2>${para(t.vi)}<h2>Câu hỏi dẫn đường</h2><ol>${(t.guide || []).map(g => `<li>${esc(g)}</li>`).join('')}</ol>`, notes: [] });
       toast('Đã lưu vào Kho lưu trữ — bấm lần nữa để mở trình đọc'); $('#acArc', el).textContent = '📖 Mở trong trình đọc';
     };
   },
