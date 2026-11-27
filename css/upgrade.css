@@ -522,3 +522,24 @@ body.reduce-fx .view.pg-in { animation: none; }
   .top-tools { gap: 3px; }
   .tbtn { width: 34px; height: 34px; font-size: 15px; }
 }
+
+/* ================= Ôn ngữ pháp theo lịch ================= */
+.gs-bar { display: flex; align-items: center; gap: 12px; background: var(--card); border: var(--bd); border-radius: 18px; padding: 10px 14px; box-shadow: var(--sh-s); margin-bottom: 12px; }
+.gs-ic { font-size: 28px; }
+.gs-txt { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.gs-tag { font-size: 12px; font-weight: 700; border: 2px solid var(--ink); border-radius: 999px; padding: 0 8px; background: var(--soft); white-space: nowrap; }
+.gs-tag.due { background: #ffd2a8; } .gs-tag.lrn { background: #fff3a8; } .gs-tag.ok { background: #c9f2b8; }
+.gs-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.gs-card { max-width: 760px; margin: 0 auto; background: var(--card); border: var(--bd); border-radius: 22px; padding: 18px 22px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 12px; }
+.gs-sent { font-size: 26px; line-height: 1.6; font-family: var(--fj, inherit); }
+.gs-gap { display: inline-block; min-width: 2.2em; text-align: center; border-bottom: 3px dashed var(--ink); color: var(--muted); padding: 0 6px; }
+.gs-gap.ok { color: #2e8b3d; border-color: #2e8b3d; } .gs-gap.bad { color: #d03a3a; border-color: #d03a3a; }
+.gs-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.gs-opts .btn { font-size: 20px; justify-content: flex-start; }
+.gs-opts .btn.ok { background: #c9f2b8; } .gs-opts .btn.bad { background: #ffd0d0; }
+.gs-opts kbd { font-size: 12px; opacity: .6; }
+.gs-full { font-size: 20px; font-weight: 700; }
+.gs-body { max-height: 46vh; overflow: auto; border-top: 2px dashed var(--line, #ddd); padding-top: 8px; }
+.gs-after { display: flex; flex-direction: column; gap: 10px; }
+.gs-after[hidden] { display: none; }
+@media (max-width: 600px) { .gs-bar { flex-wrap: wrap; } .gs-sent { font-size: 21px; } .gs-card { padding: 14px; } }

@@ -300,6 +300,7 @@ const Lang = {
       const mins = Math.max(1, Math.round((due + fresh) * 8 / 60));
       $('#today').innerHTML = `<div class="td-ring" style="--p:${pct}"><b>${pct}%</b><small>hôm nay</small></div>
         <div class="td-txt"><b>${due + fresh ? `Hôm nay: ${due} thẻ đến hạn + ${fresh} thẻ mới · khoảng ${mins} phút` : 'Đã ôn xong mọi thẻ đến hạn hôm nay 🎉'}</b>
+        ${this.gramDueCount(c) ? `<a class="muted" href="#/ngoai-ngu/${cid}/ngu-phap">🔁 ${this.gramDueCount(c)} điểm ngữ pháp đến hạn ôn</a>` : ''}
         <span class="muted">Đã ôn ${doneToday} lượt · chuỗi ${Activity.streak()} ngày 🔥${isJa(c) ? ` · <label><input type="checkbox" id="tdFuri" ${S.furigana !== false ? 'checked' : ''}> hiện furigana</label>` : ''}</span></div>
         <a class="btn pri" href="#/ngoai-ngu/${cid}/hoc">▶ Vào học</a>`;
       $('#tdFuri') && ($('#tdFuri').onchange = e => { S.furigana = e.target.checked; Store.save('settings'); render(); });
@@ -805,8 +806,10 @@ const Lang = {
   /* ---------- NGỮ PHÁP ---------- */
   grammar(el, c, sc, rerender) {
     const list = Store.list('grammar').filter(g => g.courseId === c.id && (!sc.bookId || g.bookId === sc.bookId) && (!sc.unitId || g.unitId === sc.unitId) && (!sc.part || g.part === sc.part));
-    el.innerHTML = `<div class="filter-row"><button class="btn pri" id="gAdd">＋ Điểm ngữ pháp mới</button><button class="btn" id="gAiNew">✦ AI soạn điểm ngữ pháp</button></div>
-      <div class="gram-list">${list.map(g => `<div class="gram-card" data-id="${g.id}"><div class="gc-title">${esc(g.title)}</div>${g.form ? `<div class="gc-form">${esc(g.form)}</div>` : ''}<p class="muted">${esc(stripHtml((g.content || '').replace(/<h\d[^>]*>[\s\S]*?<\/h\d>/gi, ' ').replace(/<\/(p|li|div|tr)>|<br\s*\/?>/gi, ' ')).replace(/\s+/g, ' ').trim().slice(0, 160))}…</p><div class="pc-foot"><span>${g.exercises?.length ? `📝 ${g.exercises.length} bài tập` : ''}</span><span class="grow"></span><button class="mini-btn" data-practice="${g.id}">Luyện</button></div></div>`).join('') || `<div class="empty big">${Art.creature('prof', { size: 100 })}<p>Chưa có điểm ngữ pháp nào trong phạm vi.</p></div>`}</div>`;
+    const GS = { new: ['mới', ''], due: ['đến hạn ôn', 'due'], learning: ['đang nhớ', 'lrn'], mature: ['nhớ lâu', 'ok'] };
+    el.innerHTML = this.gramBar(c, sc) + `<div class="filter-row"><button class="btn pri" id="gAdd">＋ Điểm ngữ pháp mới</button><button class="btn" id="gAiNew">✦ AI soạn điểm ngữ pháp</button></div>
+      <div class="gram-list">${list.map(g => `<div class="gram-card" data-id="${g.id}"><div class="gc-title">${esc(g.title)}</div>${g.form ? `<div class="gc-form">${esc(g.form)}</div>` : ''}<p class="muted">${esc(stripHtml((g.content || '').replace(/<h\d[^>]*>[\s\S]*?<\/h\d>/gi, ' ').replace(/<\/(p|li|div|tr)>|<br\s*\/?>/gi, ' ')).replace(/\s+/g, ' ').trim().slice(0, 160))}…</p><div class="pc-foot"><span class="gs-tag ${GS[this.gramState(g)][1]}">${GS[this.gramState(g)][0]}</span><span>${g.exercises?.length ? `📝 ${g.exercises.length} bài tập` : ''}</span><span class="grow"></span><button class="mini-btn" data-practice="${g.id}">Luyện</button></div></div>`).join('') || `<div class="empty big">${Art.creature('prof', { size: 100 })}<p>Chưa có điểm ngữ pháp nào trong phạm vi.</p></div>`}</div>`;
+    this.bindGramBar(c, sc, el, rerender);
     $('#gAdd').onclick = () => this.gramForm(c, sc, null, rerender);
     $('#gAiNew').onclick = async e => {
       const topic = await promptBox('Chủ điểm ngữ pháp?', '', 'vd: thì hiện tại hoàn thành / ～てしまう / subjonctif'); if (!topic) return;
