@@ -543,3 +543,33 @@ body.reduce-fx .view.pg-in { animation: none; }
 .gs-after { display: flex; flex-direction: column; gap: 10px; }
 .gs-after[hidden] { display: none; }
 @media (max-width: 600px) { .gs-bar { flex-wrap: wrap; } .gs-sent { font-size: 21px; } .gs-card { padding: 14px; } }
+
+/* ================= Luyện viết chữ ================= */
+.wr-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.wr-card { max-width: 820px; margin: 0 auto; background: var(--card); border: var(--bd); border-radius: 22px; padding: 16px 20px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 12px; }
+.wr-q { text-align: center; }
+.wr-mean { font-family: var(--fh); font-weight: 800; font-size: 24px; }
+.wr-word { font-size: 30px; margin-top: 4px; color: #2e8b3d; }
+.wr-word[hidden] { display: none; }
+.wr-boxes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.wr-box { width: min(260px, 40vw); aspect-ratio: 1; border: 3px solid var(--ink); border-radius: 16px; background: #fffdf5; position: relative; touch-action: none; opacity: .75; }
+.wr-box.on { opacity: 1; box-shadow: 0 0 0 4px #ffe156; }
+.wr-svg { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+.wr-grid { stroke: #e3b9b9; stroke-width: .5; stroke-dasharray: 2 2; fill: none; }
+.wr-g { stroke: #d9d4e8; stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wr-d { stroke: #2a2346; stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wr-a { stroke: #ff4f98; stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wr-live { stroke: #4a7bff; stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wr-h { stroke: #ffb020; stroke-width: 7; fill: none; stroke-linecap: round; opacity: .8; animation: pulse 1s infinite; }
+.wr-start { fill: #ff4f98; }
+.wr-load, .wr-nodata { position: absolute; inset: 0; display: grid; place-items: center; font-size: 40px; text-align: center; }
+.wr-nodata small { display: block; font-size: 12px; color: var(--muted); }
+.wr-msg { text-align: center; font-weight: 700; min-height: 1.4em; }
+.wr-tools { justify-content: center; flex-wrap: wrap; }
+.wr-tools .btn.on { background: #fff3a8; }
+.wr-credit { text-align: center; margin-top: 10px; }
+@media (max-width: 600px) { .wr-box { width: min(300px, 80vw); } .wr-card { padding: 12px; } }
+
+/* tab lớp học: luôn hiện đủ chữ; thiếu chỗ thì vuốt ngang thay vì cắt “…” */
+.ws-tabs { gap: 3px; overflow-x: auto; }
+.ws-tabs a { flex: 1 0 auto; min-width: auto; padding: 7px 6px; font-size: 13px; overflow: visible; text-overflow: clip; }

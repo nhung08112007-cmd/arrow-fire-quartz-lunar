@@ -242,7 +242,7 @@ const Lang = {
     const c = Store.find('courses', cid); if (!c) return Router.go('/ngoai-ngu');
     const sc = this.scope[cid] = this.scope[cid] || {};
     view.classList.add('full');
-    const TABS = [['hanh-trinh', '🗺 Hành trình'], ['hoc', '🧠 Học & ôn'], ['tu-vung', '🃏 Thẻ từ'], ['nghe-chep', '🎧 Nghe & nói'], ['bai-tap', '✦ Bài tập AI'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
+    const TABS = [['hanh-trinh', '🗺 Hành trình'], ['hoc', '🧠 Học & ôn'], ['tu-vung', '🃏 Thẻ từ'], ['nghe-chep', '🎧 Nghe & nói'], ...(isJa(c) || /^zh/.test(c.lang || '') ? [['viet-chu', '✍️ Viết chữ']] : []), ['bai-tap', '✦ Bài tập AI'], ['tro-choi', '🎮 Trò chơi'], ['ngu-phap', '📐 Ngữ pháp'], ['gia-su', '✦ Gia sư AI'], ['thong-ke', '📊 Thống kê']];
     view.innerHTML = `
     <div class="lang-ws" style="--cc:${c.color}">
       <aside class="ws-tree">
@@ -308,7 +308,7 @@ const Lang = {
     const body = $('#wsBody');
     const render = () => {
       drawTree(); drawToday();
-      const fn = { 'hanh-trinh': 'journey', 'hoc': 'study', 'tu-vung': 'vocab', 'nghe-chep': 'listenSpeak', 'bai-tap': 'aiExercises', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'journey';
+      const fn = { 'hanh-trinh': 'journey', 'hoc': 'study', 'tu-vung': 'vocab', 'nghe-chep': 'listenSpeak', 'viet-chu': 'writing', 'bai-tap': 'aiExercises', 'tro-choi': 'games', 'ngu-phap': 'grammar', 'gia-su': 'tutor', 'thong-ke': 'stats' }[tab] || 'journey';
       this[fn](body, c, sc, render);
     };
     render();
