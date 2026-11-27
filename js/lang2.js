@@ -164,7 +164,7 @@ Object.assign(Lang, {
     // “học thêm”: nâng hạn mức riêng hôm nay để có thêm k từ mới
     const more = k => { S.extraNew = { d: today, n: Math.max(0, learnedToday + fresh.length + k - S.newPerDay) }; Store.save('settings'); this.study(el, c, sc); };
     const MODES = [['mix', '🔀 Tự trộn (khuyên dùng)'], ['flip', '🃏 Lật thẻ'], ['type', '⌨ Gõ đáp án'], ['cloze', '✍️ Điền chỗ trống'], ['listen', '🎧 Nghe → nghĩa'], ['speak', '🎙 Luyện nói']];
-    el.innerHTML = `<div class="st-start">
+    el.innerHTML = `<div class="st-start">${this.leechBanner(c, sc)}
       <div class="st-big"><div><b>${due.length}</b><span>thẻ đến hạn</span></div><div><b>${fresh.length}</b><span>từ mới hôm nay</span></div><div><b>${Math.max(1, Math.round((due.length * 8 + fresh.length * 30) / 60))}′</b><span>ước tính</span></div></div>
       <label class="lbl">Cách luyện</label><div class="seg wrap" id="stMode">${MODES.map(m => `<button data-m="${m[0]}" class="${S.studyMode === m[0] ? 'on' : ''}">${m[1]}</button>`).join('')}</div>
       <label class="rlbl">Từ mới mỗi ngày <input type="number" class="inp sm" id="stNew" value="${S.newPerDay}" min="0" max="500" style="width:80px"></label>
@@ -183,6 +183,7 @@ Object.assign(Lang, {
       <p class="muted sm">Dạng bài bạn chọn được dùng cho cả bước kiểm tra từ mới lẫn thẻ ôn.</p>
       ${due.length + fresh.length ? '' : `<p class="ok">Hôm nay không còn gì để học ở phạm vi này 🎉 Thử <a href="#/ngoai-ngu/${c.id}/video">nghe chép video</a> hoặc <a href="#/luu-tru">đọc một bài báo</a> để đào thêm từ.</p>`}
     </div>`;
+    $('#lcGo', el) && ($('#lcGo', el).onclick = () => this.leechClinic(el, c, sc, () => this.study(el, c, sc)));
     $$('#stMode button').forEach(b => b.onclick = () => { S.studyMode = b.dataset.m; Store.save('settings'); $$('#stMode button').forEach(x => x.classList.toggle('on', x === b)); });
     $('#stNew').onchange = e => { S.newPerDay = +e.target.value; Store.save('settings'); this.study(el, c, sc); };
     $$('[data-more]', el).forEach(b => b.onclick = () => more(+b.dataset.more));

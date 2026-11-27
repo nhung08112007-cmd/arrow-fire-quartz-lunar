@@ -327,7 +327,7 @@ const Lang = {
         <button class="btn pri" id="vAdd">＋ Thêm từ</button>
         <button class="btn" id="vBulk">⚡ Thêm hàng loạt</button>
         <button class="btn" id="vFill" title="AI điền các ô còn trống (cách đọc, ví dụ, đồng/trái nghĩa, mẹo nhớ…) cho mọi thẻ trong phạm vi">✦ AI điền ô trống</button>
-        <button class="btn hot" id="vFlash">🃏 Lật thẻ</button>
+        <button class="btn hot" id="vFlash">🃏 Lật thẻ</button>${this.leeches(c, sc).length ? `<button class="btn" id="vLeech">🐛 Chữa ${this.leeches(c, sc).length} thẻ hay quên</button>` : ''}
         <input class="inp grow" id="vq" placeholder="🔍 Tìm từ, nghĩa, ví dụ…">
         <select class="inp sel" id="vst"><option value="">Mọi trạng thái</option><option value="new">🥚 Mới</option><option value="learning">🐣 Đang học</option><option value="mature">🐥 Thuộc</option><option value="leech">🐛 Hay quên</option><option value="due">⏰ Đến hạn</option></select>
         <div class="seg" id="vview">${[['grid', '▦'], ['table', '☰']].map(v => `<button data-v="${v[0]}" class="${S.vocabView === v[0] ? 'on' : ''}">${v[1]}</button>`).join('')}</div>
@@ -355,6 +355,7 @@ const Lang = {
       if (e.target.dataset.say) { e.stopPropagation(); return Speech.speak(e.target.dataset.say, c.lang); }
       const id = e.target.closest('[data-id]')?.dataset.id; if (id) this.cardForm(c, sc, Store.find('cards', id), rerender);
     });
+    $('#vLeech') && ($('#vLeech').onclick = () => this.leechClinic(el, c, sc, rerender));
     $('#vAdd').onclick = () => this.cardForm(c, sc, null, rerender);
     $('#vBulk').onclick = () => this.bulk(c, sc, rerender);
     $('#vFlash').onclick = () => { const cs = this.cardsIn(c.id, sc); cs.length ? this.flash(c, cs) : toast('Chưa có thẻ', 'err'); };

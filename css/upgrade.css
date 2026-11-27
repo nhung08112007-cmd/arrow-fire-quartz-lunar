@@ -590,3 +590,19 @@ body.reduce-fx .view.pg-in { animation: none; }
 .rk-st { font-size: 12px; color: var(--muted); }
 .rk-tr { font-style: italic; }
 .rk-tr:empty { display: none; }
+
+/* ================= Thẻ cứng đầu ================= */
+.lc-bar { display: flex; align-items: center; gap: 12px; background: #fff4dc; border: var(--bd); border-radius: 18px; padding: 10px 14px; box-shadow: var(--sh-s); margin-bottom: 12px; text-align: left; }
+.lc-bar > div { flex: 1; }
+.lc-ic { font-size: 30px; }
+.lc-card { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; max-width: 980px; margin: 0 auto; }
+.lc-main, .lc-side { background: var(--card); border: var(--bd); border-radius: 20px; padding: 14px 18px; box-shadow: var(--sh-s); display: flex; flex-direction: column; gap: 8px; }
+.lc-main.hide > :not(.kicker) { filter: blur(9px); user-select: none; }
+.lc-word { font-size: 36px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.lc-mean { font-size: 20px; font-weight: 700; }
+.lc-mn { background: #fff9c9; border-radius: 12px; padding: 8px 10px; }
+.lc-cf { border-top: 2px dashed #e5dfef; padding-top: 6px; }
+.lc-ai { background: var(--soft); border-radius: 12px; padding: 8px 12px; }
+.lc-drill { max-width: 980px; margin: 14px auto 0; background: var(--card); border: var(--bd); border-radius: 20px; padding: 14px 18px; box-shadow: var(--sh-s); display: flex; flex-direction: column; gap: 8px; }
+.lc-drill .row .inp { flex: 1; }
+@media (max-width: 760px) { .lc-card { grid-template-columns: 1fr; } .lc-bar { flex-wrap: wrap; } }
