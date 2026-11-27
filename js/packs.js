@@ -12,6 +12,7 @@ const Packs = {
   /* giáo trình có sẵn trong app (Claude thêm file vào js/data/ rồi khai báo ở đây) */
   builtin: [
     { id: 'minna-n5', title: 'Minna no Nihongo I · JLPT N5', lang: 'ja-JP', flag: '🇯🇵', desc: 'Bài nhập môn – Bài 25: từ vựng chính + từ tham khảo của sách (chữ Hán, cách đọc, nghĩa Việt/Anh, ví dụ có dịch) và giải thích ngữ pháp từng bài.', units: 26, cards: 1502, grammarN: 150, open: cid => Minna.open(cid) },
+    { id: 'eng-b2c1', title: 'Ngữ pháp tiếng Anh B2 → C1', lang: 'en-GB', flag: '🇬🇧', desc: '51 chủ điểm ngữ pháp từ củng cố B2 đến nâng cao C1 (theo trình tự kiểu Advanced Grammar in Use): thì, modal, điều kiện, đảo ngữ, câu chẻ, mệnh đề phân từ… Giải thích tiếng Việt, ví dụ có dịch, ôn bằng câu đục lỗ.', units: 10, cards: 0, grammarN: 51, open: cid => Packs.loadBuiltin('js/data/eng-b2c1.js', 'ENG_B2C1_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được giáo trình', 'err')) },
     { id: 'hsk3', title: 'HSK 3.0 · Cấp 1–4', lang: 'zh-CN', flag: '🇨🇳', desc: 'Từ vựng HSK 3.0 cấp 1–4 xếp theo từ loại: chữ Hán, pinyin, nghĩa Việt, âm Hán Việt, ví dụ có dịch; kèm 118 chủ điểm ngữ pháp.', units: 4, cards: 2000, grammarN: 118, open: cid => Packs.loadBuiltin('js/data/hsk3.js', 'HSK3_PACK').then(p => Packs.choose(p, cid)).catch(() => toast('Không tải được dữ liệu HSK', 'err')) },
   ],
   /* dữ liệu giáo trình lớn chỉ tải khi cần */
@@ -33,7 +34,7 @@ const Packs = {
     let o; try { o = JSON.parse(m[0]); } catch (e) { throw new Error('Đoạn mã bị lỗi định dạng: ' + e.message); }
     if (!Array.isArray(o.units) || !o.units.length) throw new Error('Giáo trình không có bài nào ("units")');
     const s = v => String(v == null ? '' : v).trim();
-    const ex = a => (Array.isArray(a) ? a : []).filter(e => e && e.s).map(e => ({ s: s(e.s), t: s(e.t) }));
+    const ex = a => (Array.isArray(a) ? a : []).filter(e => e && e.s).map(e => ({ s: s(e.s), t: s(e.t), ...(e.k ? { k: s(e.k) } : {}), ...(Array.isArray(e.d) ? { d: e.d.map(s).filter(Boolean) } : {}) }));
     const pack = {
       format: 'chutchi-pack@1', id: s(o.id) || ('p' + hashStr(s(o.title) + o.units.length).toString(36)), title: s(o.title) || 'Giáo trình mới',
       lang: s(o.lang) || 'en-US', flag: s(o.flag) || '📘', desc: s(o.desc), partOrder: Array.isArray(o.partOrder) ? o.partOrder.map(s) : undefined,
@@ -71,7 +72,7 @@ const Packs = {
       });
       U.grammar.forEach((g, j) => {
         const id = `pkg-${pack.id}-${i}-${j}`; if (gids.has(id)) return;
-        const content = `${g.explain ? `<h3>Giải thích</h3>${g.explain.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('')}` : ''}${g.examples.length ? `<h3>Ví dụ</h3><ul>${g.examples.map(e => `<li>${esc(e.s)}${e.t ? ` — <i>${esc(e.t)}</i>` : ''}</li>`).join('')}</ul>` : ''}${g.tip ? `<div class="blk callout c-warn"><span class="ci" contenteditable="false">⚠️</span><div><b>Lỗi hay gặp:</b> ${esc(g.tip)}</div></div>` : ''}`;
+        const content = `${g.explain ? `<h3>Giải thích</h3>${g.explain.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('')}` : ''}${g.examples.length ? `<h3>Ví dụ</h3><ul>${g.examples.map(e => `<li${e.k ? ` data-k="${esc(e.k)}"` : ''}${e.d?.length ? ` data-d="${esc(e.d.join('|'))}"` : ''}>${esc(e.s)}${e.t ? ` — <i>${esc(e.t)}</i>` : ''}</li>`).join('')}</ul>` : ''}${g.tip ? `<div class="blk callout c-warn"><span class="ci" contenteditable="false">⚠️</span><div><b>Lỗi hay gặp:</b> ${esc(g.tip)}</div></div>` : ''}`;
         Store.list('grammar').push({ id, courseId: cid, bookId: book.id, unitId: u.id, title: g.title, form: g.form, content, created: now }); gAdded++;
       });
     });
@@ -174,13 +175,14 @@ Mỗi thẻ đủ các ô, mỗi thẻ 2–3 ví dụ.`;
     const lc = (p.lang || '').slice(0, 2).toLowerCase();
     const same = Store.list('courses').filter(c => (c.lang || '').slice(0, 2).toLowerCase() === lc);
     const ids = new Set(Store.list('cards').map(c => c.id));
-    const have = i => p.units[i].cards.filter((_, j) => ids.has(`pk-${p.id}-${i}-${j}`)).length;
+    const gids = new Set(Store.list('grammar').map(g => g.id));
+    const have = i => p.units[i].cards.filter((_, j) => ids.has(`pk-${p.id}-${i}-${j}`)).length + p.units[i].grammar.filter((_, j) => gids.has(`pkg-${p.id}-${i}-${j}`)).length;
     modal({
       title: `${esc(p.flag)} ${esc(p.title)}`, wide: true, body: `
         <label class="lbl">Nạp vào lớp</label>
         <select class="inp" id="pcCourse">${same.map(c => `<option value="${c.id}" ${c.id === preCid ? 'selected' : ''}>${c.flag} ${esc(c.name)}</option>`).join('')}<option value="__new" ${same.length ? '' : 'selected'}>＋ Tạo lớp mới “${esc(p.title)}”</option></select>
         <div class="row" style="margin:12px 0 6px;justify-content:space-between"><label class="lbl" style="margin:0">Chọn bài</label><span><button class="btn sm" id="pcAll">Chọn hết</button> <button class="btn sm" id="pcNone">Bỏ chọn</button></span></div>
-        <div class="mn-grid">${p.units.map((u, i) => { const h = have(i), done = u.cards.length && h === u.cards.length; return `<label class="mn-l ${done ? 'done' : ''}"><input type="checkbox" value="${i}" ${done ? '' : 'checked'}><b>${esc(u.title)}</b>${u.sub ? `<small>${esc(u.sub)}</small>` : ''}<i>${done ? '✓ đã có' : `${u.cards.length} từ${u.grammar.length ? ` · ${u.grammar.length} ngữ pháp` : ''}`}</i></label>`; }).join('')}</div>`,
+        <div class="mn-grid">${p.units.map((u, i) => { const h = have(i), done = h > 0 && h === u.cards.length + u.grammar.length; return `<label class="mn-l ${done ? 'done' : ''}"><input type="checkbox" value="${i}" ${done ? '' : 'checked'}><b>${esc(u.title)}</b>${u.sub ? `<small>${esc(u.sub)}</small>` : ''}<i>${done ? '✓ đã có' : [u.cards.length ? u.cards.length + ' từ' : '', u.grammar.length ? u.grammar.length + ' ngữ pháp' : ''].filter(Boolean).join(' · ')}</i></label>`; }).join('')}</div>`,
       onOpen: w => {
         $('#pcAll', w).onclick = () => $$('.mn-grid input', w).forEach(b => b.checked = true);
         $('#pcNone', w).onclick = () => $$('.mn-grid input', w).forEach(b => b.checked = false);
@@ -191,8 +193,8 @@ Mỗi thẻ đủ các ô, mỗi thẻ 2–3 ví dụ.`;
         let cid = $('#pcCourse', w).value;
         if (cid === '__new') { const c = { id: uid(), name: p.title, lang: p.lang, flag: p.flag, color: Art.palette[hashStr(p.id) % 10], native: 'vi' }; Store.upsert('courses', c); cid = c.id; }
         const r = this.importPack(p, cid, idxs);
-        toast(`Đã nạp ${r.added} thẻ${r.gAdded ? ` và ${r.gAdded} điểm ngữ pháp` : ''} 🎉`, 'ok');
-        Router.go('/ngoai-ngu/' + cid + '/tu-vung');
+        toast(`Đã nạp ${[r.added ? r.added + ' thẻ' : '', r.gAdded ? r.gAdded + ' điểm ngữ pháp' : ''].filter(Boolean).join(' và ') || 'xong (đã có đủ)'} 🎉`, 'ok');
+        Router.go('/ngoai-ngu/' + cid + (p.units.some(u => u.cards.length) ? '/tu-vung' : '/ngu-phap'));
       } }]
     });
   }

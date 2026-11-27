@@ -24,7 +24,7 @@ Object.assign(Lang, {
     $$('li', d).forEach(li => {
       const t = li.querySelector('i')?.textContent.trim() || '';
       const s = li.textContent.replace(t, '').replace(/\s*[—–-]\s*$/, '').trim();
-      if (s && CJK_RE.test(s)) out.push({ s, t }); CJK_RE.lastIndex = 0;
+      if (s && (t || li.dataset.k)) out.push({ s, t, k: li.dataset.k || '', d: li.dataset.d ? li.dataset.d.split('|') : [] });   // chỉ lấy dòng ví dụ (có dịch / có chỗ đục)
     });
     if (!out.length) {   // bài do AI soạn: khối song ngữ
       const L = $$('.bl-l p', d).map(p => p.textContent.trim()), R = $$('.bl-r p', d).map(p => p.textContent.trim());
@@ -35,6 +35,10 @@ Object.assign(Lang, {
   /* một câu hỏi: đục lỗ cụm cấu trúc dài nhất có trong câu */
   gramItem(g, k = 0) {
     const ex = this.gramExamples(g); if (!ex.length) return null;
+    for (let i = 0; i < ex.length; i++) {   // ví dụ có đánh dấu sẵn chỗ đục lỗ (k) & đáp án nhiễu (d)
+      const e = ex[(k + i) % ex.length];
+      if (e.k && e.s.includes(e.k)) { const at = e.s.indexOf(e.k); return { ...e, ans: e.k, before: e.s.slice(0, at), after: e.s.slice(at + e.k.length) }; }
+    }
     const toks = this.gramTokens(g).sort((a, b) => b.length - a.length);
     for (let i = 0; i < ex.length; i++) {
       const e = ex[(k + i) % ex.length];
@@ -43,7 +47,8 @@ Object.assign(Lang, {
     }
     return { ...ex[k % ex.length], ans: null };   // không tìm được chỗ đục: lật thẻ tự chấm
   },
-  gramChoices(c, g, ans, all) {
+  gramChoices(c, g, ans, all, it) {
+    if (it?.d?.length >= 2) return shuffle([ans, ...it.d.filter(x => x !== ans).slice(0, 3)]);
     const lc = isJa(c) ? 'ja' : (c.lang || '').startsWith('zh') ? 'zh' : '';
     const ok = x => x !== ans && !ans.includes(x) && !x.includes(ans);
     const fit = x => Math.abs(x.length - ans.length) <= 1;
@@ -113,7 +118,7 @@ Object.assign(Lang, {
       el.innerHTML = head() + `<div class="gs-card"><div class="kicker">${esc(g.title)}</div>
         ${it.ans ? `<div class="cz-sent gs-sent">${esc(it.before)}<span class="gs-gap" id="gsGap">？</span>${esc(it.after)}</div>
           ${it.t ? `<div class="muted">${esc(it.t)}</div>` : ''}
-          <div class="gs-opts">${this.gramChoices(c, g, it.ans, list).map((o, i) => `<button class="btn" data-o="${esc(o)}"><kbd>${i + 1}</kbd> ${esc(o)}</button>`).join('')}</div>`
+          <div class="gs-opts">${this.gramChoices(c, g, it.ans, list, it).map((o, i) => `<button class="btn" data-o="${esc(o)}"><kbd>${i + 1}</kbd> ${esc(o)}</button>`).join('')}</div>`
         : `<div class="gs-sent">${esc(it.t || '')}</div><p class="muted">Nói hoặc viết câu này bằng ${esc(c.name)}, rồi bấm xem đáp án.</p><button class="btn pri" id="gsShow">Xem đáp án</button>`}
         <div class="gs-after" hidden><div class="gs-full">${esc(it.s)}</div>${g.form ? `<div class="gc-form">${esc(g.form)}</div>` : ''}
           <details><summary>Xem lại giải thích</summary><div class="gs-body rich">${g.content || ''}</div></details>${btns}</div></div>`;
