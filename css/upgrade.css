@@ -463,7 +463,7 @@ body.reduce-fx .view.pg-in { animation: none; }
 .hroom svg.bare { transition: none; }
 .s-ufo, .tw, .roof-cre, .antenna svg { animation: none !important; }
 .s-ufo { display: none; }
-.house { contain: layout paint; }
+.house { contain: layout; }   /* không dùng paint: sẽ cắt ống khói, ăng-ten, mây nhô trên mái */
 
 /* ================= Bài tập v2 ================= */
 .ax-modes { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -509,3 +509,16 @@ body.reduce-fx .view.pg-in { animation: none; }
 .pk-flag { font-size: 34px; }
 .pk-steps { line-height: 1.7; padding-left: 20px; }
 .pk-body textarea { font-family: ui-monospace, monospace; font-size: 13px; }
+
+/* thanh trên: không để chữ rớt dòng ở màn hình vừa */
+.ib span, .brand-txt { white-space: nowrap; }
+@media (max-width: 1240px) and (min-width: 901px) {
+  .topbar { gap: 8px; padding: 8px 12px; }
+  .brand-txt small { display: none; }
+  .brand-txt { font-size: 19px; }
+  .iconbar { gap: 1px; padding: 4px 5px; }
+  .ib { padding: 4px 6px; }
+  .ib span { font-size: 13px; }
+  .top-tools { gap: 3px; }
+  .tbtn { width: 34px; height: 34px; font-size: 15px; }
+}
