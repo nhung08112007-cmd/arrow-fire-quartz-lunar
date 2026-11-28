@@ -24,7 +24,7 @@ const Packs = {
   loadBuiltin(src, name) {
     if (this._loaded[name]) return Promise.resolve(this._loaded[name]);
     return new Promise((ok, no) => {
-      const sc = document.createElement('script'); sc.src = src;
+      const sc = document.createElement('script'); const v = (document.querySelector('script[src*="js/academy.js?v="]') || document.querySelector('script[src*="?v="]'))?.src.split('?v=')[1] || ''; sc.src = src + (v && !src.includes('?') ? '?v=' + v : '');
       sc.onload = () => { try { this._loaded[name] = (0, eval)(name); ok(this._loaded[name]); } catch (e) { no(e); } };
       sc.onerror = no; document.head.appendChild(sc);
     });
