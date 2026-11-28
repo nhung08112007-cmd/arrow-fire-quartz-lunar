@@ -6,6 +6,7 @@
    ========================================================= */
 const Academy = {
   builtin: [
+    { id: 'han-van', src: 'js/data/acad-hanvan.js', name: 'ACAD_HANVAN', title: 'Cơ sở Hán văn cổ', field: 'Hán Nôm', icon: '📜', color: '#ffe680', n: 32 },
     { id: 'cn-phil', src: 'js/data/acad-cnphil.js', name: 'ACAD_CNPHIL', title: 'Triết học Trung Quốc cổ đại', field: 'Triết học phương Đông', icon: '☯️', color: '#b8f0a0', n: 24 },
     { id: 'konrad', src: 'js/data/acad-konrad.js', name: 'ACAD_KONRAD', title: 'Konrad: Phương Tây và Phương Đông', field: 'Văn học phương Đông', icon: '🌏', color: '#ffc0b0', n: 6 },
     { id: 'philo-west', src: 'js/data/acad-philo.js', name: 'ACAD_PHILO', title: 'Nhập môn Triết học phương Tây', field: 'Triết học', icon: '🏛', color: '#c9b6ff', n: 6 },
@@ -17,6 +18,7 @@ const Academy = {
   LOOK: [['describe', 'Mô tả', 'Chỉ kể những gì mắt thấy: hình, màu, người, vật, vị trí. Chưa đánh giá, chưa đoán ý.'], ['analyze', 'Phân tích', 'Các yếu tố được sắp xếp thế nào: bố cục, đường dẫn mắt, ánh sáng, màu, nét, tỉ lệ.'], ['interpret', 'Diễn giải', 'Theo bạn tác phẩm nói về điều gì? Chỉ ra chi tiết nào làm bằng chứng.'], ['judge', 'Đánh giá', 'Tác phẩm có thành công không — theo tiêu chí nào? Bạn có đổi ý so với ấn tượng đầu không?']],
 
   stepsOf(l) {
+    if (l.kind === 'lang') return [['q', '🎯', 'Mục tiêu'], ...(l.lecture?.length ? [['lecture', '🎓', 'Bài giảng']] : []), ['read', '📜', 'Văn bản'], ['concepts', '🔤', 'Chữ & từ'], ['practice', '✏️', 'Luyện tập'], ['socra', '🧑‍🏫', 'Hỏi gia sư'], ['feyn', '✍️', 'Tự dịch & tự giảng']];
     const st = this.STEPS.map((x, i) => i === 1 && l.kind === 'art' ? ['look', '👁', 'Nhìn chậm'] : x);
     if (l.lecture?.length) st.splice(1, 0, ['lecture', '🎓', 'Bài giảng']);
     return st;
@@ -203,8 +205,9 @@ const Academy = {
     el.innerHTML = `<div class="ac-bigq">${esc(l.q)}</div>
       ${art ? `<p class="muted">Bối cảnh của tác phẩm sẽ mở ra <b>sau</b> khi bạn tự nhìn — để mắt mình đi trước kiến thức.</p>` : `<div class="rich ac-ctx">${l.context || ''}</div>`}
       ${l.book ? `<div class="ac-book">📕 <b>Đọc kèm sách:</b> ${esc(l.book)}</div>` : ''}
-      <h3>Câu trả lời đầu tiên của bạn</h3><p class="muted sm">Viết nhanh 2–3 câu, đúng sai không quan trọng. Cuối bài bạn sẽ đọc lại để thấy mình đã nghĩ khác đi thế nào.</p>
-      ${this.ta(r, 'q0', art ? 'Ấn tượng đầu tiên khi nhìn tác phẩm…' : 'Theo mình thì…', 4)}`;
+      ${l.goals?.length ? `<div class="ac-goals"><b>🎯 Học xong bài này, bạn có thể:</b><ul>${l.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ul></div>` : ''}
+      <h3>${l.kind === 'lang' ? 'Bạn đang vướng ở đâu?' : 'Câu trả lời đầu tiên của bạn'}</h3><p class="muted sm">${l.kind === 'lang' ? 'Ghi lại chỗ bạn thấy khó hoặc chưa hiểu ở chủ đề này (trên lớp, khi đọc sách). Gia sư ở bước sau sẽ dựa vào đây.' : 'Viết nhanh 2–3 câu, đúng sai không quan trọng. Cuối bài bạn sẽ đọc lại để thấy mình đã nghĩ khác đi thế nào.'}</p>
+      ${this.ta(r, 'q0', l.kind === 'lang' ? 'Mình chưa phân biệt được…' : art ? 'Ấn tượng đầu tiên khi nhìn tác phẩm…' : 'Theo mình thì…', 4)}`;
     if (art && l.look) el.insertAdjacentHTML('afterbegin', `<figure class="ac-fig sm">${this.img(l)}</figure>`);
   },
   img(l) {
@@ -275,12 +278,13 @@ const Academy = {
   step_concepts(el, c, l, r, cid) {
     el.innerHTML = `<p class="muted">Với mỗi khái niệm: <b>tự định nghĩa bằng lời của bạn trước</b>, rồi mới mở định nghĩa, ví dụ và phản ví dụ để so.</p>
       <div class="ac-concepts">${l.concepts.map((k, i) => `<div class="ac-con" data-i="${i}"><h3>${k.han ? `<span class="ac-han">${esc(k.han)}</span> ` : ''}${esc(k.term)}</h3>${this.ta(r, 'def_' + k.id, 'Mình hiểu khái niệm này là…', 2)}
-        <button class="btn sm" data-show="${i}">${this.getN(r, 'open_' + k.id) ? 'Ẩn' : 'Mở'} định nghĩa</button><div class="ac-reveal" ${this.getN(r, 'open_' + k.id) ? '' : 'hidden'}>${this.conceptHTML(k, null, c)}</div></div>`).join('')}</div>
+        <button class="btn sm" data-show="${i}">${this.getN(r, 'open_' + k.id) ? 'Ẩn' : 'Mở'} định nghĩa</button>${k.write ? ` <button class="btn sm" data-wr="${esc(k.write)}">✍️ Tập viết ${esc(k.write)}</button>` : ''}<div class="ac-reveal" ${this.getN(r, 'open_' + k.id) ? '' : 'hidden'}>${this.conceptHTML(k, null, c)}</div></div>`).join('')}</div>
       <div class="row"><button class="btn pri" id="acAddK">💡 Đưa ${l.concepts.length} khái niệm vào lịch ôn</button><span class="muted sm">(tự động khi hoàn thành bài)</span></div>`;
     $$('[data-show]', el).forEach(b => b.onclick = () => {
       const k = l.concepts[+b.dataset.show], box = b.nextElementSibling, open = box.hidden;
       box.hidden = !open; b.textContent = (open ? 'Ẩn' : 'Mở') + ' định nghĩa'; this.setN(r, 'open_' + k.id, open ? '1' : ''); this.save();
     });
+    $$('[data-wr]', el).forEach(b => b.onclick = () => this.writeModal(b.dataset.wr));
     const ab = $('#acAddK', el); const have = l.concepts.every(k => Store.find('acad', `C:${cid}:${k.id}`));
     if (have) { ab.disabled = true; ab.textContent = '✓ Các khái niệm đã ở trong lịch ôn'; }
     ab.onclick = () => { const n = this.addConcepts(cid, l); toast(n ? `Đã thêm ${n} khái niệm vào lịch ôn` : 'Đã có sẵn'); ab.disabled = true; ab.textContent = '✓ Các khái niệm đã ở trong lịch ôn'; };
@@ -313,7 +317,63 @@ const Academy = {
     if (this.getN(r, 'argFb')) $('#acArgFb', el).innerHTML = `<div class="ac-fb rich">${this.md(this.getN(r, 'argFb'))}</div>`;
   },
 
+  /* tập viết theo thứ tự nét (dùng lại StrokeData + strokeBox của phần Viết chữ) */
+  writeModal(chars) {
+    const list = [...chars].filter(ch => StrokeData.isChar(ch));
+    modal({ title: '✍️ Tập viết ' + esc(chars), wide: true,
+      body: `<p class="muted sm">Bấm “Xem nét” để xem thứ tự nét, rồi tự viết bằng chuột/ngón tay vào ô. Viết sai nét sẽ được nhắc.</p><div class="ac-wr">${list.map((ch, i) => `<div class="ac-wrc"><div class="wr-box" data-i="${i}"></div><div class="row"><button class="btn sm" data-a="show" data-i="${i}">▶ Xem nét</button><button class="btn sm" data-a="ghost" data-i="${i}">👻 Hiện mờ</button><button class="btn sm" data-a="redo" data-i="${i}">↺</button></div></div>`).join('')}</div><p class="muted sm" id="acWrMsg"></p>`,
+      onOpen: async w => {
+        const boxes = [];
+        for (const [i, ch] of list.entries()) {
+          const host = $(`.wr-box[data-i="${i}"]`, w);
+          host.innerHTML = '<div class="wr-nodata">Đang tải…</div>';
+          const d = await StrokeData.get(ch, false);
+          if (!d) { host.innerHTML = `<div class="wr-nodata">${esc(ch)}<small>chưa có dữ liệu nét (cần mạng)</small></div>`; continue; }
+          boxes[i] = strokeBox(host, d, { onStroke: (ok, n, all) => { $('#acWrMsg', w).textContent = ok ? `✓ Nét ${n}/${all}` : `✗ Chưa đúng — thử lại nét ${n + 1}/${all}`; }, onDone: () => { $('#acWrMsg', w).textContent = `🌟 Xong chữ ${ch}!`; } });
+        }
+        let ghostOn = {};
+        $$('[data-a]', w).forEach(b => b.onclick = () => { const i = +b.dataset.i, bx = boxes[i]; if (!bx) return; if (b.dataset.a === 'show') bx.animate(); if (b.dataset.a === 'ghost') { ghostOn[i] = !ghostOn[i]; bx.ghost(ghostOn[i]); } if (b.dataset.a === 'redo') bx.reset(); });
+      } });
+  },
+  step_practice(el, c, l, r) {
+    const D = l.drills || []; r.dr = r.dr || {};
+    const mcqs = D.map((d, i) => [d, i]).filter(([d]) => d.t !== 'tr');
+    const score = () => { const done = mcqs.filter(([, i]) => r.dr[i] != null), ok = done.filter(([d, i]) => r.dr[i] === d.a); $('#acScore', el).innerHTML = done.length ? `<b>Trắc nghiệm: ${ok.length}/${mcqs.length} đúng</b>${done.length === mcqs.length ? (ok.length === mcqs.length ? ' 🌟 Tuyệt vời!' : ' — xem lại giải thích các câu sai, rồi bấm “Làm lại” khi muốn.') : ''}` : ''; };
+    el.innerHTML = `<p class="muted">Có ${mcqs.length} câu trắc nghiệm và ${D.length - mcqs.length} câu dịch. Làm xong mỗi câu sẽ có giải thích. Câu dịch: tự dịch trước, rồi xem bản mẫu hoặc nhờ AI chấm.</p>
+      <div class="ac-drills">${D.map((d, i) => d.t === 'tr'
+        ? `<div class="ac-drill tr"><div class="dq"><b>${i + 1}.</b> Dịch câu sau: <span class="dsrc">${esc(d.src)}</span></div>${d.rd ? `<div class="drd">${esc(d.rd)}</div>` : ''}${this.ta(r, 'tr' + i, 'Bản dịch của bạn…', 2)}
+            <div class="row"><button class="btn sm" data-show="${i}">Xem bản dịch mẫu</button><button class="btn sm" data-ai="${i}">✦ AI chấm</button></div>
+            <div class="dans" ${this.getN(r, 'trshow' + i) ? '' : 'hidden'}><b>Bản mẫu:</b> ${esc(d.a)}${d.why ? `<div class="dwhy">${esc(d.why)}</div>` : ''}</div><div class="dfb">${this.getN(r, 'trfb' + i) ? `<div class="ac-fb rich">${this.md(this.getN(r, 'trfb' + i))}</div>` : ''}</div></div>`
+        : `<div class="ac-drill" data-i="${i}"><div class="dq"><b>${i + 1}.</b> ${d.ch ? `<span class="dch">${esc(d.ch)}</span>` : ''}${esc(d.q)}</div><div class="dopts">${d.o.map((o, j) => `<button class="btn sm" data-j="${j}">${esc(o)}</button>`).join('')}</div><div class="dwhy" hidden>${esc(d.why || '')}</div></div>`).join('')}</div>
+      <div class="row"><span id="acScore"></span><span class="grow"></span><button class="btn sm" id="acRedo">↺ Làm lại trắc nghiệm</button></div>`;
+    const paint = (box, i) => {
+      const d = D[i], pick = r.dr[i]; if (pick == null) return;
+      $$('.dopts button', box).forEach((b, j) => { b.disabled = true; if (j === d.a) b.classList.add('ok'); else if (j === pick) b.classList.add('bad'); });
+      $('.dwhy', box).hidden = false;
+    };
+    $$('.ac-drill[data-i]', el).forEach(box => {
+      const i = +box.dataset.i; paint(box, i);
+      $$('.dopts button', box).forEach(b => b.onclick = () => { if (r.dr[i] != null) return; r.dr[i] = +b.dataset.j; this.save(); paint(box, i); score(); if (r.dr[i] === D[i].a) Sfx.click?.(); });
+    });
+    $$('[data-show]', el).forEach(b => b.onclick = () => { const box = b.closest('.ac-drill'); const a = $('.dans', box); a.hidden = !a.hidden; this.setN(r, 'trshow' + b.dataset.show, a.hidden ? '' : '1'); this.save(); });
+    $$('[data-ai]', el).forEach(b => b.onclick = () => AI.withSpinner(b, async () => {
+      const i = +b.dataset.ai, d = D[i], v = $(`[data-n="tr${i}"]`, el).value.trim(); if (!v) { toast('Dịch thử trước đã nhé', 'err'); return; }
+      const fb = await AI.ask({ system: 'Bạn là giảng viên Hán văn ở một trường đại học Việt Nam, chấm bài dịch của sinh viên. Trả lời tiếng Việt, ngắn gọn: (1) nhận xét đúng/sai theo từng chữ, hư từ, cấu trúc câu (đặc biệt trật tự định ngữ, tỉnh lược, phần đề – phần thuyết); (2) gợi ý sửa. Không chép lại bản dịch tham khảo nếu sinh viên đã dịch đúng ý.', prompt: `Câu Hán văn: ${d.src}\nÂm Hán Việt: ${d.rd || ''}\nBản dịch tham khảo: ${d.a}\nBản dịch của sinh viên: ${v}` });
+      this.setN(r, 'trfb' + i, fb); this.save(); $('.dfb', b.closest('.ac-drill')).innerHTML = `<div class="ac-fb rich">${this.md(fb)}</div>`;
+    }));
+    $('#acRedo', el).onclick = () => { r.dr = {}; this.save(); this.step_practice(el, c, l, r); this.rebind(el, r); };
+    score();
+  },
   socraSystem(c, l) {
+    if (l.kind === 'lang') return `Bạn là gia sư Hán văn (môn Cơ sở Hán Nôm) cho một sinh viên Việt Nam, đang học bài “${l.title}”.
+Nội dung chính của bài: ${(l.concepts || []).map(k => `${k.han || ''} ${k.term}`).join('; ')}.
+Chỗ sinh viên tự nói là đang vướng: ${(Store.find('acad', `L:${c.id}:${l.id}`)?.n?.q0) || '(chưa ghi)'}.
+CÁCH DẠY:
+- Giải thích ngắn, rõ, bằng tiếng Việt; luôn kèm chữ Hán (phồn thể) + âm Hán Việt + nghĩa khi đưa ví dụ.
+- Dùng đúng thuật ngữ của giáo trình Việt Nam: văn/tự, từ đơn âm/đa âm, điệp tự, song thanh, nghĩa gốc/nghĩa mở rộng, nghĩa cổ/nghĩa mới, thực từ/hư từ, tự động từ/tha động từ/hệ từ, hình dung từ, đại từ nhân xưng/chỉ thị, phần đề/phần thuyết, nòng cốt câu, hư hoá.
+- Sau mỗi lần giải thích, hỏi lại MỘT câu ngắn để kiểm tra sinh viên đã hiểu (ví dụ: cho một chữ/câu để họ tự phân tích).
+- Nếu không chắc về nguyên văn hay nghĩa một chữ hiếm, nói rõ là không chắc và khuyên tra Thiều Chửu.`;
+    return
     return `Bạn đóng vai Socrates, người thầy dùng phép chất vấn, nói chuyện bằng tiếng Việt với một sinh viên đang học bài “${l.title}” (khoá ${c.title}).
 Câu hỏi lớn của bài: ${l.q}
 Khái niệm chính: ${(l.concepts || []).map(k => k.term).join(', ')}.
@@ -328,9 +388,10 @@ QUY TẮC:
     r.chat = r.chat || [];
     const ready = AI.ready();
     const draw = () => {
-      el.innerHTML = `<p class="muted">Socrates không giảng — ông chỉ hỏi. Hãy trả lời thật lòng, kể cả “mình không chắc”. Mục tiêu không phải thắng, mà là thấy rõ mình đang nghĩ gì.</p>
-        ${ready ? `<div class="ac-chat" id="acChat">${r.chat.length ? r.chat.map(m => `<div class="msg ${m.role === 'user' ? 'me' : 'so'}">${m.role === 'user' ? '' : '<span class="who">🏛</span>'}<div>${this.md(m.content)}</div></div>`).join('') : `<div class="msg so"><span class="who">🏛</span><div>Chào bạn. Trước khi nói về ${esc(l.title.split(':')[0])}, ta muốn hỏi: <b>${esc(l.socra?.[0] || l.q)}</b></div></div>`}</div>
-          <div class="ac-say"><textarea class="inp" id="acMsg" rows="2" placeholder="Trả lời Socrates… (Ctrl+Enter để gửi)"></textarea><button class="btn pri" id="acSend">Gửi</button></div>
+      const L = l.kind === 'lang', who = L ? '🧑‍🏫' : '🏛';
+      el.innerHTML = `<p class="muted">${L ? 'Hỏi gia sư bất cứ điều gì về bài: một chữ, một câu, một khái niệm chưa rõ. Gia sư giải thích rồi hỏi lại một câu để kiểm tra bạn đã hiểu chưa.' : 'Socrates không giảng — ông chỉ hỏi. Hãy trả lời thật lòng, kể cả “mình không chắc”. Mục tiêu không phải thắng, mà là thấy rõ mình đang nghĩ gì.'}</p>
+        ${ready ? `<div class="ac-chat" id="acChat">${r.chat.length ? r.chat.map(m => `<div class="msg ${m.role === 'user' ? 'me' : 'so'}">${m.role === 'user' ? '' : `<span class="who">${who}</span>`}<div>${this.md(m.content)}</div></div>`).join('') : (L ? `<div class="msg so"><span class="who">${who}</span><div>Chào bạn! Mình là gia sư Hán văn. Bạn muốn hỏi gì về bài này? Hoặc thử trả lời câu này trước: <b>${esc(l.socra?.[0] || l.q)}</b></div></div>` : `<div class="msg so"><span class="who">🏛</span><div>Chào bạn. Trước khi nói về ${esc(l.title.split(':')[0])}, ta muốn hỏi: <b>${esc(l.socra?.[0] || l.q)}</b></div></div>`)}</div>
+          <div class="ac-say"><textarea class="inp" id="acMsg" rows="2" placeholder="${L ? 'Hỏi gia sư hoặc trả lời câu hỏi…' : 'Trả lời Socrates…'} (Ctrl+Enter để gửi)"></textarea><button class="btn pri" id="acSend">Gửi</button></div>
           <div class="row"><button class="btn sm" id="acSum" ${r.chat.length >= 4 ? '' : 'disabled'}>📝 Kết thúc & tổng kết điều mình đã nghĩ</button><button class="btn sm" id="acNewChat">↺ Bắt đầu lại</button></div>
           ${r.chatSum ? `<div class="ac-fb rich"><b>Tổng kết cuộc đối thoại</b>${this.md(r.chatSum)}</div>` : ''}`
         : `<div class="ac-fb">Chưa có AI — bạn vẫn có thể tự đối thoại: trả lời từng câu hỏi dưới đây, rồi <b>tự hỏi “ví dụ? phản ví dụ? nếu vậy thì sao?”</b> cho chính câu trả lời của mình. (Thêm key miễn phí ở ⚙️ Cài đặt → Trợ lý AI để có Socrates thật.)</div>
@@ -339,7 +400,7 @@ QUY TẮC:
       const box = $('#acChat', el); box.scrollTop = box.scrollHeight;
       const send = async () => {
         const t = $('#acMsg', el).value.trim(); if (!t) return;
-        if (!r.chat.length) r.chat.push({ role: 'assistant', content: `Chào bạn. Ta muốn hỏi: ${l.socra?.[0] || l.q}` });
+        if (!r.chat.length) r.chat.push({ role: 'assistant', content: l.kind === 'lang' ? `Chào bạn! Bạn muốn hỏi gì? Hoặc thử trả lời: ${l.socra?.[0] || l.q}` : `Chào bạn. Ta muốn hỏi: ${l.socra?.[0] || l.q}` });
         r.chat.push({ role: 'user', content: t }); this.save(); draw();
         const btn = $('#acSend', el); btn.disabled = true; btn.innerHTML = '<span class="spin">✦</span>';
         try { const a = await AI.ask({ system: this.socraSystem(c, l), messages: [{ role: 'user', content: 'Chào thầy Socrates, con sẵn sàng.' }, ...(h => h[0]?.role === 'user' ? h.slice(1) : h)(r.chat.slice(-15))], maxTokens: 400 }); r.chat.push({ role: 'assistant', content: a.trim() }); this.save(); }
@@ -350,7 +411,7 @@ QUY TẮC:
       $('#acMsg', el).onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } };
       $('#acNewChat', el).onclick = async () => { if (r.chat.length && !(await confirmBox('Xoá cuộc đối thoại này và bắt đầu lại?'))) return; r.chat = []; delete r.chatSum; this.save(); draw(); };
       $('#acSum', el).onclick = e => AI.withSpinner(e.target, async () => {
-        r.chatSum = await AI.ask({ system: 'Tóm tắt bằng tiếng Việt, ngắn, dạng gạch đầu dòng, 3 mục in đậm: **Lập trường của bạn lúc đầu**, **Bạn đã điều chỉnh điều gì**, **Câu hỏi còn bỏ ngỏ**. Chỉ dựa vào lời người học.', prompt: r.chat.map(m => (m.role === 'user' ? 'Người học: ' : 'Socrates: ') + m.content).join('\n') });
+        r.chatSum = l.kind === 'lang' ? await AI.ask({ system: 'Tóm tắt bằng tiếng Việt, gạch đầu dòng, 3 mục in đậm: **Đã hiểu**, **Còn hay nhầm**, **Nên ôn lại**. Chỉ dựa vào cuộc trò chuyện.', prompt: r.chat.map(m => (m.role === 'user' ? 'Sinh viên: ' : 'Gia sư: ') + m.content).join('\n') }) : await AI.ask({ system: 'Tóm tắt bằng tiếng Việt, ngắn, dạng gạch đầu dòng, 3 mục in đậm: **Lập trường của bạn lúc đầu**, **Bạn đã điều chỉnh điều gì**, **Câu hỏi còn bỏ ngỏ**. Chỉ dựa vào lời người học.', prompt: r.chat.map(m => (m.role === 'user' ? 'Người học: ' : 'Socrates: ') + m.content).join('\n') });
         this.save(); draw();
       });
     };
@@ -363,7 +424,7 @@ QUY TẮC:
       ${l.exam ? this.examHTML(l) : ''}
       <h3>1 · Tự giảng lại (kỹ thuật Feynman)</h3><p class="muted">${esc(l.feynman || 'Giải thích lại bài này cho một người chưa biết gì, bằng lời đơn giản.')}</p>
       ${this.ta(r, 'feyn', 'Không dùng thuật ngữ nào mà bạn chưa giải thích…', 5)}
-      <h3>2 · Bài viết ngắn</h3><p class="muted">${esc(l.essay || 'Bạn nghĩ gì về câu hỏi lớn của bài? Nêu một phản bác và trả lời nó.')}</p>
+      <h3>2 · ${l.kind === 'lang' ? 'Bài dịch / bài phân tích' : 'Bài viết ngắn'}</h3><p class="muted">${esc(l.essay || 'Bạn nghĩ gì về câu hỏi lớn của bài? Nêu một phản bác và trả lời nó.')}</p>
       ${this.ta(r, 'essay', 'Mở bài nêu lập trường → lý lẽ & ví dụ → phản bác → trả lời → kết…', 8)}
       <div class="row"><span class="muted sm" id="acWc"></span><span class="grow"></span><button class="btn" id="acPost">📝 Lưu sang Phòng Viết</button><button class="btn pri" id="acFeynAI">✦ AI đánh giá mức hiểu</button></div>
       <details class="ac-self"><summary>Tự kiểm tra (không cần AI)</summary><ul class="ac-chk">${[
@@ -384,7 +445,7 @@ QUY TẮC:
     };
     $('#acFeynAI', el).onclick = e => AI.withSpinner(e.target, async () => {
       const f = this.getN(r, 'feyn'), es = this.getN(r, 'essay'); if (!f && !es) { toast('Viết phần tự giảng hoặc bài viết trước đã', 'err'); return; }
-      const o = await AI.json({ system: 'Bạn là giáo sư nhân văn chấm bài theo tinh thần khích lệ nhưng trung thực, trả lời tiếng Việt.', prompt: `Bài học: ${l.title}\nCâu hỏi lớn: ${l.q}\nKhái niệm chính: ${(l.concepts || []).map(k => `${k.term}: ${k.def}`).join(' || ')}\n\nPhần tự giảng của người học:\n${f || '(trống)'}\n\nBài viết ngắn:\n${es || '(trống)'}\n\nTrả về JSON: {"level":1-5 (1 = còn mơ hồ, 3 = hiểu ý chính, 5 = hiểu sâu và có lập luận riêng),"understood":["điều đã hiểu đúng", …],"gaps":["chỗ còn mờ/chưa giải thích", …],"misconceptions":["hiểu sai cụ thể (nếu có)"],"argument":"nhận xét 1–2 câu về chất lượng lập luận trong bài viết","next":"một câu hỏi để người học đào sâu tiếp"}` });
+      const o = await AI.json({ system: l.kind === 'lang' ? 'Bạn là giảng viên Hán văn chấm bài của sinh viên Việt Nam, khích lệ nhưng chính xác; với bài dịch, soát từng chữ, hư từ, cấu trúc câu. Trả lời tiếng Việt.' : 'Bạn là giáo sư nhân văn chấm bài theo tinh thần khích lệ nhưng trung thực, trả lời tiếng Việt.', prompt: `Bài học: ${l.title}\nCâu hỏi lớn: ${l.q}\nKhái niệm chính: ${(l.concepts || []).map(k => `${k.term}: ${k.def}`).join(' || ')}\n\nPhần tự giảng của người học:\n${f || '(trống)'}\n\nBài viết ngắn:\n${es || '(trống)'}\n\nTrả về JSON: {"level":1-5 (1 = còn mơ hồ, 3 = hiểu ý chính, 5 = hiểu sâu và có lập luận riêng),"understood":["điều đã hiểu đúng", …],"gaps":["chỗ còn mờ/chưa giải thích", …],"misconceptions":["hiểu sai cụ thể (nếu có)"],"argument":"nhận xét 1–2 câu về chất lượng lập luận trong bài viết","next":"một câu hỏi để người học đào sâu tiếp"}` });
       r.feynFb = o; this.save(); $('#acFeynFb', el).innerHTML = this.feynHTML(o);
     });
   },
@@ -433,7 +494,7 @@ QUY TẮC:
       }
       const { r, c, l, k } = q[0]; r.srs = r.srs || {};
       const rel = (k.rel || []).map(id => this.lessons(c).flatMap(x => x.concepts || []).find(x => x.id === id)).filter(Boolean);
-      const modes = [['Định nghĩa bằng lời của bạn', `“${k.term}” là gì?`], ['Ví dụ & phản ví dụ', `Cho một ví dụ của “${k.term}” — và một trường hợp trông giống nhưng KHÔNG phải.`],
+      const modes = l.kind === 'lang' ? [['Nghĩa & cách dùng', `${k.han || ''} “${k.term}” — nghĩa là gì, dùng thế nào?`], ['Ví dụ', `Nêu một ví dụ (chữ Hán + âm Hán Việt + nghĩa) cho “${k.term}”.`], ...(rel.length ? [['Phân biệt', `Phân biệt “${k.term}” với “${rel[(r.srs.k || 0) % rel.length].term}”.`]] : [])] : [['Định nghĩa bằng lời của bạn', `“${k.term}” là gì?`], ['Ví dụ & phản ví dụ', `Cho một ví dụ của “${k.term}” — và một trường hợp trông giống nhưng KHÔNG phải.`],
         ...(rel.length ? [['So sánh', `“${k.term}” liên quan hoặc khác gì với “${rel[(r.srs.k || 0) % rel.length].term}”?`]] : []), ['Áp dụng', `Dùng “${k.term}” để trả lời: ${l.q}`]];
       const [mn, mq] = modes[(r.srs.k || 0) % modes.length];
       const mine = Store.find('acad', `L:${r.course}:${r.lesson}`)?.n?.['def_' + k.id];

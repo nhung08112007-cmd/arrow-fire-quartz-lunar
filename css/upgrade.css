@@ -739,3 +739,18 @@ body.reduce-fx .view.pg-in { animation: none; }
 .ac-han { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 1.15em; color: var(--pink); }
 .ac-debates { display: grid; gap: 10px; margin: 10px 0; } .ac-deb { padding: 10px 14px; border-left: 5px solid #8a5cff; background: #f6f1ff; border-radius: 6px; color: #2a2346; } .ac-deb .rich p { margin: 4px 0 0; }
 @media (max-width: 720px) { .ac-toc ol { columns: 1; } .ac-notes dl { grid-template-columns: 1fr; } .ac-notes dd { margin-bottom: 6px; } }
+
+/* Học viện — bài Hán văn */
+.ac-goals { margin: 12px 0; padding: 10px 16px; border: 2px solid var(--ink); border-radius: 12px; background: #eaffdf; color: #2a2346; } .ac-goals ul { margin: 4px 0 0; padding-left: 22px; }
+.ac-drills { display: grid; gap: 12px; margin: 12px 0; }
+.ac-drill { padding: 12px 14px; border: 2px solid var(--ink); border-radius: 14px; background: var(--card, #fff); }
+.ac-drill .dq { font-weight: 700; margin-bottom: 8px; line-height: 1.6; }
+.ac-drill .dch { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 30px; margin-right: 10px; vertical-align: middle; color: var(--pink); }
+.ac-drill .dsrc { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 22px; letter-spacing: .05em; }
+.ac-drill .drd { font-style: italic; opacity: .75; margin: -4px 0 6px; }
+.ac-drill .dopts { display: flex; flex-wrap: wrap; gap: 8px; } .ac-drill .dopts .btn { font-family: inherit; }
+.ac-drill .dopts .btn.ok { background: var(--green); } .ac-drill .dopts .btn.bad { background: #ff9b9b; }
+.ac-drill .dwhy { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: #fffbe8; color: #2a2346; font-size: 14.5px; }
+.ac-drill .dans { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: #eaffdf; color: #2a2346; }
+.ac-wr { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; } .ac-wrc { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ac-wrc .wr-box { width: 180px; height: 180px; border: 2px solid var(--ink); border-radius: 12px; background: #fffdf6; }
