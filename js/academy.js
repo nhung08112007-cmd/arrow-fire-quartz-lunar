@@ -6,6 +6,7 @@
    ========================================================= */
 const Academy = {
   builtin: [
+    { id: 'lit-theory', src: 'js/data/acad-littheory.js', name: 'ACAD_LITTHEORY', title: 'Lý thuyết văn học thế kỷ XX', field: 'Lý luận văn học', icon: '📖', color: '#ffb3c8', n: 25 },
     { id: 'han-van', src: 'js/data/acad-hanvan.js', name: 'ACAD_HANVAN', title: 'Cơ sở Hán văn cổ', field: 'Hán Nôm', icon: '📜', color: '#ffe680', n: 32 },
     { id: 'cn-phil', src: 'js/data/acad-cnphil.js', name: 'ACAD_CNPHIL', title: 'Triết học Trung Quốc cổ đại', field: 'Triết học phương Đông', icon: '☯️', color: '#b8f0a0', n: 24 },
     { id: 'konrad', src: 'js/data/acad-konrad.js', name: 'ACAD_KONRAD', title: 'Konrad: Phương Tây và Phương Đông', field: 'Văn học phương Đông', icon: '🌏', color: '#ffc0b0', n: 6 },
