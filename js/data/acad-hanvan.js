@@ -676,6 +676,507 @@ const HV_HINHDUNG = {
   readings: ['Giáo trình của lớp: phần Thực từ — Hình dung từ', 'Mạnh Tử · Cáo Tử hạ — đoạn “sinh ư ưu hoạn, tử ư an lạc” (đọc trọn)', 'Tìm đọc giai thoại Vương An Thạch sửa chữ 綠 trong câu “春風又綠江南岸”']
 };
 
+const HV_KHAIQUAT = {
+  id: 'hv-khaiquat', kind: 'lang', short: 'Chữ Hán', title: 'Chữ Hán: khái quát', sub: 'Loại chữ ghi ý – âm, nguồn gốc, các thể chữ từ giáp cốt đến khải thư, phồn thể và giản thể, chữ Hán ở Việt Nam', who: 'Phần I · Chữ Hán',
+  goals: ['Giải thích chữ Hán là loại chữ ghi ý – âm, mỗi chữ thống nhất hình – âm – nghĩa', 'Kể được các thể chữ theo trình tự lịch sử và ý nghĩa của “lệ biến”', 'Phân biệt phồn thể và giản thể; biết vì sao học Hán Nôm dùng phồn thể và bẫy “một giản – nhiều phồn”', 'Nắm các mốc của chữ Hán ở Việt Nam'],
+  q: 'Chữ cái Latinh chỉ có vài chục ký hiệu ghi âm. Chữ Hán có hàng vạn chữ. Vì sao một nền văn minh lại chọn một hệ chữ “khó” như vậy — và nó đã sống sót hơn ba nghìn năm thế nào?',
+  context: '<p>Bài mở đầu khoá: trước khi học cấu tạo chữ (lục thư), từ và ngữ pháp, ta cần hiểu <b>chữ Hán là loại chữ gì</b>, nó đã thay hình đổi dạng ra sao qua ba nghìn năm, và nó đã gắn với lịch sử Việt Nam như thế nào. Phần này cũng giải thích những khái niệm bạn sẽ gặp mãi về sau: giáp cốt, triện, lệ, khải, phồn thể, giản thể.</p>',
+  lecture: [
+    { h: 'Chữ Hán là loại chữ gì', html: `<p>Các hệ chữ trên thế giới có thể chia đại thể thành <b>chữ ghi âm</b> (chữ cái Latinh, chữ Quốc ngữ — mỗi ký hiệu ghi một âm) và <b>chữ ghi ý</b> (mỗi ký hiệu ghi một đơn vị có nghĩa). Chữ Hán thường được gọi là <b>chữ ghi ý – âm</b> (hay chữ ghi từ / ghi ngữ tố): mỗi chữ ghi <b>một âm tiết có nghĩa</b>, vừa có yếu tố biểu ý (bộ phận chỉ nghĩa), vừa có yếu tố biểu âm (bộ phận gợi âm — sẽ thấy rõ ở chữ hình thanh, bài 3).</p>
+<p>Mỗi chữ Hán thống nhất ba mặt: <b>hình</b> (cách viết), <b>âm</b> (một âm tiết), <b>nghĩa</b>. Vì thế một chữ Hán có thể được đọc rất khác nhau ở Bắc Kinh, Quảng Đông, Nhật Bản, Hàn Quốc, Việt Nam mà <b>vẫn hiểu cùng một nghĩa</b> — 人 là “người” với tất cả, dù đọc là rén, jan, hito/jin, in hay nhân. Đây là lý do chữ Hán trở thành văn tự chung của cả vùng Đông Á suốt nhiều thế kỷ, và là lý do một người Việt xưa có thể “bút đàm” (nói chuyện bằng bút) với sứ thần Trung Quốc, Triều Tiên.</p>
+<p><b>Số lượng</b>: <i>Thuyết văn giải tự</i> (năm 100) có 9.353 chữ; <i>Khang Hy tự điển</i> (1716) có khoảng 47.000 chữ. Nhưng số chữ thường dùng ít hơn nhiều: khoảng 3.500 chữ chiếm tuyệt đại đa số văn bản. Đọc được phần lớn văn bản cổ thông thường cần khoảng 2.000 – 3.000 chữ. Học chữ Hán vì thế không phải học hết hàng vạn chữ, mà học <b>cách chữ được cấu tạo</b> (lục thư, bộ thủ) để đoán và nhớ chữ mới.</p>` },
+    { h: 'Nguồn gốc: từ truyền thuyết đến khảo cổ', html: `<p><b>Truyền thuyết</b> kể rằng <b>Thương Hiệt</b>, sử quan của Hoàng Đế, có bốn mắt, nhìn dấu chân chim thú mà sáng tạo ra chữ. Sách <i>Hoài Nam Tử</i> kể khi Thương Hiệt làm ra chữ thì “trời mưa thóc, quỷ khóc đêm” — chữ viết là một biến cố vũ trụ. Kinh Dịch thì nói thời thượng cổ người ta <b>thắt nút dây</b> (kết thằng) để ghi nhớ, về sau thánh nhân thay bằng <b>thư khế</b> (khắc chữ).</p>
+<p>Thực tế, chữ Hán không do một người tạo ra mà hình thành dần qua nhiều thế hệ. Bằng chứng sớm nhất có hệ thống là <b>giáp cốt văn</b> 甲骨文 — chữ khắc trên mai rùa, xương thú dùng để bói của nhà Thương (khoảng thế kỷ XIV – XI TCN), tìm thấy ở Ân Khư (An Dương, Hà Nam). Câu chuyện phát hiện rất ly kỳ: năm 1899, Vương Ý Vinh, một quan chức kiêm nhà nghiên cứu đồ cổ, nhận ra những vết khắc trên các mảnh “long cốt” bán làm thuốc ở hiệu thuốc bắc là chữ cổ.</p>
+<p>Giáp cốt văn đã là một hệ chữ <b>hoàn chỉnh</b> (đã có đủ các phép tạo chữ của lục thư), với khoảng bốn nghìn chữ khác nhau, trong đó giới nghiên cứu đọc được khoảng một phần ba. Điều đó cho thấy chữ Hán phải có một quá trình phát triển dài trước đó mà ta chưa tìm được dấu vết đầy đủ. Các ký hiệu khắc trên đồ gốm thời đồ đá mới (như văn hoá Ngưỡng Thiều) có phải là tiền thân của chữ hay không vẫn còn tranh luận.</p>` },
+    { h: 'Các thể chữ qua ba nghìn năm', html: `<table class="ac-tbl"><tr><th>Thể chữ</th><th>Thời kỳ</th><th>Đặc điểm</th></tr>
+<tr><td><b>Giáp cốt văn</b> 甲骨文</td><td>Thương</td><td>Khắc bằng dao trên mai rùa, xương; nét mảnh, thẳng, gãy góc; hình chữ chưa cố định.</td></tr>
+<tr><td><b>Kim văn</b> 金文 (chung đỉnh văn)</td><td>Thương – Chu</td><td>Đúc trên đồ đồng (chuông, đỉnh); nét đầy, tròn. Đỉnh Mao Công (Tây Chu) có gần 500 chữ.</td></tr>
+<tr><td><b>Đại triện</b> 大篆</td><td>Cuối Chu, các nước Chiến Quốc</td><td>Mỗi nước một kiểu chữ khác nhau.</td></tr>
+<tr><td><b>Tiểu triện</b> 小篆</td><td>Tần (221 TCN)</td><td>Tần Thuỷ Hoàng thống nhất văn tự (“thư đồng văn”), Lý Tư chuẩn hoá; nét đều, tròn, cân đối. Nay còn dùng trên con dấu (“chữ triện”).</td></tr>
+<tr><td><b>Lệ thư</b> 隸書</td><td>Tần – Hán</td><td>Nét thẳng, có đầu tằm đuôi én; viết nhanh hơn triện. Đánh dấu bước ngoặt lớn nhất.</td></tr>
+<tr><td><b>Khải thư</b> 楷書 (chân thư)</td><td>Cuối Hán – Nguỵ Tấn, chín muồi đời Đường</td><td>Chữ chân phương, mẫu mực; là thể chữ in và viết chuẩn đến ngày nay.</td></tr>
+<tr><td><b>Hành thư</b> 行書</td><td>từ Đông Hán</td><td>Bán thảo, viết nhanh mà vẫn dễ đọc (Vương Hy Chi, <i>Lan Đình tự</i>).</td></tr>
+<tr><td><b>Thảo thư</b> 草書</td><td>từ Hán</td><td>Viết rất nhanh, nét liền, khó đọc; đỉnh cao là “cuồng thảo” của Trương Húc, Hoài Tố đời Đường.</td></tr></table>
+<p><b>Lệ biến</b> (隸變 — sự biến đổi sang lệ thư) là ranh giới quan trọng nhất: trước lệ thư là <b>cổ văn tự</b> (giáp cốt, kim văn, triện — còn giữ nhiều nét tượng hình), sau lệ thư là <b>kim văn tự</b> (lệ, khải — chữ đã thành những nét thẳng, tính tượng hình mờ đi). Vì thế, muốn hiểu cấu tạo gốc của một chữ (lục thư), phải nhìn về chữ <b>trước lệ biến</b>. Ví dụ: chân ngựa trong 馬 và đuôi cá trong 魚 sau lệ biến đều thành bốn chấm 灬 — trông như bộ hoả, nhưng chẳng liên quan đến lửa.</p>` },
+    { h: 'Phồn thể và giản thể', html: `<p>Năm 1956, nước Cộng hoà Nhân dân Trung Hoa ban hành <i>Phương án giản hoá chữ Hán</i>, rồi <i>Tổng biểu chữ giản hoá</i> (1964, điều chỉnh năm 1986). Chữ được giản hoá gọi là <b>giản thể</b> (简体); chữ truyền thống gọi là <b>phồn thể</b> (繁體). Đài Loan, Hồng Kông, Ma Cao vẫn dùng phồn thể; Nhật Bản có kiểu giản hoá riêng (shinjitai); Singapore, Malaysia dùng giản thể.</p>
+<p>Một số cách giản hoá: dùng hình chữ thảo (書 → 书), giản hoá bộ phận (言 → 讠: 說 → 说), lấy một phần đại diện (聲 → 声), và <b>dùng một chữ đồng âm thay cho nhiều chữ</b> (後 → 后, 髮 và 發 → 发, 乾 và 幹 → 干).</p>
+<p><b>Vì sao môn Hán Nôm học phồn thể?</b> Vì toàn bộ văn bản cổ — của Trung Quốc lẫn Việt Nam — đều viết bằng chữ phồn thể (chữ chính thể). Hơn nữa, cách giản hoá đồng âm tạo ra <b>bẫy “một giản – nhiều phồn”</b>: chữ 后 giản thể có thể là 后 (hoàng hậu) hoặc 後 (sau); 发 có thể là 發 (phát) hoặc 髮 (tóc); 干 có thể là 干 (can — cái khiên), 乾 (càn / can — khô) hoặc 幹 (cán — làm). Đọc văn cổ qua bản giản thể rất dễ hiểu sai. Khi tra cứu trên mạng hay dùng phần mềm, hãy chuyển về phồn thể.</p>` },
+    { h: 'Chữ Hán ở Việt Nam', html: `<p>Chữ Hán vào Việt Nam theo con đường lịch sử của thời Bắc thuộc, từ khoảng thế kỷ II TCN. Thái thú Sĩ Nhiếp (cuối thế kỷ II – đầu thế kỷ III) được người xưa tôn là “Nam Giao học tổ” — ông tổ của việc học chữ ở nước Nam. Sau khi giành độc lập (thế kỷ X), các triều đại Việt Nam vẫn dùng chữ Hán làm <b>văn tự chính thức</b>:</p>
+<ul><li>1070: Lý Thánh Tông lập Văn Miếu; 1075: khoa thi đầu tiên (Minh kinh bác học); 1076: Quốc Tử Giám.</li>
+<li>Văn bản hành chính, luật pháp, sử sách (Đại Việt sử ký toàn thư), văn chương bác học (Nam quốc sơn hà, Hịch tướng sĩ, Bình Ngô đại cáo) đều viết bằng chữ Hán.</li>
+<li>Song song, người Việt sáng tạo <b>chữ Nôm</b> (dựa trên chữ Hán) để ghi tiếng Việt, dùng cho văn chương dân tộc (Truyện Kiều).</li>
+<li>1919: khoa thi Hội cuối cùng ở Huế; đầu thế kỷ XX, chữ Quốc ngữ dần thay thế chữ Hán, chữ Nôm.</li></ul>
+<p>Kết quả là một kho di sản Hán Nôm khổng lồ: sách, văn bia, gia phả, sắc phong, hoành phi câu đối ở đình chùa. Viện Nghiên cứu Hán Nôm (thành lập năm 1979) lưu giữ hàng chục nghìn văn bản. Học Hán văn cổ chính là học để đọc được hơn một nghìn năm lịch sử thành văn của chính người Việt — và để hiểu vì sao tiếng Việt có nhiều từ Hán Việt đến vậy (bài 5).</p>` }
+  ],
+  texts: [
+    { title: 'Từ thắt nút dây đến khắc chữ', src: 'Kinh Dịch · Hệ từ hạ', lang: 'zh-TW',
+      orig: '上古結繩而治，後世聖人易之以書契。',
+      reading: 'Thượng cổ kết thằng nhi trị, hậu thế thánh nhân dịch chi dĩ thư khế.',
+      vi: 'Thời thượng cổ thắt nút dây mà trị (việc), đời sau thánh nhân thay nó bằng việc khắc chữ.',
+      notes: [['結繩 kết thằng', 'thắt nút dây (để ghi nhớ sự việc)'], ['治 trị', 'cai trị, sắp đặt công việc'], ['易 dịch', 'thay đổi (đọc “dịch”; đọc “dị” là “dễ”)'], ['之 chi', 'đại từ: việc thắt nút dây'], ['以 dĩ', 'giới từ: bằng'], ['書契 thư khế', 'khắc chữ (契 = khắc), tức chữ viết']],
+      guide: ['Chữ 易 có hai âm (dịch / dị). Ở đây đọc âm nào, vì sao?', 'Theo đoạn văn, chữ viết ra đời để đáp ứng nhu cầu gì?'],
+      comment: '<p>Đây là một trong những ghi chép cổ nhất về nguồn gốc chữ viết, nhìn chữ viết như một <b>công cụ cai trị, ghi nhớ</b>. Về ngữ pháp, câu có cấu trúc 易之以書契 = “thay nó bằng thư khế” — 以 là giới từ chỉ công cụ (bài 17). Chữ 易 đọc là <b>dịch</b> (thay đổi), cùng chữ với tên sách Kinh Dịch (Kinh về sự biến đổi); khi đọc là <b>dị</b> thì nghĩa là “dễ” — một ví dụ chữ nhiều âm (bài 5).</p>' },
+    { title: 'Trời mưa thóc, quỷ khóc đêm', src: 'Hoài Nam Tử · Bản kinh huấn', lang: 'zh-TW',
+      orig: '昔者倉頡作書，而天雨粟，鬼夜哭。',
+      reading: 'Tích giả Thương Hiệt tác thư, nhi thiên vũ túc, quỷ dạ khốc.',
+      vi: 'Ngày xưa Thương Hiệt làm ra chữ, thì trời mưa thóc, quỷ khóc ban đêm.',
+      notes: [['昔者 tích giả', 'ngày xưa (者 là hậu tố chỉ thời gian)'], ['作書 tác thư', 'làm ra chữ'], ['雨 vũ', 'danh từ “mưa” dùng như động từ: mưa xuống (khi là động từ, có sách ghi âm “vụ”)'], ['粟 túc', 'thóc'], ['夜 dạ', 'danh từ làm trạng ngữ: ban đêm'], ['哭 khốc', 'khóc']],
+      guide: ['Tìm một danh từ dùng như động từ và một danh từ làm trạng ngữ trong câu (nhớ bài 10).', 'Vì sao người xưa tưởng tượng sự ra đời của chữ viết lại kéo theo những dị tượng như vậy?'],
+      comment: '<p>Các nhà chú giải đời Hán giải thích: có chữ thì người ta bỏ nghề nông mà theo nghề viết lách, trời sợ dân đói nên mưa thóc xuống; quỷ sợ bị chữ viết (bùa chú) trấn áp nên khóc. Dù hiểu thế nào, câu chuyện cho thấy người xưa coi chữ viết là một <b>sức mạnh</b>, thay đổi cả quan hệ giữa con người với trời đất và thần linh.</p><p>Về ngữ pháp: <b>雨</b> (mưa) là danh từ dùng như động từ (trời <i>mưa</i> thóc), <b>夜</b> là danh từ làm trạng ngữ (khóc <i>ban đêm</i>). Ngay câu chuyện về nguồn gốc chữ đã chứa ngữ pháp bạn học ở Phần III.</p>' },
+    { title: 'Thống nhất văn tự', src: 'Sử ký · Tần Thuỷ Hoàng bản kỷ (trích)', lang: 'zh-TW',
+      orig: '一法度衡石丈尺，車同軌，書同文字。',
+      reading: 'Nhất pháp độ hành thạch trượng xích, xa đồng quỹ, thư đồng văn tự.',
+      vi: '(Tần Thuỷ Hoàng) thống nhất pháp độ, cân đo và thước tấc; xe cùng một cỡ trục, chữ viết cùng một kiểu chữ.',
+      notes: [['一 nhất', 'số từ dùng như động từ: thống nhất'], ['法度 pháp độ', 'luật lệ, chế độ'], ['衡石 hành thạch', 'cân và đơn vị cân (thạch)'], ['丈尺 trượng xích', 'đơn vị đo chiều dài'], ['軌 quỹ', 'khoảng cách giữa hai bánh xe'], ['書同文字 thư đồng văn tự', 'chữ viết dùng chung một kiểu chữ']],
+      guide: ['Chữ 一 (một) được dùng như loại từ nào ở đầu câu?', 'Vì sao thống nhất chữ viết lại quan trọng ngang với thống nhất đo lường và cỡ xe?'],
+      comment: '<p>Sau khi diệt sáu nước năm 221 TCN, Tần Thuỷ Hoàng thống nhất mọi thứ: luật, cân đo, cỡ xe, và <b>chữ viết</b> — lấy tiểu triện của nước Tần làm chuẩn, bỏ các kiểu chữ riêng của các nước. Cụm “書同文，車同軌” trở thành biểu tượng của sự thống nhất. Về lâu dài, việc có một hệ chữ chung giúp một vùng đất rộng lớn với rất nhiều phương ngữ vẫn đọc được văn bản của nhau.</p><p>Chữ <b>一</b> đứng đầu câu là số từ dùng như động từ (“làm cho thành một” — thống nhất), một dạng hoạt dụng (bài 15).</p>' }
+  ],
+  concepts: [
+    { id: 'hantu', han: '漢字', term: 'Chữ Hán: chữ ghi ý – âm', def: 'Mỗi chữ ghi một âm tiết có nghĩa, thống nhất hình – âm – nghĩa; có yếu tố biểu ý và biểu âm. Đọc khác nhau theo vùng nhưng nghĩa chung, nên từng là văn tự chung của Đông Á.', ex: '人: rén (Bắc Kinh), nhân (Hán Việt), hito / jin (Nhật) — đều là “người”.', counter: 'Chữ Quốc ngữ — chữ ghi âm, mỗi ký hiệu ghi một âm vị.', rel: ['the-chu', 'phon-gian'], write: '漢字' },
+    { id: 'giapcot', han: '甲骨文', term: 'Giáp cốt văn', def: 'Chữ khắc trên mai rùa, xương thú để bói của nhà Thương; phát hiện năm 1899 (Vương Ý Vinh) ở Ân Khư; đã là hệ chữ hoàn chỉnh, khoảng bốn nghìn chữ.', ex: 'Các câu hỏi bói về chiến tranh, mùa màng, bệnh tật của vua Thương.', counter: 'Kim văn — chữ đúc trên đồ đồng, nét đầy và tròn hơn.', rel: ['the-chu'], write: '甲骨' },
+    { id: 'the-chu', han: '篆 · 隸 · 楷', term: 'Các thể chữ và lệ biến', def: 'Giáp cốt → kim văn → đại triện → tiểu triện (Tần) → lệ thư → khải thư; hành thư, thảo thư. Lệ biến là ranh giới giữa cổ văn tự (còn tượng hình) và kim văn tự (nét thẳng).', ex: 'Sau lệ biến, chân ngựa (馬) và đuôi cá (魚) đều thành 灬.', counter: 'Kiểu chữ in (font) như Tống thể, Hắc thể — là kiểu trình bày của khải thư, không phải thể chữ khác.', rel: ['giapcot', 'hantu'], write: '隸' },
+    { id: 'phon-gian', han: '繁體 · 簡體', term: 'Phồn thể và giản thể', def: 'Giản thể: chữ giản hoá ở CHND Trung Hoa từ 1956; phồn thể: chữ truyền thống. Văn bản cổ dùng phồn thể. Bẫy: một chữ giản thể có thể ứng với nhiều chữ phồn thể.', ex: '后 = 后 (hậu) / 後 (sau); 发 = 發 (phát) / 髮 (tóc); 干 = 干 / 乾 / 幹.', counter: 'Biến thể chữ cổ (dị thể tự) như 峰 / 峯 — cùng một chữ, khác cách viết, không do giản hoá.', rel: ['hantu'], write: '繁' },
+    { id: 'hanvn', han: '漢字在越南', term: 'Chữ Hán ở Việt Nam', def: 'Vào Việt Nam từ thời Bắc thuộc; là văn tự chính thức đến đầu thế kỷ XX: Văn Miếu 1070, khoa thi đầu 1075, Quốc Tử Giám 1076, khoa thi cuối 1919. Song song có chữ Nôm.', ex: 'Nam quốc sơn hà, Hịch tướng sĩ, Bình Ngô đại cáo, Đại Việt sử ký toàn thư.', counter: 'Chữ Nôm — chữ dựa trên chữ Hán để ghi tiếng Việt, không phải chữ Hán.', rel: ['hantu'], write: '越' }
+  ],
+  drills: [
+    { t: 'mcq', q: 'Chữ Hán được xếp vào loại chữ nào?', o: ['Chữ ghi âm thuần tuý', 'Chữ ghi ý – âm (mỗi chữ ghi một âm tiết có nghĩa)', 'Chữ tượng hình thuần tuý', 'Chữ ghi âm tiết không có nghĩa'], a: 1, why: 'Mỗi chữ thống nhất hình – âm – nghĩa, có yếu tố biểu ý và biểu âm (rõ nhất ở chữ hình thanh).' },
+    { t: 'mcq', q: 'Giáp cốt văn được phát hiện năm nào, trên vật liệu gì?', o: ['1899, mai rùa và xương thú', '221 TCN, thẻ tre', '1716, giấy', '1956, đồ đồng'], a: 0, why: 'Vương Ý Vinh nhận ra chữ trên các mảnh “long cốt” năm 1899; chữ của nhà Thương khắc để bói.' },
+    { t: 'mcq', q: 'Ai thống nhất văn tự, lấy tiểu triện làm chuẩn?', o: ['Chu Công', 'Tần Thuỷ Hoàng (với Lý Tư)', 'Hán Vũ Đế', 'Khổng Tử'], a: 1, why: '“書同文” — năm 221 TCN sau khi diệt sáu nước.' },
+    { t: 'mcq', q: '“Lệ biến” là ranh giới giữa:', o: ['Phồn thể và giản thể', 'Cổ văn tự (còn tượng hình) và kim văn tự (nét thẳng)', 'Chữ Hán và chữ Nôm', 'Hành thư và thảo thư'], a: 1, why: 'Từ triện sang lệ, chữ mất dần tính tượng hình; vì thế tìm nguồn gốc chữ phải nhìn chữ trước lệ biến.' },
+    { t: 'mcq', q: 'Thể chữ chuẩn để in và viết hiện nay là:', o: ['Tiểu triện', 'Lệ thư', 'Khải thư', 'Thảo thư'], a: 2, why: 'Khải thư (chân thư) chín muồi đời Đường, là chữ chân phương mẫu mực đến nay.' },
+    { t: 'mcq', ch: '灬', q: 'Bốn chấm 灬 trong chữ 馬 (ngựa) là gì?', o: ['Bộ hoả (lửa)', 'Bốn chân ngựa, biến đổi sau lệ biến', 'Dấu chỉ số nhiều', 'Bộ thuỷ'], a: 1, why: 'Trong chữ cổ, đó là chân ngựa; sau lệ biến thành 灬, trông giống bộ hoả. Tương tự đuôi cá trong 魚.' },
+    { t: 'mcq', ch: '后', q: 'Trong một bản giản thể, gặp chữ 后. Bản phồn thể có thể là:', o: ['Chỉ có 后 (hoàng hậu)', '后 (hoàng hậu) hoặc 後 (sau)', 'Chỉ có 後', '候 (chờ)'], a: 1, why: 'Giản hoá đồng âm gộp hai chữ: đây là bẫy “một giản – nhiều phồn”.' },
+    { t: 'mcq', q: 'Khoa thi đầu tiên ở Việt Nam và khoa thi cuối cùng diễn ra năm nào?', o: ['1070 và 1945', '1075 và 1919', '1010 và 1884', '1076 và 1858'], a: 1, why: '1075: khoa Minh kinh bác học thời Lý Nhân Tông; 1919: khoa thi Hội cuối cùng ở Huế.' },
+    { t: 'mcq', ch: '易', q: 'Chữ 易 trong 易之以書契 đọc là gì?', o: ['dị — dễ', 'dịch — thay đổi', 'dịch — Kinh Dịch (tên sách)', 'dị — khác'], a: 1, why: 'Đây là động từ “thay đổi”: thay (việc thắt nút) bằng chữ viết.' },
+    { t: 'tr', src: '上古結繩而治，後世聖人易之以書契。', rd: 'Thượng cổ kết thằng nhi trị, hậu thế thánh nhân dịch chi dĩ thư khế.', a: 'Thời thượng cổ thắt nút dây mà trị việc, đời sau thánh nhân thay nó bằng chữ khắc.', why: '結繩: thắt nút dây; 易: thay; 之: nó (việc thắt nút); 以: bằng; 書契: chữ khắc.' },
+    { t: 'tr', src: '車同軌，書同文字。', rd: 'Xa đồng quỹ, thư đồng văn tự.', a: 'Xe cùng một cỡ trục, chữ viết cùng một kiểu chữ.', why: '同: cùng (hình dung từ làm vị ngữ); 軌: cỡ trục xe; 書: chữ viết; 文字: kiểu chữ.' }
+  ],
+  socra: ['Vì sao chữ Hán có thể được đọc khác nhau ở mỗi nước mà vẫn hiểu chung một nghĩa? Chữ Quốc ngữ có làm được vậy không?', 'Lệ biến ảnh hưởng thế nào đến việc tìm hiểu nguồn gốc một chữ?', 'Bạn thử kể một trường hợp đọc bản giản thể có thể gây hiểu sai nghĩa văn cổ.'],
+  feynman: 'Kể lại cho một người bạn hành trình của chữ Hán từ giáp cốt văn đến khải thư trong 6–8 câu, và giải thích vì sao học Hán Nôm phải dùng phồn thể.',
+  essay: 'Tìm một văn bản Hán Nôm ở nơi bạn sống hoặc từng đến (hoành phi, câu đối, văn bia ở đình, chùa, Văn Miếu). Chụp ảnh, chép lại các chữ bạn nhận ra, và ghi những chữ chưa biết để tra ở bài 4.',
+  exam: {
+    points: ['Chữ Hán: chữ ghi ý – âm, mỗi chữ thống nhất hình – âm – nghĩa; từng là văn tự chung Đông Á', 'Số lượng: Thuyết văn 9.353 chữ; Khang Hy ~47.000; thường dùng ~3.500', 'Nguồn gốc: truyền thuyết Thương Hiệt, kết thằng → thư khế; giáp cốt văn (Thương, phát hiện 1899)', 'Thể chữ: giáp cốt → kim văn → đại triện → tiểu triện (Tần, thư đồng văn) → lệ → khải; hành, thảo', 'Lệ biến: ranh giới cổ văn tự / kim văn tự; 灬 trong 馬, 魚 không phải lửa', 'Phồn thể / giản thể (1956); bẫy một giản nhiều phồn (后/後, 发/發/髮, 干/乾/幹)', 'Chữ Hán ở VN: Bắc thuộc, Sĩ Nhiếp; Văn Miếu 1070, khoa thi 1075, Quốc Tử Giám 1076, khoa cuối 1919'],
+    qs: ['Nếu chữ Hán là “khó”, vì sao nó tồn tại lâu hơn hầu hết mọi hệ chữ khác trên thế giới?', 'Việc thay chữ Hán bằng chữ Quốc ngữ đem lại gì và làm mất gì?']
+  },
+  readings: ['Giáo trình của lớp: phần Khái quát về chữ Hán', 'Xem ảnh giáp cốt văn và đỉnh Mao Công (tìm trên các trang bảo tàng) để thấy hình chữ cổ', 'Tìm hiểu về Văn Miếu – Quốc Tử Giám và 82 bia tiến sĩ']
+};
+
+const HV_LUCTHU1 = {
+  id: 'hv-lucthu1', kind: 'lang', short: 'Lục thư I', title: 'Văn và tự · Lục thư (I): tượng hình, chỉ sự, hội ý', sub: 'Sáu phép cấu tạo chữ theo Hứa Thận; ba phép đầu tạo nên những chữ gốc — và cuộc tranh luận quanh chữ 武', who: 'Phần I · Chữ Hán',
+  goals: ['Trình bày nguồn gốc khái niệm lục thư (Chu lễ, Ban Cố, Hứa Thận) và thuyết “tứ thể nhị dụng”', 'Định nghĩa và nhận diện chữ tượng hình, chỉ sự, hội ý, kèm ví dụ', 'Liên hệ văn / tự với lục thư', 'Phân biệt chiết tự khoa học với chiết tự dân gian'],
+  q: 'Chữ 休 vẽ một người tựa vào gốc cây — “nghỉ ngơi”. Chữ 明 ghép mặt trời và mặt trăng — “sáng”. Nếu chữ Hán đều “đọc” được như tranh thế này thì học dễ biết bao. Vậy vì sao chỉ một phần nhỏ chữ Hán là như vậy?',
+  context: '<p>Lục thư (六書 — sáu phép làm chữ) là khung lý thuyết truyền thống để giải thích cấu tạo chữ Hán, và là phần gần như chắc chắn có trong mọi đề thi Hán Nôm. Bài này học ba phép đầu — <b>tượng hình, chỉ sự, hội ý</b> — những phép tạo ra các chữ “gốc”. Bài sau học ba phép còn lại — <b>hình thanh, chuyển chú, giả tá</b> — những phép giúp chữ Hán sinh sôi thành hàng vạn chữ.</p>',
+  lecture: [
+    { h: 'Lục thư: tên gọi, nguồn gốc và cách hiểu', html: `<p>Tên “lục thư” xuất hiện sớm nhất trong <i>Chu lễ</i>: quan Bảo thị dạy con em quý tộc “lục nghệ”, trong đó có “lục thư” — nhưng không nói sáu phép ấy là gì. Đến đời Hán, ba học giả đưa ra danh mục cụ thể, với tên gọi và thứ tự hơi khác nhau:</p>
+<ul><li><b>Ban Cố</b> (Hán thư · Nghệ văn chí): tượng hình, tượng sự, tượng ý, tượng thanh, chuyển chú, giả tá.</li>
+<li><b>Trịnh Chúng</b>: tượng hình, hội ý, chuyển chú, xứ sự, giả tá, hài thanh.</li>
+<li><b>Hứa Thận</b> (Thuyết văn giải tự tự, năm 100): chỉ sự, tượng hình, hình thanh, hội ý, chuyển chú, giả tá — kèm <b>định nghĩa và ví dụ</b> cho từng phép.</li></ul>
+<p>Ngày nay người ta thường dùng <b>tên gọi của Hứa Thận theo thứ tự của Ban Cố</b>: tượng hình, chỉ sự, hội ý, hình thanh, chuyển chú, giả tá.</p>
+<p>Đến đời Thanh, Đái Chấn đưa ra thuyết <b>“tứ thể nhị dụng”</b> (bốn thể, hai dụng): tượng hình, chỉ sự, hội ý, hình thanh là bốn cách <b>tạo chữ</b>; chuyển chú và giả tá là hai cách <b>dùng chữ</b> (không tạo ra chữ mới, mà dùng chữ có sẵn theo cách khác). Cách hiểu này được nhiều giáo trình hiện nay chấp nhận.</p>
+<p><b>Liên hệ với văn / tự</b> (bài 6): chữ tượng hình và chỉ sự phần lớn là <b>văn</b> (chữ đơn thể, một khối); chữ hội ý và hình thanh là <b>tự</b> (chữ hợp thể, ghép từ các văn).</p>` },
+    { h: 'Tượng hình 象形: vẽ hình sự vật', html: `<p>Hứa Thận: “Tượng hình là vẽ thành hình vật, theo đường nét của vật mà uốn lượn; 日, 月 là như vậy.” Tức là <b>mô phỏng hình dáng</b> sự vật cụ thể.</p>
+<table class="ac-tbl"><tr><th>Chữ</th><th>Hình gốc (theo chữ cổ)</th></tr>
+<tr><td>日 nhật</td><td>vòng tròn có chấm ở giữa — mặt trời</td></tr>
+<tr><td>月 nguyệt</td><td>vầng trăng khuyết</td></tr>
+<tr><td>山 sơn</td><td>ba đỉnh núi</td></tr>
+<tr><td>水 thuỷ</td><td>dòng nước chảy, hai bên là gợn sóng</td></tr>
+<tr><td>木 mộc</td><td>cái cây có cành và rễ</td></tr>
+<tr><td>人 nhân</td><td>người đứng nghiêng, thấy tay và chân</td></tr>
+<tr><td>目 mục</td><td>con mắt (vốn nằm ngang, sau dựng đứng)</td></tr>
+<tr><td>馬 mã</td><td>con ngựa có bờm, bốn chân (灬) và đuôi</td></tr>
+<tr><td>魚 ngư</td><td>con cá có đầu, vảy, đuôi (灬)</td></tr>
+<tr><td>門 môn</td><td>cánh cổng hai cánh</td></tr>
+<tr><td>雨 vũ</td><td>mây và những hạt mưa rơi</td></tr></table>
+<p><b>Giới hạn</b>: chỉ vẽ được những <b>vật cụ thể, nhìn thấy được</b>. Những khái niệm trừu tượng (trên, dưới, yêu, ghét, tốt, xấu) không vẽ được. Vì vậy chữ tượng hình chỉ chiếm một phần rất nhỏ — theo thống kê thường được dẫn, khoảng 364 trong 9.353 chữ của Thuyết văn. Nhưng chúng là <b>vật liệu gốc</b> để ghép nên các chữ khác.</p>` },
+    { h: 'Chỉ sự 指事: dùng ký hiệu chỉ ra ý', html: `<p>Hứa Thận: “Chỉ sự là nhìn thì nhận ra, xét thì thấy được ý; 上, 下 là như vậy.” Tức là dùng <b>ký hiệu</b> (vạch, chấm) để biểu thị một ý trừu tượng. Có hai kiểu:</p>
+<ol><li><b>Ký hiệu thuần tuý</b>: 一, 二, 三 (số vạch); 上 thượng (một vạch ngắn ở <i>trên</i> một vạch dài), 下 hạ (vạch ngắn ở <i>dưới</i>).</li>
+<li><b>Thêm ký hiệu vào chữ tượng hình</b> để chỉ vào một bộ phận:
+<ul><li>本 bản: 木 + vạch ở <b>gốc</b> → gốc cây.</li><li>末 mạt: 木 + vạch ở <b>ngọn</b> → ngọn cây.</li><li>刃 nhận: 刀 (dao) + một chấm ở <b>lưỡi</b> → lưỡi dao.</li><li>朱 chu: 木 + vạch ở <b>thân</b> → lõi cây màu đỏ → màu đỏ.</li><li>甘 cam: 口 (miệng) + vạch bên trong → miệng ngậm vật ngon → ngọt.</li><li>亦 diệc: 大 (người dang tay) + hai chấm ở <b>nách</b> → nách (sau bị mượn làm phó từ “cũng”, nên phải tạo chữ 腋 cho nghĩa “nách”).</li></ul></li></ol>
+<p>Chữ chỉ sự rất ít (khoảng 125 chữ trong Thuyết văn). Điểm khác với tượng hình: tượng hình vẽ <b>vật</b>, chỉ sự chỉ ra <b>một điểm, một vị trí, một quan hệ</b>.</p>` },
+    { h: 'Hội ý 會意: ghép nghĩa để ra nghĩa mới', html: `<p>Hứa Thận: “Hội ý là ghép các loại lại, hợp nghĩa của chúng, để thấy được ý chỉ; 武, 信 là như vậy.” Tức là <b>ghép hai hay nhiều chữ có sẵn</b>, nghĩa của chữ mới do nghĩa các thành phần gợi ra.</p>
+<p><b>Ghép các chữ giống nhau</b>:</p>
+<ul><li>林 lâm (2 cây → rừng), 森 sâm (3 cây → rừng rậm, um tùm).</li><li>從 tòng — chữ gốc 从: hai người, người sau theo người trước → theo.</li><li>眾 chúng — gốc là ba người → đông người.</li></ul>
+<p><b>Ghép các chữ khác nhau</b>:</p>
+<ul><li>明 minh = 日 + 月 → sáng.</li><li>休 hưu = 人 + 木 → người tựa gốc cây → nghỉ.</li><li>好 hảo = 女 + 子 → người mẹ bế con → tốt, đẹp.</li><li>信 tín = 人 + 言 → lời của người (phải giữ) → tin.</li><li>男 nam = 田 + 力 → sức lực ở ruộng → đàn ông.</li><li>安 an = 宀 (mái nhà) + 女 → người phụ nữ ở trong nhà → yên.</li><li>鳴 minh = 口 + 鳥 → chim kêu.</li><li>杲 cảo (mặt trời trên ngọn cây → sáng rõ) đối với 杳 yểu (mặt trời dưới gốc cây → tối mịt).</li><li>解 giải = 角 + 刀 + 牛 → mổ trâu (nhớ bài 8).</li></ul>
+<p>Hội ý giải quyết được vấn đề của tượng hình: biểu thị được hành động và khái niệm trừu tượng. Nhưng nó vẫn có giới hạn: không phải ý nào cũng ghép được bằng hình ảnh, và người đọc dễ hiểu theo nhiều cách. Hội ý chiếm khoảng 1.167 chữ trong Thuyết văn (theo thống kê thường dẫn).</p>` },
+    { h: 'Chữ 武: “ngừng giáo là võ”?', html: `<p>Hứa Thận chọn 武 làm ví dụ cho hội ý, dựa vào một câu trong <i>Tả truyện</i>: Sở Trang vương nói <span class="han">夫文，止戈為武</span> — “Xét về chữ, ngừng (止) cây giáo (戈) là võ (武).” Ý nghĩa đẹp: võ thật sự là để chấm dứt chiến tranh. Cách giải thích này được truyền tụng hai nghìn năm.</p>
+<p>Nhưng nghiên cứu giáp cốt văn và kim văn cho thấy: chữ 止 trong chữ cổ là hình <b>bàn chân</b> (nghĩa gốc của 止 là “chân”, về sau mới có nghĩa “dừng”). Vậy 武 = bàn chân + cây giáo → <b>vác giáo mà đi</b>, tức là hành quân, đánh trận — một nghĩa hoàn toàn ngược với “ngừng giáo”. Nhiều nhà văn tự học hiện đại nghiêng về cách giải thích này.</p>
+<p><b>Bài học phương pháp</b>: (1) Hứa Thận vĩ đại nhưng không phải lúc nào cũng đúng — ông không được thấy giáp cốt văn (phát hiện năm 1899). (2) Phân tích cấu tạo chữ phải dựa vào <b>hình chữ cổ</b>, không chỉ hình chữ khải hiện nay. (3) Một cách giải thích có thể sai về văn tự học mà vẫn có giá trị về tư tưởng: “chỉ qua vi vũ” là một quan niệm đạo đức về chiến tranh, đáng nhớ theo nghĩa đó.</p>` },
+    { h: 'Chiết tự khoa học và chiết tự dân gian', html: `<p>Người Việt có truyền thống <b>chiết tự</b> (tách chữ) rất phong phú — trong câu đố, câu đối, thơ, bói toán: “Chữ 好 là gái với trai”, “Chữ 囚 người ở trong vòng — là tù”. Chiết tự là cách tuyệt vời để <b>nhớ chữ</b>.</p>
+<p>Nhưng cần phân biệt:</p>
+<ul><li><b>Chiết tự khoa học</b> (văn tự học): dựa trên hình chữ cổ và lục thư để tìm cấu tạo thật của chữ.</li>
+<li><b>Chiết tự dân gian</b>: dựa trên hình chữ hiện nay để đặt ra câu chuyện dễ nhớ — có thể trùng hoặc không trùng với nguồn gốc thật.</li></ul>
+<p>Ví dụ: chữ 忍 nhẫn thường được giải là “con dao (刃) đâm vào tim (心) mà vẫn chịu” — một câu chuyện rất hay để nhớ. Nhưng về văn tự học, 忍 là <b>chữ hình thanh</b>: 心 chỉ nghĩa (thuộc về lòng), 刃 (nhận) chỉ âm (nhận – nhẫn gần âm) — bài 3. Bạn hoàn toàn có thể dùng chiết tự dân gian để nhớ, miễn là khi làm bài phân tích cấu tạo thì dùng lục thư.</p>` }
+  ],
+  texts: [
+    { title: 'Lục thư trong Chu lễ', src: 'Chu lễ · Địa quan · Bảo thị', lang: 'zh-TW',
+      orig: '保氏掌諫王惡，而養國子以道，乃教之六藝：一曰五禮，二曰六樂，三曰五射，四曰五馭，五曰六書，六曰九數。',
+      reading: 'Bảo thị chưởng gián vương ác, nhi dưỡng quốc tử dĩ đạo, nãi giáo chi lục nghệ: nhất viết ngũ lễ, nhị viết lục nhạc, tam viết ngũ xạ, tứ viết ngũ ngự, ngũ viết lục thư, lục viết cửu số.',
+      vi: 'Quan Bảo thị coi việc can ngăn điều sai của vua, và nuôi dạy con em quý tộc bằng đạo; bèn dạy họ sáu nghề: một là năm lễ, hai là sáu nhạc, ba là năm phép bắn, bốn là năm phép đánh xe, năm là sáu phép chữ (lục thư), sáu là chín phép tính.',
+      notes: [['保氏 Bảo thị', 'chức quan dạy dỗ con em quý tộc'], ['掌 chưởng', 'nắm, coi giữ'], ['諫 gián', 'can ngăn'], ['國子 quốc tử', 'con em các nhà quý tộc'], ['乃 nãi', 'bèn'], ['六藝 lục nghệ', 'sáu nghề: lễ, nhạc, xạ, ngự, thư, số'], ['曰 viết', 'hệ từ: là'], ['馭 ngự', 'đánh xe']],
+      guide: ['Lục thư được xếp vào hệ thống giáo dục nào? Điều đó nói gì về vị trí của chữ viết?', 'Tìm cấu trúc lặp lại “一曰…，二曰…”. 曰 ở đây có chức năng gì (nhớ bài 11)?'],
+      comment: '<p>Đây là lần đầu tiên tên “lục thư” xuất hiện — nằm trong <b>lục nghệ</b>, sáu môn học của con em quý tộc nhà Chu (cũng chính là lục nghệ mà Khổng Tử dạy — khoá Triết học Trung Quốc, bài 3). Chu lễ không giải thích lục thư là gì; việc giải thích là công của các học giả đời Hán. Lưu ý: <i>Chu lễ</i> có lẽ được biên soạn muộn (thời Chiến Quốc – Hán), nên đoạn này phản ánh quan niệm về giáo dục nhà Chu hơn là ghi chép trực tiếp.</p><p>Cấu trúc <b>一曰…二曰…</b> — “một là…, hai là…” — dùng <b>曰</b> như hệ từ “là”, rất hay gặp khi liệt kê.</p>' },
+    { title: 'Định nghĩa ba phép đầu của Hứa Thận', src: 'Hứa Thận, Thuyết văn giải tự · Tự (trích)', lang: 'zh-TW',
+      orig: '周禮八歲入小學，保氏教國子，先以六書。一曰指事。指事者，視而可識，察而見意，上下是也。二曰象形。象形者，畫成其物，隨體詰詘，日月是也。……四曰會意。會意者，比類合誼，以見指撝，武信是也。',
+      reading: 'Chu lễ bát tuế nhập tiểu học, Bảo thị giáo quốc tử, tiên dĩ lục thư. Nhất viết chỉ sự. Chỉ sự giả, thị nhi khả thức, sát nhi kiến ý, thượng hạ thị dã. Nhị viết tượng hình. Tượng hình giả, hoạ thành kỳ vật, tuỳ thể cật khuất, nhật nguyệt thị dã. …… Tứ viết hội ý. Hội ý giả, tỉ loại hợp nghị, dĩ kiến chỉ huy, vũ tín thị dã.',
+      vi: 'Theo lễ nhà Chu, tám tuổi vào tiểu học, quan Bảo thị dạy con em quý tộc, trước hết dạy lục thư. Một là chỉ sự. Chỉ sự là nhìn thì nhận ra, xét kỹ thì thấy ý; chữ 上, 下 là như vậy. Hai là tượng hình. Tượng hình là vẽ thành hình vật, theo đường nét của vật mà uốn lượn; chữ 日, 月 là như vậy. …… Bốn là hội ý. Hội ý là ghép các loại lại, hợp nghĩa của chúng, để thấy được ý chỉ; chữ 武, 信 là như vậy.',
+      notes: [['小學 tiểu học', 'bậc học vỡ lòng (học chữ); về sau “tiểu học” còn là tên ngành văn tự – âm vận – huấn hỗ'], ['識 thức', 'nhận biết'], ['詰詘 cật khuất', 'uốn lượn, quanh co'], ['比類 tỉ loại', 'đặt các loại (chữ) cạnh nhau'], ['誼 nghị', '= 義: nghĩa'], ['指撝 chỉ huy', 'ý chỉ, ý hướng tới (撝 = 揮)'], ['是也 thị dã', '“là như vậy” — 是 là đại từ chỉ thị: (chữ) này']],
+      guide: ['Mỗi định nghĩa có cấu trúc “… 者，…，… 是也”. Chia mỗi định nghĩa thành hai phần: định nghĩa và ví dụ.', 'Hứa Thận xếp chỉ sự trước tượng hình. Ban Cố xếp ngược lại. Thứ tự nào hợp lý hơn theo bạn?'],
+      comment: '<p>Đây là <b>đoạn văn quan trọng nhất</b> của môn văn tự học chữ Hán: Hứa Thận định nghĩa mỗi phép bằng hai câu bốn chữ, rồi cho hai chữ làm ví dụ. Học thuộc mấy câu này (chỉ sự: “thị nhi khả thức, sát nhi kiến ý”; tượng hình: “hoạ thành kỳ vật, tuỳ thể cật khuất”; hội ý: “tỉ loại hợp nghị, dĩ kiến chỉ huy”) là có nền móng để trả lời mọi câu hỏi về lục thư.</p><p>Về ngữ pháp, cấu trúc <b>…者，…也</b> là câu phán đoán (bài 26); <b>上下是也</b> có 是 là <b>đại từ chỉ thị</b> (“chữ 上 下 là cái này”), đúng như bài 11 đã nói — thời Hán 是 vẫn thường là đại từ.</p>' },
+    { title: '“Ngừng giáo là võ”', src: 'Tả truyện · Tuyên công năm thứ 12 (trích)', lang: 'zh-TW',
+      orig: '夫文，止戈為武。……夫武，禁暴、戢兵、保大、定功、安民、和眾、豐財者也。',
+      reading: 'Phù văn, chỉ qua vi vũ. …… Phù vũ, cấm bạo, tập binh, bảo đại, định công, an dân, hoà chúng, phong tài giả dã.',
+      vi: 'Xét về chữ, ngừng giáo là võ. …… Võ là để ngăn bạo tàn, cất binh khí, giữ nước lớn, định công nghiệp, yên dân, hoà hợp mọi người, làm giàu của cải vậy.',
+      notes: [['夫 phù', 'trợ từ đầu câu, nêu đề tài: “xét…, phàm…”'], ['文 văn', 'chữ (văn tự)'], ['止 chỉ', 'dừng; nghĩa gốc trong chữ cổ: bàn chân'], ['戈 qua', 'cây giáo (binh khí)'], ['為 vi', 'hệ từ: là'], ['戢 tập', 'cất giấu (binh khí)'], ['者也 giả dã', 'cuối câu phán đoán: “là cái … vậy”']],
+      guide: ['Theo Sở Trang vương, mục đích của “võ” là gì? Đó là một định nghĩa văn tự học hay một quan niệm đạo đức?', 'Nếu 止 vốn là “bàn chân”, chữ 武 có nghĩa gốc là gì?'],
+      comment: '<p>Sau khi đại thắng quân Tấn, có người khuyên Sở Trang vương đắp gò xác quân địch để khoe võ công. Nhà vua từ chối, nói rằng chữ “võ” là “ngừng giáo”, và liệt kê bảy đức của võ (ngăn bạo, cất binh, giữ nước…). Đây là một trong những đoạn văn đẹp nhất của Tả truyện về đạo đức chiến tranh.</p><p>Về văn tự học, như bài giảng đã nói, nhiều khả năng 止 trong 武 là bàn chân (đi), và 武 vốn chỉ việc vác giáo hành quân. Hãy giữ cả hai trong đầu: một cách đọc về <b>nguồn gốc chữ</b>, một cách đọc về <b>ý nghĩa đạo đức</b> mà người xưa gửi vào chữ.</p>' }
+  ],
+  concepts: [
+    { id: 'lucthu', han: '六書', term: 'Lục thư', def: 'Sáu phép cấu tạo / sử dụng chữ Hán: tượng hình, chỉ sự, hội ý, hình thanh, chuyển chú, giả tá. Tên có trong Chu lễ; Hứa Thận định nghĩa và cho ví dụ. Đái Chấn: “tứ thể nhị dụng” (4 cách tạo chữ, 2 cách dùng chữ).', ex: 'Tượng hình 日; chỉ sự 上; hội ý 明; hình thanh 江; chuyển chú 考 老; giả tá 令 長.', counter: 'Bộ thủ — cách xếp chữ trong từ điển, không phải phép cấu tạo chữ.', rel: ['tuonghinh', 'chisu', 'hoiy'], write: '六書' },
+    { id: 'tuonghinh', han: '象形', term: 'Tượng hình', def: '“Hoạ thành kỳ vật, tuỳ thể cật khuất” — vẽ hình sự vật cụ thể. Chỉ biểu thị được vật nhìn thấy; số lượng ít nhưng là vật liệu gốc.', ex: '日, 月, 山, 水, 木, 人, 目, 馬, 魚, 門, 雨.', counter: 'Chỉ sự 上, 下 — dùng ký hiệu chỉ vị trí, không vẽ vật.', rel: ['lucthu', 'chisu'], write: '象' },
+    { id: 'chisu', han: '指事', term: 'Chỉ sự', def: '“Thị nhi khả thức, sát nhi kiến ý” — dùng ký hiệu (vạch, chấm) biểu thị ý trừu tượng; thuần ký hiệu hoặc thêm ký hiệu vào chữ tượng hình.', ex: '一, 二, 三, 上, 下; 本, 末, 刃, 朱, 甘, 亦.', counter: 'Hội ý — ghép các chữ có nghĩa, không chỉ thêm ký hiệu.', rel: ['tuonghinh', 'hoiy'], write: '本末' },
+    { id: 'hoiy', han: '會意', term: 'Hội ý', def: '“Tỉ loại hợp nghị, dĩ kiến chỉ huy” — ghép hai hay nhiều chữ có sẵn, nghĩa chữ mới do nghĩa các thành phần gợi ra; ghép chữ giống nhau hoặc khác nhau.', ex: '林, 森, 從, 眾; 明, 休, 好, 信, 男, 安, 鳴, 解.', counter: 'Hình thanh 江 — một phần chỉ nghĩa (氵), một phần chỉ âm (工), không phải hai phần nghĩa ghép lại.', rel: ['chisu', 'chiettu'], write: '休' },
+    { id: 'chiettu', han: '拆字', term: 'Chiết tự khoa học và dân gian', def: 'Chiết tự khoa học dựa vào hình chữ cổ và lục thư để tìm cấu tạo thật; chiết tự dân gian dựa vào hình chữ hiện nay để tạo câu chuyện dễ nhớ — có thể sai về nguồn gốc.', ex: '忍: dân gian “dao đâm tim”; khoa học: hình thanh (心 nghĩa + 刃 âm). 武: “ngừng giáo” (Tả truyện) hay “vác giáo đi” (giáp cốt).', counter: 'Phân tích dựa trên chữ trước lệ biến — đó là chiết tự khoa học.', rel: ['hoiy'], write: '忍' }
+  ],
+  drills: [
+    { t: 'mcq', ch: '日', q: 'Chữ 日 thuộc phép nào?', o: ['Tượng hình', 'Chỉ sự', 'Hội ý', 'Hình thanh'], a: 0, why: 'Vẽ hình mặt trời — tượng hình (chính là ví dụ Hứa Thận dùng).' },
+    { t: 'mcq', ch: '上', q: 'Chữ 上 thuộc phép nào?', o: ['Tượng hình', 'Chỉ sự', 'Hội ý', 'Giả tá'], a: 1, why: 'Vạch ngắn đặt trên vạch dài để chỉ vị trí “trên” — chỉ sự (ví dụ của Hứa Thận).' },
+    { t: 'mcq', ch: '本', q: 'Chữ 本 (gốc cây) thuộc phép nào?', o: ['Tượng hình', 'Chỉ sự (木 + vạch chỉ vào gốc)', 'Hội ý', 'Hình thanh'], a: 1, why: 'Thêm một ký hiệu vào chữ tượng hình 木 để chỉ phần gốc → chỉ sự.' },
+    { t: 'mcq', ch: '休', q: 'Chữ 休 (nghỉ) thuộc phép nào?', o: ['Tượng hình', 'Chỉ sự', 'Hội ý (人 + 木)', 'Hình thanh'], a: 2, why: 'Người tựa vào gốc cây: ghép nghĩa hai chữ → hội ý.' },
+    { t: 'mcq', ch: '森', q: 'Chữ 森 (rừng rậm) thuộc kiểu nào?', o: ['Tượng hình', 'Hội ý ghép các chữ giống nhau', 'Hội ý ghép các chữ khác nhau', 'Chỉ sự'], a: 1, why: 'Ba chữ 木 ghép lại → hội ý (ghép chữ giống nhau).' },
+    { t: 'mcq', q: 'Định nghĩa “hoạ thành kỳ vật, tuỳ thể cật khuất” là của phép nào?', o: ['Chỉ sự', 'Tượng hình', 'Hội ý', 'Hình thanh'], a: 1, why: 'Vẽ thành hình vật, theo đường nét của vật mà uốn lượn → tượng hình.' },
+    { t: 'mcq', q: 'Thuyết “tứ thể nhị dụng” của Đái Chấn cho rằng hai phép nào là cách DÙNG chữ (không tạo chữ mới)?', o: ['Tượng hình và chỉ sự', 'Hội ý và hình thanh', 'Chuyển chú và giả tá', 'Chỉ sự và giả tá'], a: 2, why: 'Bốn thể (tạo chữ): tượng hình, chỉ sự, hội ý, hình thanh; hai dụng (dùng chữ): chuyển chú, giả tá.' },
+    { t: 'mcq', ch: '武', q: 'Vì sao cách giải 武 = “ngừng giáo” (止戈為武) bị nhiều nhà văn tự học hiện đại nghi ngờ?', o: ['Vì chữ 武 là chữ hình thanh', 'Vì trong chữ cổ, 止 là hình bàn chân → 武 vốn là “vác giáo mà đi”', 'Vì 戈 không phải cây giáo', 'Vì Tả truyện là sách giả'], a: 1, why: 'Nghĩa gốc của 止 là bàn chân; nghĩa “dừng” là nghĩa về sau.' },
+    { t: 'mcq', ch: '忍', q: 'Về văn tự học, chữ 忍 (nhẫn) được cấu tạo theo phép nào?', o: ['Hội ý: dao đâm vào tim', 'Hình thanh: 心 chỉ nghĩa, 刃 chỉ âm', 'Tượng hình', 'Chỉ sự'], a: 1, why: '“Dao đâm tim” là chiết tự dân gian (dễ nhớ). Theo lục thư, 刃 (nhận) là thanh bàng.' },
+    { t: 'tr', src: '象形者，畫成其物，隨體詰詘，日月是也。', rd: 'Tượng hình giả, hoạ thành kỳ vật, tuỳ thể cật khuất, nhật nguyệt thị dã.', a: 'Tượng hình là vẽ thành hình vật, theo đường nét của vật mà uốn lượn; chữ 日, 月 là như vậy.', why: '者…也: câu phán đoán; 其物: vật ấy; 隨體: theo hình thể; 是: đại từ chỉ thị.' },
+    { t: 'tr', src: '夫文，止戈為武。', rd: 'Phù văn, chỉ qua vi vũ.', a: 'Xét về chữ, ngừng giáo là võ.', why: '夫: trợ từ đầu câu nêu đề; 文: chữ; 止: dừng; 戈: giáo; 為: là.' }
+  ],
+  socra: ['Cho mình một chữ bạn biết mà bạn nghĩ là hội ý. Ta cùng kiểm tra xem nó là hội ý hay hình thanh nhé.', 'Tượng hình và chỉ sự khác nhau thế nào? Chữ 刃 thuộc loại nào và vì sao?', 'Vì sao Hứa Thận lại có thể giải sai một số chữ như 武?'],
+  feynman: 'Giải thích ba phép tượng hình, chỉ sự, hội ý cho một bạn cùng lớp, mỗi phép một định nghĩa của Hứa Thận và hai ví dụ, rồi kể câu chuyện chữ 武.',
+  essay: 'Chọn 10 chữ Hán bạn đã gặp trong khoá (không lặp với bài), phân loại theo tượng hình / chỉ sự / hội ý, mỗi chữ giải thích ngắn cấu tạo. Đánh dấu những chữ bạn không chắc để hỏi gia sư.',
+  exam: {
+    points: ['Lục thư: tên trong Chu lễ (lục nghệ); danh mục của Ban Cố, Trịnh Chúng, Hứa Thận; nay dùng tên Hứa Thận theo thứ tự Ban Cố', 'Tứ thể nhị dụng (Đái Chấn): tượng hình, chỉ sự, hội ý, hình thanh tạo chữ; chuyển chú, giả tá dùng chữ', 'Văn ≈ tượng hình, chỉ sự (đơn thể); tự ≈ hội ý, hình thanh (hợp thể)', 'Tượng hình: “hoạ thành kỳ vật, tuỳ thể cật khuất” — 日 月 山 水 木 人 馬 魚', 'Chỉ sự: “thị nhi khả thức, sát nhi kiến ý” — 上 下 一 二 三; 本 末 刃 朱 甘 亦', 'Hội ý: “tỉ loại hợp nghị, dĩ kiến chỉ huy” — 武 信; 林 森 從 眾; 明 休 好 男 安 鳴', '武: “chỉ qua vi vũ” (Tả truyện) vs “vác giáo đi” (giáp cốt: 止 = bàn chân)', 'Chiết tự dân gian (忍 dao đâm tim) ≠ chiết tự khoa học (忍 hình thanh)'],
+    qs: ['Vì sao tượng hình, chỉ sự, hội ý không đủ để tạo ra hàng vạn chữ Hán?', 'Một cách giải chữ sai về văn tự học (như 止戈為武) có nên dạy nữa không?']
+  },
+  readings: ['Giáo trình của lớp: phần Cấu tạo chữ Hán — Lục thư', 'Thiều Chửu: phần giải thích chữ thường ghi “chữ tượng hình”, “chữ hội ý” — tra 休, 明, 本, 刃', 'Tìm hình giáp cốt văn của 日, 月, 馬, 魚, 武 trên các trang tra chữ cổ (ví dụ trang “Chinese Etymology”)']
+};
+
+const HV_LUCTHU2 = {
+  id: 'hv-lucthu2', kind: 'lang', short: 'Lục thư II', title: 'Lục thư (II): hình thanh, chuyển chú, giả tá', sub: 'Hình bàng và thanh bàng, sáu kiểu vị trí, họ chữ cùng thanh bàng; chuyển chú; giả tá, thông giả và chữ cổ – kim', who: 'Phần I · Chữ Hán',
+  goals: ['Định nghĩa chữ hình thanh, tách được hình bàng và thanh bàng, nhận ra sáu kiểu vị trí', 'Dùng thanh bàng để đoán âm Hán Việt — và biết giới hạn của mẹo này', 'Trình bày chuyển chú theo Hứa Thận và các cách hiểu', 'Phân biệt giả tá (vốn không có chữ) và thông giả (vốn có chữ); hiểu hiện tượng chữ cổ – kim (其 → 箕)', 'Tự phân tích cấu tạo một chữ Hán bất kỳ theo quy trình'],
+  q: 'Chữ 清 (trong), 請 (mời), 情 (tình), 晴 (trời tạnh), 精 (tinh) — năm nghĩa khác hẳn nhau nhưng đều có chung bộ phận 青, và âm Hán Việt đều gần “thanh”. Đây là ngẫu nhiên hay là một hệ thống?',
+  context: '<p>Bài trước cho thấy tượng hình, chỉ sự, hội ý không đủ để ghi hết mọi từ của ngôn ngữ. Bài này học ba phép giúp chữ Hán sinh sôi: <b>hình thanh</b> — phép tạo chữ năng sản nhất (hơn 80% chữ Hán), và hai phép <b>dùng chữ</b>: <b>chuyển chú</b>, <b>giả tá</b>. Nắm được hình thanh là có “chìa khoá” để đoán nghĩa và âm của rất nhiều chữ chưa gặp.</p>',
+  lecture: [
+    { h: 'Hình thanh 形聲: một phần chỉ nghĩa, một phần chỉ âm', html: `<p>Hứa Thận: “Hình thanh là lấy sự việc làm tên (loại), lấy âm gần mà ghép thành; 江, 河 là như vậy.” Chữ hình thanh gồm hai bộ phận:</p>
+<ul><li><b>Hình bàng</b> 形旁 (còn gọi nghĩa phù, ý phù): cho biết chữ thuộc <b>loại nghĩa</b> nào.</li><li><b>Thanh bàng</b> 聲旁 (âm phù): cho biết chữ <b>đọc gần</b> với âm nào.</li></ul>
+<p>Ví dụ của Hứa Thận: <b>江</b> giang = 氵(nước — chỉ nghĩa: sông) + 工 công (chỉ âm); <b>河</b> hà = 氵 + 可 khả (chỉ âm). Thêm: 銅 đồng = 金 (kim loại) + 同 đồng; 媽 = 女 + 馬; 晴 tình = 日 (trời nắng) + 青 thanh.</p>
+<p><b>Vì sao hình thanh chiếm đa số?</b> Vì nó là cách tạo chữ <b>linh hoạt nhất</b>: muốn có chữ cho một từ mới, chỉ cần lấy một chữ đồng âm (hoặc gần âm) làm thanh bàng và thêm một bộ chỉ loại nghĩa. Theo thống kê thường được dẫn (của các học giả đời Thanh trên chữ trong Thuyết văn): tượng hình khoảng 364, chỉ sự 125, hội ý 1.167, hình thanh 7.697 — tức hơn 80%. Trong chữ Hán hiện đại, tỉ lệ hình thanh còn cao hơn.</p>` },
+    { h: 'Sáu kiểu vị trí của hình bàng và thanh bàng', html: `<table class="ac-tbl"><tr><th>Kiểu</th><th>Ví dụ (hình bàng + thanh bàng)</th></tr>
+<tr><td>Trái hình – phải thanh</td><td>江 (氵+ 工), 銅 (金 + 同), 情 (忄+ 青)</td></tr>
+<tr><td>Phải hình – trái thanh</td><td>鴨 áp (鳥 + 甲 giáp), 頸 cảnh (頁 + 巠 kinh)</td></tr>
+<tr><td>Trên hình – dưới thanh</td><td>草 thảo (艹 + 早 tảo), 簡 giản (竹 + 間 gian)</td></tr>
+<tr><td>Dưới hình – trên thanh</td><td>婆 bà (女 + 波 ba), 想 tưởng (心 + 相 tương)</td></tr>
+<tr><td>Ngoài hình – trong thanh</td><td>園 viên (囗 + 袁 viên), 固 cố (囗 + 古 cổ)</td></tr>
+<tr><td>Trong hình – ngoài thanh</td><td>問 vấn (口 + 門 môn), 聞 văn (耳 + 門)</td></tr></table>
+<p>Trường hợp cuối rất đáng nhớ: 問 (hỏi) và 聞 (nghe) đều có 門 bên ngoài nhưng 門 ở đây <b>chỉ âm</b> (môn – vấn – văn gần âm), còn phần chỉ nghĩa nằm bên trong (口 miệng → hỏi; 耳 tai → nghe). Nếu chiết tự kiểu hội ý (“miệng ở trong cửa”) thì sai.</p>` },
+    { h: 'Thanh bàng và âm Hán Việt: mẹo hữu ích có giới hạn', html: `<p>Vì âm Hán Việt kế thừa hệ thống âm Hán đời Đường, nhiều chữ cùng thanh bàng vẫn có âm Hán Việt <b>gần nhau</b>. Các “họ chữ”:</p>
+<ul><li><b>青</b> thanh → 清 thanh (trong), 請 thỉnh (mời), 情 tình, 晴 tình (tạnh), 精 tinh, 睛 tình (con ngươi).</li>
+<li><b>工</b> công → 功 công, 攻 công, 江 giang, 紅 hồng, 空 không, 貢 cống.</li>
+<li><b>可</b> khả → 河 hà, 何 hà, 歌 ca, 柯 kha.</li>
+<li><b>門</b> môn → 問 vấn, 聞 văn, 悶 muộn.</li>
+<li><b>包</b> bao → 抱 bão (ôm), 飽 bão (no), 胞 bào, 泡 bào (bọt), 砲 pháo.</li></ul>
+<p>Mẹo “có bên đọc bên” giúp bạn <b>đoán âm</b> chữ chưa gặp, và <b>nhớ chữ theo họ</b>. Nhưng phải nhớ giới hạn: qua hàng nghìn năm, âm đã biến đổi, nên thanh bàng thường chỉ <b>gần</b> âm (江 giang ← 工 công), có khi rất xa (海 hải ← 每 mỗi; 特 đặc ← 寺 tự). Câu đùa của các cụ: “Hữu biên đọc biên, vô biên đọc trung” (có bên thì đọc bên, không có bên thì đọc giữa) — buồn cười chính vì nó hay sai. Khi không chắc, <b>tra từ điển</b>.</p>
+<p><b>Hình bàng</b> thì đáng tin hơn để đoán <b>loại nghĩa</b>: thấy 氵 nghĩ đến nước, 木 → cây, 金 → kim loại, 言 → lời nói, 心/忄 → tâm lý, 手/扌 → động tác tay, 艹 → cây cỏ. Bài 4 sẽ học bộ thủ có hệ thống.</p>` },
+    { h: 'Chuyển chú 轉注: phép khó nhất', html: `<p>Hứa Thận: “Chuyển chú là lập một loại chung một bộ, cùng ý thì nhận cho nhau; 考, 老 là như vậy.” 老 lão (già) và 考 khảo (già; về sau chỉ người cha đã mất) cùng bộ 老 (耂), nghĩa giống nhau, và Thuyết văn dùng chữ này để giải thích chữ kia (老: 考也; 考: 老也).</p>
+<p>Vì Hứa Thận chỉ cho một ví dụ, chuyển chú trở thành phép <b>gây tranh cãi nhất</b>; có hàng chục cách hiểu. Ba hướng chính:</p>
+<ul><li><b>Hình chuyển</b>: các chữ cùng bộ thủ, cùng nghĩa (như 考, 老).</li><li><b>Nghĩa chuyển</b>: các chữ cùng nghĩa, dùng để giải thích lẫn nhau (hỗ huấn), không cần cùng bộ.</li><li><b>Âm chuyển</b>: các chữ có quan hệ về âm và nghĩa, do một từ phân hoá thành nhiều chữ.</li></ul>
+<p>Theo thuyết “tứ thể nhị dụng”, chuyển chú là một <b>cách dùng chữ</b> (dùng các chữ đồng nghĩa giải thích nhau), không phải cách tạo chữ mới. Với người học, chỉ cần nắm định nghĩa, ví dụ 考 老, và biết đây là vấn đề còn tranh luận.</p>` },
+    { h: 'Giả tá 假借 và thông giả 通假', html: `<p>Hứa Thận: “Giả tá là vốn không có chữ, dựa theo âm mà gửi việc; 令, 長 là như vậy.” Tức là: một từ trong lời nói <b>chưa có chữ viết</b>, người ta <b>mượn một chữ đồng âm</b> (hoặc gần âm) có sẵn để ghi nó. 令 (vốn là “ra lệnh”) được mượn ghi “quan huyện lệnh”; 長 (vốn là “dài, lớn”) mượn ghi “huyện trưởng”.</p>
+<p>Giả tá đặc biệt quan trọng với <b>hư từ</b> — những từ chỉ có nghĩa ngữ pháp, khó vẽ hình:</p>
+<ul><li><b>其</b> kỳ: vốn vẽ cái nia (đồ sàng gạo) → mượn làm đại từ “của nó, ấy”.</li><li><b>而</b> nhi: vốn vẽ bộ râu → mượn làm liên từ “mà”.</li><li><b>我</b> ngã: vốn vẽ một loại binh khí có răng → mượn làm đại từ “ta”.</li><li><b>來</b> lai: vốn vẽ cây lúa mạch → mượn làm động từ “đến”.</li><li><b>自</b> tự: vốn vẽ cái mũi → mượn làm “tự mình”, “từ”.</li></ul>
+<p><b>Chữ cổ – kim</b> (古今字): khi nghĩa mượn chiếm hẳn chữ cũ, người ta tạo <b>chữ mới</b> (thường là hình thanh) để ghi lại nghĩa gốc: 其 → <b>箕</b> (thêm 竹: cái nia); 自 → <b>鼻</b> (thêm 畀 tý làm thanh bàng: cái mũi); 然 (vốn là đốt cháy, bị mượn làm “như thế”) → <b>燃</b> (thêm 火); 莫 (vốn là mặt trời lặn trong cỏ, bị mượn làm “không ai”) → <b>暮</b> (thêm 日: chiều tối).</p>
+<p><b>Thông giả</b> (通假) khác giả tá ở một điểm then chốt: từ đó <b>vốn đã có chữ riêng</b>, nhưng người viết lại dùng một chữ đồng âm khác thay vào (gần như “viết chữ khác cùng âm”). Ví dụ: 說 = 悅 (vui) trong 不亦說乎; 女 = 汝 (anh, ngươi) trong 誨女知之乎; 知 = 智 (trí tuệ) trong 知者不惑; 蚤 = 早 (sớm); 反 = 返 (trở về). Khi đọc, phải nhận ra và đọc theo chữ gốc (說 đọc “duyệt”, 女 đọc “nhữ”).</p>
+<p>Tóm lại: <b>giả tá — bản vô kỳ tự</b> (vốn không có chữ); <b>thông giả — bản hữu kỳ tự</b> (vốn có chữ).</p>` },
+    { h: 'Quy trình phân tích cấu tạo một chữ Hán', html: `<p>Tổng hợp hai bài lục thư thành một quy trình bạn có thể áp dụng cho mọi chữ:</p>
+<ol><li><b>Chữ có tách được thành các bộ phận không?</b> Không tách được → thường là tượng hình hoặc chỉ sự (văn). Tách được → hội ý hoặc hình thanh (tự).</li>
+<li><b>Nếu là chữ đơn thể</b>: nó vẽ một vật (tượng hình — 日, 馬) hay có ký hiệu chỉ vào một điểm (chỉ sự — 本, 刃)?</li>
+<li><b>Nếu là chữ hợp thể</b>: có bộ phận nào <b>gợi âm</b> (âm Hán Việt của chữ gần âm của bộ phận đó) không? Có → hình thanh: xác định hình bàng (loại nghĩa) và thanh bàng (âm). Không → các bộ phận đều góp nghĩa → hội ý.</li>
+<li><b>Kiểm tra bằng chữ cổ</b> nếu có thể (giáp cốt, kim văn, triện), đặc biệt với những chữ có vẻ “quá dễ giải thích”.</li>
+<li><b>Xét cách dùng trong văn bản</b>: chữ đang dùng với nghĩa gốc, nghĩa mở rộng, hay nghĩa giả tá / thông giả?</li></ol>
+<p>Ví dụ áp dụng: <b>情</b> → hợp thể (忄 + 青) → 青 thanh gần âm tình → hình thanh: 忄 chỉ nghĩa (tâm lý: tình cảm), 青 chỉ âm. <b>明</b> → hợp thể (日 + 月) → không bộ phận nào gần âm “minh” → hội ý. <b>刃</b> → đơn thể (刀 + chấm) → chấm chỉ vào lưỡi dao → chỉ sự.</p>` }
+  ],
+  texts: [
+    { title: 'Định nghĩa ba phép còn lại của Hứa Thận', src: 'Hứa Thận, Thuyết văn giải tự · Tự (trích)', lang: 'zh-TW',
+      orig: '三曰形聲。形聲者，以事為名，取譬相成，江河是也。……五曰轉注。轉注者，建類一首，同意相受，考老是也。六曰假借。假借者，本無其字，依聲託事，令長是也。',
+      reading: 'Tam viết hình thanh. Hình thanh giả, dĩ sự vi danh, thủ thí tương thành, giang hà thị dã. …… Ngũ viết chuyển chú. Chuyển chú giả, kiến loại nhất thủ, đồng ý tương thụ, khảo lão thị dã. Lục viết giả tá. Giả tá giả, bản vô kỳ tự, y thanh thác sự, lệnh trưởng thị dã.',
+      vi: 'Ba là hình thanh. Hình thanh là lấy sự việc (loại nghĩa) làm tên, lấy âm gần để ví mà ghép thành; chữ 江, 河 là như vậy. …… Năm là chuyển chú. Chuyển chú là lập loại chung một bộ đầu, cùng ý thì nhận (giải thích) cho nhau; chữ 考, 老 là như vậy. Sáu là giả tá. Giả tá là vốn không có chữ, dựa theo âm mà gửi việc vào; chữ 令, 長 là như vậy.',
+      notes: [['以事為名 dĩ sự vi danh', 'lấy loại sự việc làm phần tên — tức hình bàng'], ['取譬相成 thủ thí tương thành', 'lấy (chữ có âm) gần để ví, ghép lại thành chữ — tức thanh bàng'], ['建類一首 kiến loại nhất thủ', 'lập một loại chung một bộ (đầu)'], ['同意相受 đồng ý tương thụ', 'cùng nghĩa thì nhận cho nhau'], ['本無其字 bản vô kỳ tự', 'vốn không có chữ ấy'], ['依聲託事 y thanh thác sự', 'dựa theo âm mà gửi việc (nghĩa) vào']],
+      guide: ['Trong định nghĩa hình thanh, cụm nào ứng với hình bàng, cụm nào ứng với thanh bàng?', 'Câu “bản vô kỳ tự” giúp phân biệt giả tá với thông giả thế nào?'],
+      comment: '<p>Cùng với đoạn ở bài 2, đây là trọn bộ định nghĩa lục thư của Hứa Thận. Ba câu then chốt nên thuộc: hình thanh — <b>“dĩ sự vi danh, thủ thí tương thành”</b>; chuyển chú — <b>“kiến loại nhất thủ, đồng ý tương thụ”</b>; giả tá — <b>“bản vô kỳ tự, y thanh thác sự”</b>.</p><p>Ví dụ giả tá của Hứa Thận (令, 長) thật ra bị nhiều người cho là gần với nghĩa dẫn thân hơn (lệnh → người ra lệnh; trưởng → người lớn đứng đầu). Các ví dụ như 其, 而, 我, 來 minh hoạ giả tá rõ hơn, vì nghĩa mượn hoàn toàn không liên quan đến nghĩa gốc.</p>' },
+    { title: 'Ba chữ thông giả trong Luận ngữ', src: 'Luận ngữ 1.1, 2.17, 9.29 (trích)', lang: 'zh-TW',
+      orig: '學而時習之，不亦說乎？\n……\n由！誨女知之乎！\n……\n知者不惑，仁者不憂，勇者不懼。',
+      reading: 'Học nhi thời tập chi, bất diệc duyệt hồ?\n……\nDo! Hối nhữ tri chi hồ!\n……\nTrí giả bất hoặc, nhân giả bất ưu, dũng giả bất cụ.',
+      vi: 'Học rồi thường xuyên luyện tập, chẳng cũng vui sao?\n……\nDo này! Ta dạy anh thế nào là biết nhé!\n……\nNgười trí không mê hoặc, người nhân không lo buồn, người dũng không sợ hãi.',
+      notes: [['說 = 悅 duyệt', 'thông giả: vui (không đọc “thuyết”)'], ['女 = 汝 nhữ', 'thông giả: anh, ngươi (không đọc “nữ”)'], ['知 = 智 trí', 'thông giả: trí tuệ (không đọc “tri”)'], ['惑 hoặc', 'mê lầm'], ['憂 ưu', 'lo'], ['懼 cụ', 'sợ']],
+      guide: ['Nếu đọc 說 là “thuyết”, 女 là “nữ”, 知 là “tri”, mỗi câu sẽ sai nghĩa thế nào?', 'Ba trường hợp này là giả tá hay thông giả? Vì sao?'],
+      comment: '<p>Ba câu quen thuộc, ba chữ thông giả — và cả ba đều <b>đổi âm đọc</b> khi đọc đúng: 說 đọc <b>duyệt</b>, 女 đọc <b>nhữ</b>, 知 đọc <b>trí</b>. Đây là lý do các bản Luận ngữ có chú thích thường ghi “說 âm duyệt”, “女 âm nhữ”.</p><p>Chúng là <b>thông giả</b> chứ không phải giả tá, vì các từ “vui”, “ngươi”, “trí tuệ” <b>vốn đã có chữ riêng</b> (悅, 汝, 智) — người xưa dùng chữ đồng âm khác thay vào. Thói quen này phổ biến ở văn bản Tiên Tần, một phần vì lúc đó chữ viết chưa được chuẩn hoá chặt chẽ.</p>' },
+    { title: 'Phân tích một câu: tìm chữ hình thanh', src: 'Đỗ Mục, Thanh minh (thơ Đường)', lang: 'zh-TW',
+      orig: '清明時節雨紛紛，\n路上行人欲斷魂。',
+      reading: 'Thanh minh thời tiết vũ phân phân,\nLộ thượng hành nhân dục đoạn hồn.',
+      vi: 'Tiết Thanh minh mưa lất phất bay,\nNgười đi trên đường như muốn đứt ruột (buồn đến tan nát lòng).',
+      notes: [['清 thanh', 'hình thanh: 氵(nước — trong) + 青 thanh'], ['時 thời', 'hình thanh: 日 (thời gian) + 寺 tự (âm, đã biến đổi nhiều)'], ['節 tiết', 'hình thanh: 竹 (đốt tre) + 即 tức'], ['紛紛 phân phân', 'điệp tự; 紛 hình thanh: 糸 (sợi tơ — rối) + 分 phân'], ['路 lộ', 'hình thanh: 足 (chân — đi) + 各 các'], ['魂 hồn', 'hình thanh: 鬼 (quỷ, hồn) + 云 vân']],
+      guide: ['Câu thơ có bao nhiêu chữ hình thanh? Với mỗi chữ, hình bàng gợi loại nghĩa gì?', 'Chữ nào trong câu không phải hình thanh? (Gợi ý: 明, 雨, 上, 人.)'],
+      comment: '<p>Mười bốn chữ, hơn một nửa là hình thanh — đúng với tỉ lệ thống kê. Để ý những thanh bàng vẫn giữ âm gần (清 ← 青, 紛 ← 分) và những thanh bàng đã biến âm xa (時 ← 寺, 路 ← 各): đó chính là giới hạn của mẹo “có bên đọc bên”.</p><p>Các chữ không phải hình thanh: <b>明</b> (hội ý), <b>雨</b> (tượng hình), <b>上</b> (chỉ sự), <b>人</b> (tượng hình) — một câu thơ là một bảo tàng nhỏ của lục thư. Bài thơ “Thanh minh” còn là ví dụ cho điệp tự (紛紛 — bài 7).</p>' }
+  ],
+  concepts: [
+    { id: 'hinhthanh', han: '形聲', term: 'Hình thanh', def: '“Dĩ sự vi danh, thủ thí tương thành” — chữ gồm hình bàng (chỉ loại nghĩa) và thanh bàng (chỉ âm gần); phép tạo chữ năng sản nhất, hơn 80% chữ Hán.', ex: '江 (氵+ 工), 河 (氵+ 可), 銅 (金 + 同), 晴 (日 + 青).', counter: 'Hội ý 明 (日 + 月) — không bộ phận nào chỉ âm.', rel: ['vitri', 'giata'], write: '江河' },
+    { id: 'vitri', han: '形旁 · 聲旁', term: 'Hình bàng, thanh bàng và sáu kiểu vị trí', def: 'Trái hình phải thanh (江), phải hình trái thanh (鴨), trên hình dưới thanh (草), dưới hình trên thanh (婆), ngoài hình trong thanh (園), trong hình ngoài thanh (問, 聞). Thanh bàng gợi âm Hán Việt nhưng có thể đã biến âm.', ex: 'Họ 青: 清, 請, 情, 晴, 精; họ 工: 江, 紅, 功, 空.', counter: '問 không phải “miệng trong cửa” (hội ý) — 門 là thanh bàng.', rel: ['hinhthanh'], write: '問聞' },
+    { id: 'chuyenchu', han: '轉注', term: 'Chuyển chú', def: '“Kiến loại nhất thủ, đồng ý tương thụ” — các chữ cùng bộ, cùng nghĩa, giải thích cho nhau; phép gây tranh cãi nhất (hình chuyển, nghĩa chuyển, âm chuyển). Theo Đái Chấn là cách dùng chữ.', ex: '考 và 老 (cùng bộ 老, cùng nghĩa “già”).', counter: 'Hai chữ đồng nghĩa khác bộ như 死 và 崩 — không phải ví dụ chuyển chú kiểu Hứa Thận.', rel: ['giata'], write: '考老' },
+    { id: 'giata', han: '假借', term: 'Giả tá', def: '“Bản vô kỳ tự, y thanh thác sự” — từ chưa có chữ, mượn chữ đồng âm có sẵn để ghi; rất phổ biến với hư từ. Khi nghĩa mượn chiếm chữ, tạo chữ mới cho nghĩa gốc (chữ cổ – kim).', ex: '其 (nia → đại từ; 箕 cho “cái nia”), 而 (râu → liên từ), 來 (lúa mạch → đến), 自 (mũi → tự; 鼻 cho “mũi”).', counter: 'Thông giả — từ vốn có chữ riêng nhưng dùng chữ khác cùng âm (說 = 悅).', rel: ['hinhthanh', 'thonggia'], write: '其' },
+    { id: 'thonggia', han: '通假', term: 'Thông giả', def: 'Từ vốn đã có chữ riêng nhưng văn bản dùng chữ đồng âm khác thay vào (“bản hữu kỳ tự”); khi đọc phải nhận ra và đọc theo chữ gốc.', ex: '說 = 悅 (duyệt), 女 = 汝 (nhữ), 知 = 智 (trí), 蚤 = 早, 反 = 返.', counter: 'Giả tá — từ vốn không có chữ (bản vô kỳ tự).', rel: ['giata'], write: '說' }
+  ],
+  drills: [
+    { t: 'mcq', ch: '江', q: 'Trong chữ 江, bộ phận nào là thanh bàng?', o: ['氵(nước)', '工 (công)', 'Cả hai', 'Không có thanh bàng'], a: 1, why: '氵 chỉ nghĩa (sông nước), 工 chỉ âm (công – giang gần âm).' },
+    { t: 'mcq', ch: '問', q: 'Chữ 問 (hỏi) được cấu tạo thế nào?', o: ['Hội ý: miệng ở trong cửa', 'Hình thanh: 口 chỉ nghĩa (trong), 門 chỉ âm (ngoài)', 'Tượng hình', 'Chỉ sự'], a: 1, why: 'Kiểu “trong hình – ngoài thanh”: 門 (môn) gợi âm vấn; 口 (miệng) gợi nghĩa hỏi.' },
+    { t: 'mcq', ch: '婆', q: 'Chữ 婆 (bà) thuộc kiểu vị trí nào?', o: ['Trái hình phải thanh', 'Trên thanh (波) – dưới hình (女)', 'Ngoài hình trong thanh', 'Trên hình dưới thanh'], a: 1, why: '女 (nữ) ở dưới chỉ nghĩa; 波 (ba) ở trên chỉ âm.' },
+    { t: 'mcq', q: 'Chữ nào KHÔNG thuộc “họ” thanh bàng 青?', o: ['清 thanh', '請 thỉnh', '情 tình', '明 minh'], a: 3, why: '明 là hội ý (日 + 月), không có thanh bàng 青.' },
+    { t: 'mcq', q: 'Ví dụ chuyển chú của Hứa Thận là:', o: ['江, 河', '考, 老', '令, 長', '武, 信'], a: 1, why: 'Hình thanh: 江 河; chuyển chú: 考 老; giả tá: 令 長; hội ý: 武 信.' },
+    { t: 'mcq', ch: '其', q: 'Chữ 其 vốn vẽ cái nia, nay là đại từ “của nó, ấy”. Đây là phép:', o: ['Hình thanh', 'Giả tá', 'Thông giả', 'Chuyển chú'], a: 1, why: 'Đại từ “kỳ” vốn không có chữ, mượn chữ đồng âm 其 → giả tá. Sau đó tạo 箕 cho nghĩa “cái nia”.' },
+    { t: 'mcq', ch: '說', q: '說 trong 不亦說乎 là hiện tượng gì, đọc thế nào?', o: ['Giả tá, đọc “thuyết”', 'Thông giả = 悅, đọc “duyệt”', 'Hình thanh, đọc “thuế”', 'Chuyển chú, đọc “thuyết”'], a: 1, why: 'Từ “vui” vốn có chữ 悅 → dùng 說 thay là thông giả; đọc theo chữ gốc: duyệt.' },
+    { t: 'mcq', q: 'Điểm khác nhau cốt lõi giữa giả tá và thông giả là:', o: ['Giả tá đổi âm, thông giả không', 'Giả tá: từ vốn không có chữ; thông giả: từ vốn đã có chữ', 'Giả tá chỉ dùng cho danh từ', 'Không có gì khác'], a: 1, why: 'Giả tá — bản vô kỳ tự; thông giả — bản hữu kỳ tự.' },
+    { t: 'mcq', ch: '鼻', q: 'Chữ 鼻 (mũi) được tạo ra vì:', o: ['Chữ 自 (vốn là mũi) bị mượn làm “tự, từ”, nên phải tạo chữ mới cho nghĩa gốc', 'Để thay chữ 口', 'Do giản hoá chữ', 'Là chữ thông giả của 自'], a: 0, why: 'Hiện tượng chữ cổ – kim: 自 → 鼻 (thêm 畀 làm thanh bàng).' },
+    { t: 'tr', src: '假借者，本無其字，依聲託事，令長是也。', rd: 'Giả tá giả, bản vô kỳ tự, y thanh thác sự, lệnh trưởng thị dã.', a: 'Giả tá là vốn không có chữ, dựa theo âm mà gửi việc vào; chữ 令, 長 là như vậy.', why: '者…也: phán đoán; 本: vốn; 無其字: không có chữ ấy; 依聲: dựa theo âm; 託事: gửi việc.' },
+    { t: 'tr', src: '知者不惑，仁者不憂，勇者不懼。', rd: 'Trí giả bất hoặc, nhân giả bất ưu, dũng giả bất cụ.', a: 'Người trí không mê hoặc, người nhân không lo buồn, người dũng không sợ hãi.', why: '知 = 智 (thông giả, đọc trí); 者: người; 不: không.' }
+  ],
+  socra: ['Cho mình một chữ bạn chưa biết nghĩa nhưng có bộ phận quen. Thử đoán nghĩa và âm qua hình bàng, thanh bàng rồi ta kiểm tra.', 'Vì sao 問 và 聞 không phải hội ý? Bạn dùng dấu hiệu nào để quyết định?', 'Giải thích sự khác nhau giữa giả tá và thông giả bằng một ví dụ của mỗi loại.'],
+  feynman: 'Giải thích cho một bạn cùng lớp vì sao hình thanh chiếm hơn 80% chữ Hán, cách tách hình bàng – thanh bàng, và vì sao mẹo “có bên đọc bên” lúc đúng lúc sai.',
+  essay: 'Chọn một câu thơ hoặc văn (khoảng 10–20 chữ) trong khoá. Phân tích cấu tạo từng chữ theo quy trình năm bước của bài: tượng hình, chỉ sự, hội ý hay hình thanh (nếu hình thanh, ghi rõ hình bàng, thanh bàng). Đánh dấu những chữ bạn không chắc.',
+  exam: {
+    points: ['Hình thanh: “dĩ sự vi danh, thủ thí tương thành” — 江 河; hình bàng (nghĩa) + thanh bàng (âm); > 80% (thống kê thường dẫn: 7.697 / 9.353)', 'Sáu kiểu vị trí: 江 / 鴨 / 草 / 婆 / 園 / 問 聞', 'Họ thanh bàng và âm Hán Việt (青 → 清 請 情 晴 精); mẹo có giới hạn vì biến âm (時 ← 寺)', 'Chuyển chú: “kiến loại nhất thủ, đồng ý tương thụ” — 考 老; nhiều cách hiểu', 'Giả tá: “bản vô kỳ tự, y thanh thác sự” — 令 長; 其 而 我 來 自', 'Chữ cổ – kim: 其 → 箕, 自 → 鼻, 然 → 燃, 莫 → 暮', 'Thông giả (bản hữu kỳ tự): 說 = 悅, 女 = 汝, 知 = 智, 蚤 = 早, 反 = 返', 'Quy trình phân tích cấu tạo chữ năm bước'],
+    qs: ['Nếu thanh bàng chỉ gợi âm “gần”, làm sao người xưa vẫn dùng nó hiệu quả?', 'Hư từ phần lớn là giả tá. Điều đó giải thích gì về việc hư từ khó học?']
+  },
+  readings: ['Giáo trình của lớp: phần Hình thanh, Chuyển chú, Giả tá', 'Thiều Chửu: tra 江, 問, 聞, 箕, 鼻 để xem phần giải thích cấu tạo', 'Luyện: lấy 10 chữ có bộ 氵 và 10 chữ có bộ 忄, đoán nghĩa trước rồi tra']
+};
+
+const HV_BOTHU = {
+  id: 'hv-botthu', kind: 'lang', short: 'Bộ thủ', title: 'Nét, bút thuận, bộ thủ và cách tra từ điển', sub: 'Tám nét của chữ 永, bảy quy tắc bút thuận, 214 bộ thủ và các bộ biến thể, bẫy “nhục nguyệt”, tra Thiều Chửu và Đào Duy Anh', who: 'Phần I · Chữ Hán',
+  goals: ['Gọi tên các nét cơ bản và viết đúng bảy quy tắc bút thuận', 'Biết lịch sử hệ thống bộ thủ (540 bộ → 214 bộ) và nhận ra các bộ biến thể thường gặp', 'Phân biệt bộ thủ với hình bàng; nhận ra bẫy 月 = 肉 (nhục nguyệt)', 'Tra được chữ trong từ điển theo bộ thủ và số nét, theo âm, và bằng công cụ trực tuyến'],
+  q: 'Gặp một chữ lạ trong văn bản, không biết đọc, không biết nghĩa — bạn bắt đầu từ đâu để tìm ra nó trong một cuốn từ điển có hàng vạn chữ?',
+  context: '<p>Đây là bài <b>kỹ năng</b> thuần tuý, nhưng là kỹ năng bạn dùng mỗi ngày: viết chữ cho đúng (để nhớ lâu và viết đẹp), nhận ra bộ thủ (để đoán nghĩa, nhớ chữ), và tra từ điển (để tự học). Khoá này có sẵn công cụ tập viết theo thứ tự nét ở mỗi thẻ chữ — hãy dùng nó song song với bài.</p>',
+  lecture: [
+    { h: 'Các nét cơ bản: tám nét của chữ 永', html: `<p>Mọi chữ Hán khải thư được tạo bởi một số <b>nét</b> (筆畫) cơ bản. Truyền thống thư pháp dạy qua <b>“Vĩnh tự bát pháp”</b> (永字八法 — tám phép của chữ 永 vĩnh), vì chữ 永 chứa gần đủ các nét:</p>
+<table class="ac-tbl"><tr><th>Tên Việt thường gọi</th><th>Tên trong bát pháp</th><th>Mô tả</th></tr>
+<tr><td>Chấm 點</td><td>側 trắc</td><td>nét chấm (丶)</td></tr>
+<tr><td>Ngang 橫</td><td>勒 lặc</td><td>nét ngang trái → phải (一)</td></tr>
+<tr><td>Sổ 豎</td><td>努 nỗ</td><td>nét thẳng trên → dưới (丨)</td></tr>
+<tr><td>Móc 鉤</td><td>趯 địch</td><td>nét hất ngược lên ở cuối nét sổ (亅)</td></tr>
+<tr><td>Hất 提</td><td>策 sách</td><td>nét hất từ dưới trái lên phải</td></tr>
+<tr><td>Phẩy dài 撇</td><td>掠 lược</td><td>nét kéo xiên từ phải trên xuống trái dưới (丿)</td></tr>
+<tr><td>Phẩy ngắn (mổ)</td><td>啄 trác</td><td>nét phẩy ngắn, nhanh</td></tr>
+<tr><td>Mác 捺</td><td>磔 trách</td><td>nét kéo xiên từ trái trên xuống phải dưới (㇏)</td></tr></table>
+<p>Ngoài ra có các nét kết hợp (ngang gập, sổ gập, ngang móc…). Khi đếm số nét của một chữ, mỗi lần nhấc bút là một nét: 口 có 3 nét (sổ, ngang gập, ngang), không phải 4.</p>` },
+    { h: 'Bảy quy tắc bút thuận', html: `<p><b>Bút thuận</b> (筆順) là thứ tự viết các nét. Viết đúng thứ tự giúp chữ cân đối, viết nhanh, và — quan trọng nhất với người học — <b>nhớ chữ lâu hơn</b> (tay nhớ cùng mắt). Bảy quy tắc cơ bản:</p>
+<ol><li><b>Ngang trước, sổ sau</b>: 十 (ngang rồi sổ).</li>
+<li><b>Phẩy trước, mác sau</b>: 人, 八.</li>
+<li><b>Trên trước, dưới sau</b>: 三, 言.</li>
+<li><b>Trái trước, phải sau</b>: 川, 林.</li>
+<li><b>Ngoài trước, trong sau</b>: 月, 同, 問.</li>
+<li><b>Vào nhà rồi đóng cửa</b> (ngoài – trong – đóng đáy): 日, 回, 國 — viết khung ba mặt, viết phần trong, cuối cùng mới đóng nét ngang dưới.</li>
+<li><b>Giữa trước, hai bên sau</b>: 小, 水, 承.</li></ol>
+<p>Có một số ngoại lệ (火, 必, 九…). Cách tốt nhất là xem hoạt hình thứ tự nét — bấm nút <b>✍️ Tập viết</b> ở thẻ chữ của bài này để xem và tự viết.</p>` },
+    { h: 'Bộ thủ: lịch sử và 214 bộ', html: `<p><b>Bộ thủ</b> (部首) là bộ phận chung dùng để <b>xếp chữ</b> trong từ điển: các chữ có cùng bộ được xếp chung một nhóm. Lịch sử:</p>
+<ul><li><b>Thuyết văn giải tự</b> (Hứa Thận, năm 100): lần đầu xếp chữ theo bộ, có <b>540 bộ</b>, dựa trên nguyên tắc văn tự học (chữ cùng hình bàng).</li>
+<li><b>Tự vựng</b> (Mai Ưng Tộ, đời Minh, 1615): rút gọn còn <b>214 bộ</b>, xếp theo số nét, thuận tiện để tra.</li>
+<li><b>Khang Hy tự điển</b> (1716): giữ hệ thống 214 bộ — và từ đó 214 bộ trở thành chuẩn cho mọi từ điển chữ phồn thể, kể cả <b>Hán Việt tự điển của Thiều Chửu</b>.</li></ul>
+<p>214 bộ được xếp theo số nét từ <b>1 nét</b> (一, 丨, 丶, 丿, 乙, 亅) đến <b>17 nét</b> (龠). Không cần thuộc cả 214 bộ ngay; hãy học trước khoảng <b>50 bộ thường gặp nhất</b> (人, 口, 女, 子, 宀, 心, 手, 水, 火, 木, 日, 月, 土, 金, 言, 糸, 艸, 竹, 足, 辵, 門, 雨, 頁, 鳥…), rồi mở rộng dần.</p>
+<p><b>Lưu ý</b>: từ điển chữ giản thể ở Trung Quốc hiện nay dùng hệ thống bộ thủ khác (khoảng 200 bộ, đã điều chỉnh). Với Hán Nôm, luôn dùng hệ 214 bộ.</p>` },
+    { h: 'Các bộ biến thể và bẫy “nhục nguyệt”', html: `<p>Nhiều bộ khi đứng ở một vị trí trong chữ thì <b>đổi hình</b>. Phải nhận ra các biến thể này mới tra được từ điển:</p>
+<table class="ac-tbl"><tr><th>Bộ gốc</th><th>Biến thể</th><th>Ví dụ</th></tr>
+<tr><td>人 nhân</td><td>亻</td><td>休, 信, 仁</td></tr>
+<tr><td>水 thuỷ</td><td>氵, 氺</td><td>江, 河, 泰</td></tr>
+<tr><td>心 tâm</td><td>忄, ⺗</td><td>情, 性; 恭</td></tr>
+<tr><td>手 thủ</td><td>扌</td><td>打, 撫, 持</td></tr>
+<tr><td>艸 thảo</td><td>艹</td><td>草, 花, 茶</td></tr>
+<tr><td>刀 đao</td><td>刂</td><td>刊, 別, 利</td></tr>
+<tr><td>火 hoả</td><td>灬</td><td>熱, 然, 照</td></tr>
+<tr><td>犬 khuyển</td><td>犭</td><td>狗, 獅, 猛</td></tr>
+<tr><td>示 thị</td><td>礻</td><td>神, 祖, 福</td></tr>
+<tr><td>衣 y</td><td>衤</td><td>被, 補</td></tr>
+<tr><td>玉 ngọc</td><td>王 (bên trái)</td><td>玲, 瓏, 理</td></tr>
+<tr><td>辵 sước</td><td>辶</td><td>遠, 道, 通</td></tr>
+<tr><td>攴 phộc</td><td>攵</td><td>教, 政, 敗</td></tr>
+<tr><td>邑 ấp</td><td>阝 (bên <b>phải</b>)</td><td>郡, 都, 鄉</td></tr>
+<tr><td>阜 phụ</td><td>阝 (bên <b>trái</b>)</td><td>陽, 陰, 院</td></tr>
+<tr><td>肉 nhục</td><td>月 (nhục nguyệt)</td><td>肝, 胸, 腦, 脈</td></tr></table>
+<p><b>Hai bẫy lớn</b>:</p>
+<ul><li><b>阝</b> bên phải là bộ <b>ấp</b> (邑 — thành ấp, địa danh), bên trái là bộ <b>phụ</b> (阜 — gò đất, đồi núi). Cùng hình, khác bộ.</li>
+<li><b>月</b> trong các chữ chỉ bộ phận cơ thể (肝 gan, 胸 ngực, 腦 não, 腹 bụng, 脈 mạch) <b>không phải mặt trăng</b> mà là biến thể của 肉 (thịt) — gọi là “nhục nguyệt”. Trong từ điển 214 bộ, các chữ này xếp ở bộ 肉 (6 nét), không ở bộ 月 (4 nét).</li></ul>` },
+    { h: 'Bộ thủ và hình bàng: khi nào trùng, khi nào không', html: `<p>Thường thì bộ thủ trùng với <b>hình bàng</b> (bộ phận chỉ nghĩa) của chữ hình thanh: 江 thuộc bộ 水, 銅 thuộc bộ 金, 情 thuộc bộ 心. Vì thế bộ thủ giúp <b>đoán loại nghĩa</b>.</p>
+<p>Nhưng bộ thủ là công cụ <b>xếp chữ để tra</b>, không phải phân tích văn tự học, nên có nhiều trường hợp không trùng:</p>
+<ul><li>問 (hỏi) thuộc bộ <b>口</b> — đúng với hình bàng. Nhưng 聞 (nghe) thuộc bộ <b>耳</b>, dù 門 bao ngoài. Người mới học hay tra nhầm ở bộ 門.</li>
+<li>Một số chữ được xếp vào bộ một cách quy ước, khó đoán: 也 thuộc bộ 乙, 為 (爲) thuộc bộ 爪, 年 thuộc bộ 干, 事 thuộc bộ 亅.</li>
+<li>Chữ không có bộ phận rõ ràng thì bản thân nó là một bộ (日, 月, 木, 馬, 魚, 鳥).</li></ul>
+<p>Mẹo khi không đoán được bộ: thử lần lượt bộ ở bên trái, bên trên, bên ngoài, rồi mới đến bên phải, bên dưới, bên trong. Nếu vẫn không thấy, dùng bảng “chữ khó tra” (nan kiểm tự) ở cuối từ điển, hoặc tra trực tuyến.</p>` },
+    { h: 'Cách tra từ điển', html: `<p><b>Tra theo bộ thủ</b> (cách cơ bản, dùng khi không biết âm):</p>
+<ol><li>Xác định bộ thủ của chữ (ví dụ 撫 → bộ 手, viết 扌).</li><li>Tìm bộ trong bảng bộ thủ của từ điển (xếp theo số nét của bộ: 手 có 4 nét).</li><li>Đếm số nét <b>phần còn lại</b> (無 = 12 nét).</li><li>Trong bộ 手, tìm nhóm 12 nét, dò đến chữ 撫.</li></ol>
+<p><b>Tra theo âm</b>: nếu đã biết âm Hán Việt, tra theo vần a, b, c (có bảng tra âm ở cuối từ điển Thiều Chửu).</p>
+<p><b>Hai từ điển nền tảng của người học Hán Nôm ở Việt Nam</b>:</p>
+<ul><li><b>Thiều Chửu, <i>Hán Việt tự điển</i></b> (1942): tra <b>chữ</b> (tự). Xếp theo 214 bộ; mỗi chữ có âm Hán Việt, các nghĩa (nhiều nghĩa cổ), ví dụ, nhiều khi có giải thích cấu tạo. Đây là cuốn nên có đầu tiên.</li>
+<li><b>Đào Duy Anh, <i>Hán Việt từ điển</i></b> (1932): tra <b>từ</b> (từ ghép Hán Việt). Xếp theo âm Hán Việt; giải nghĩa từ ghép như 社稷, 干戈.</li></ul>
+<p><b>Công cụ trực tuyến</b>: các trang tra Hán Việt (ví dụ hvdic.thivien.net có tra theo bộ, theo âm, và vẽ chữ bằng tay), các bàn phím vẽ chữ trên điện thoại. Rất tiện, nhưng hãy kiểm tra chữ phồn / giản và đối chiếu nghĩa với Thiều Chửu khi đọc văn cổ (nhớ bài 8 về nghĩa cổ – nghĩa mới).</p>` }
+  ],
+  texts: [
+    { title: 'Phân tích bộ thủ: bảy chặng đời', src: 'Luận ngữ 2.4 · Vi chính (thực hành tra chữ)', lang: 'zh-TW',
+      orig: '子曰：「吾十有五而志于學，三十而立，四十而不惑，五十而知天命，六十而耳順，七十而從心所欲，不踰矩。」',
+      reading: 'Tử viết: “Ngô thập hữu ngũ nhi chí vu học, tam thập nhi lập, tứ thập nhi bất hoặc, ngũ thập nhi tri thiên mệnh, lục thập nhi nhĩ thuận, thất thập nhi tòng tâm sở dục, bất du củ.”',
+      vi: 'Khổng Tử nói: “Ta mười lăm tuổi để chí vào việc học, ba mươi tuổi đứng vững, bốn mươi tuổi không nghi hoặc, năm mươi tuổi biết mệnh trời, sáu mươi tuổi nghe gì cũng thuận tai, bảy mươi tuổi theo điều lòng muốn mà không vượt khuôn phép.”',
+      notes: [['吾 ngô', 'bộ 口 · 7 nét'], ['志 chí', 'bộ 心 · 7 nét (hình thanh: 心 + 之/士)'], ['學 học', 'bộ 子 · 16 nét'], ['惑 hoặc', 'bộ 心 · 12 nét (hình thanh: 心 + 或)'], ['知 tri', 'bộ 矢 · 8 nét'], ['命 mệnh', 'bộ 口 · 8 nét'], ['順 thuận', 'bộ 頁 · 12 nét'], ['從 tòng', 'bộ 彳 · 11 nét'], ['欲 dục', 'bộ 欠 · 11 nét'], ['踰 du', 'bộ 足 · 16 nét (hình thanh: 足 + 俞)'], ['矩 củ', 'bộ 矢 · 10 nét']],
+      guide: ['Chọn ba chữ trong đoạn và tự tra trong Thiều Chửu (bản giấy hoặc trực tuyến) theo bộ và số nét. Bạn có tìm thấy đúng không?', 'Chữ nào trong đoạn có bộ thủ khó đoán? (Gợi ý: 知, 矩 đều thuộc bộ 矢 — mũi tên.)'],
+      comment: '<p>Đoạn văn quen thuộc này giờ trở thành bài tập tra chữ. Một vài điểm đáng chú ý: <b>知</b> (biết) và <b>矩</b> (thước vuông) đều thuộc bộ <b>矢</b> (mũi tên) — không dễ đoán. <b>順</b> thuộc bộ 頁 (đầu), không phải bộ 川. <b>從</b> thuộc bộ 彳 (bước chân trái), bộ của nhiều chữ chỉ việc đi lại (行, 往, 得, 後).</p><p>Đếm nét: 學 có 16 nét — chữ phồn thể có nhiều nét, nhưng phần lớn ghép từ các bộ phận quen thuộc. Học chữ theo bộ phận nhanh hơn nhiều so với học từng nét.</p>' },
+    { title: 'Phân tích bộ thủ: câu mở đầu Luận ngữ', src: 'Luận ngữ 1.1 · Học nhi (thực hành nhận bộ)', lang: 'zh-TW',
+      orig: '學而時習之，不亦說乎？有朋自遠方來，不亦樂乎？人不知而不慍，不亦君子乎？',
+      reading: 'Học nhi thời tập chi, bất diệc duyệt hồ? Hữu bằng tự viễn phương lai, bất diệc lạc hồ? Nhân bất tri nhi bất uấn, bất diệc quân tử hồ?',
+      vi: 'Học rồi thường xuyên luyện tập, chẳng cũng vui sao? Có bạn từ phương xa đến, chẳng cũng vui sao? Người ta không biết đến mình mà mình không giận, chẳng cũng là quân tử sao?',
+      notes: [['時 thời', 'bộ 日 (hình thanh: 日 + 寺)'], ['習 tập', 'bộ 羽 (lông chim — tập bay)'], ['說 duyệt', 'bộ 言'], ['朋 bằng', 'bộ 月 (ở đây là 月 thật, không phải nhục nguyệt)'], ['遠 viễn', 'bộ 辵 (viết 辶) — đi xa'], ['來 lai', 'bộ 人'], ['樂 lạc', 'bộ 木'], ['慍 uấn', 'bộ 心 (viết 忄)'], ['君 quân', 'bộ 口']],
+      guide: ['Tìm hai chữ có bộ biến thể (辶, 忄). Bộ gốc của chúng là gì?', 'Bộ thủ của 習 (羽 — lông chim) giúp bạn nhớ nghĩa gốc “tập bay” thế nào?'],
+      comment: '<p>Bộ thủ thường cho ta một “câu chuyện” để nhớ nghĩa: <b>習</b> có bộ 羽 (lông chim) — chim non tập bay; <b>遠</b> có bộ 辶 (bước đi) — xa; <b>慍</b> có bộ 忄 (lòng) — giận trong lòng. Nhưng cũng có chữ mà bộ thủ chỉ là quy ước xếp loại: <b>來</b> thuộc bộ 人, <b>樂</b> thuộc bộ 木 — không mấy liên quan đến nghĩa “đến”, “vui”.</p><p>Chữ <b>朋</b> thuộc bộ 月 thật (trong chữ cổ, 朋 vốn vẽ hai chuỗi vỏ sò — tiền cổ — chứ không phải hai mặt trăng). Một ví dụ cho thấy hình chữ khải hiện nay không phải lúc nào cũng phản ánh nguồn gốc.</p>' }
+  ],
+  concepts: [
+    { id: 'buthuan', han: '筆畫 · 筆順', term: 'Nét và bút thuận', def: 'Nét cơ bản (Vĩnh tự bát pháp: chấm, ngang, sổ, móc, hất, phẩy dài, phẩy ngắn, mác). Bảy quy tắc bút thuận: ngang trước sổ sau; phẩy trước mác sau; trên trước dưới sau; trái trước phải sau; ngoài trước trong sau; vào nhà rồi đóng cửa; giữa trước hai bên sau.', ex: '十, 人, 三, 川, 月, 國, 小.', counter: 'Ngoại lệ như 火, 必 — phải xem hoạt hình thứ tự nét.', rel: ['bothu'], write: '永' },
+    { id: 'bothu', han: '部首', term: 'Bộ thủ (214 bộ)', def: 'Bộ phận chung dùng để xếp chữ trong từ điển. Thuyết văn 540 bộ → Tự vựng (1615) 214 bộ → Khang Hy tự điển (1716) giữ 214 bộ; xếp theo số nét 1–17. Thiều Chửu dùng 214 bộ.', ex: '江, 河 thuộc bộ 水; 情, 性 thuộc bộ 心.', counter: 'Hệ bộ thủ của từ điển giản thể hiện đại (khoảng 200 bộ) — khác hệ 214 bộ.', rel: ['bienthe', 'buthuan'], write: '部首' },
+    { id: 'bienthe', han: '亻 氵 忄 扌 艹', term: 'Bộ biến thể', def: 'Bộ đổi hình theo vị trí: 人→亻, 水→氵, 心→忄, 手→扌, 艸→艹, 刀→刂, 火→灬, 犬→犭, 示→礻, 衣→衤, 玉→王, 辵→辶, 攴→攵; 阝 phải = 邑 (ấp), 阝 trái = 阜 (phụ).', ex: '郡 (ấp, bên phải) đối với 陽 (phụ, bên trái).', counter: '月 trong 肝, 胸 — không phải bộ 月 mà là 肉 (nhục nguyệt).', rel: ['bothu', 'nhucnguyet'], write: '阝' },
+    { id: 'nhucnguyet', han: '肉 → 月', term: 'Bẫy nhục nguyệt', def: '月 trong các chữ chỉ bộ phận cơ thể là biến thể của 肉 (thịt), xếp ở bộ 肉 (6 nét), không phải mặt trăng.', ex: '肝 gan, 胸 ngực, 腦 não, 腹 bụng, 脈 mạch.', counter: '月 thật trong 明, 期, 朝 (liên quan đến mặt trăng, thời gian).', rel: ['bienthe'], write: '肝' },
+    { id: 'tradien', han: '查字典', term: 'Tra từ điển', def: 'Theo bộ thủ: xác định bộ → tìm bộ theo số nét → đếm nét phần còn lại → dò chữ. Theo âm: tra vần. Thiều Chửu (tra chữ, xếp theo bộ) và Đào Duy Anh (tra từ ghép, xếp theo âm); công cụ trực tuyến có vẽ chữ.', ex: '撫 → bộ 手 (4 nét) → phần còn lại 無 (12 nét).', counter: 'Từ điển Hán ngữ hiện đại — cho nghĩa mới, dùng giản thể; phải cẩn trọng khi đọc văn cổ.', rel: ['bothu'], write: '典' }
+  ],
+  drills: [
+    { t: 'mcq', ch: '十', q: 'Viết chữ 十 theo đúng bút thuận:', o: ['Sổ trước, ngang sau', 'Ngang trước, sổ sau', 'Tuỳ ý', 'Hai nét cùng lúc'], a: 1, why: 'Quy tắc 1: ngang trước, sổ sau.' },
+    { t: 'mcq', ch: '國', q: 'Nét cuối cùng khi viết chữ 國 là:', o: ['Nét sổ trái', 'Nét ngang đóng đáy khung 囗', 'Nét chấm', 'Nét mác'], a: 1, why: '“Vào nhà rồi đóng cửa”: viết khung ba mặt, viết phần trong, cuối cùng đóng nét ngang dưới.' },
+    { t: 'mcq', ch: '小', q: 'Chữ 小 viết theo quy tắc nào?', o: ['Trái trước phải sau', 'Giữa trước, hai bên sau', 'Ngoài trước trong sau', 'Trên trước dưới sau'], a: 1, why: 'Nét sổ móc ở giữa viết trước, rồi hai chấm hai bên.' },
+    { t: 'mcq', q: 'Hệ thống 214 bộ thủ được định ra trong sách nào, sau đó được Khang Hy tự điển kế thừa?', o: ['Thuyết văn giải tự', 'Tự vựng (Mai Ưng Tộ, đời Minh)', 'Hán thư Nghệ văn chí', 'Từ hải'], a: 1, why: 'Thuyết văn có 540 bộ; Tự vựng (1615) rút gọn còn 214; Khang Hy tự điển (1716) giữ 214.' },
+    { t: 'mcq', ch: '陽', q: '阝 bên trái trong chữ 陽 là bộ nào?', o: ['邑 ấp', '阜 phụ (gò đất)', '耳 nhĩ', '卩 tiết'], a: 1, why: '阝 bên trái là 阜 (phụ); bên phải là 邑 (ấp).' },
+    { t: 'mcq', ch: '胸', q: '月 trong chữ 胸 (ngực) là:', o: ['Bộ 月 (mặt trăng)', 'Biến thể của bộ 肉 (thịt) — nhục nguyệt', 'Thanh bàng', 'Bộ 舟'], a: 1, why: 'Các chữ chỉ bộ phận cơ thể có 月 là bộ 肉; tra ở bộ 肉 (6 nét).' },
+    { t: 'mcq', ch: '聞', q: 'Chữ 聞 (nghe) thuộc bộ nào trong từ điển 214 bộ?', o: ['門', '耳', '口', '日'], a: 1, why: '聞 là hình thanh: 耳 chỉ nghĩa, 門 chỉ âm; bộ thủ là 耳. Tra ở bộ 門 sẽ không thấy.' },
+    { t: 'mcq', ch: '撫', q: 'Tra chữ 撫 theo bộ thủ, ta làm thế nào?', o: ['Tìm bộ 無, đếm 3 nét', 'Tìm bộ 手 (扌), rồi tìm nhóm 12 nét (phần 無)', 'Tìm bộ 木', 'Tìm theo tổng số nét ở bộ 一'], a: 1, why: 'Xác định bộ 手 (4 nét), phần còn lại 無 có 12 nét.' },
+    { t: 'mcq', q: 'Muốn tra nghĩa của TỪ GHÉP 社稷 (xã tắc), nên dùng:', o: ['Thiều Chửu, Hán Việt tự điển', 'Đào Duy Anh, Hán Việt từ điển', 'Khang Hy tự điển', 'Từ điển giản thể'], a: 1, why: 'Thiều Chửu chủ yếu tra chữ (tự); Đào Duy Anh tra từ (từ ghép Hán Việt), xếp theo âm.' },
+    { t: 'tr', src: '五十而知天命', rd: 'Ngũ thập nhi tri thiên mệnh', a: 'Năm mươi tuổi thì biết mệnh trời.', why: 'Tra: 知 (bộ 矢, 8 nét) — biết; 命 (bộ 口, 8 nét) — mệnh; 而: liên từ “thì, mà”.' },
+    { t: 'tr', src: '七十而從心所欲，不踰矩。', rd: 'Thất thập nhi tòng tâm sở dục, bất du củ.', a: 'Bảy mươi tuổi thì theo điều lòng muốn mà không vượt khuôn phép.', why: '從 (bộ 彳): theo; 所欲: điều mong muốn (kết cấu 所); 踰 (bộ 足): vượt; 矩 (bộ 矢): thước vuông, khuôn phép.' }
+  ],
+  socra: ['Cho mình một chữ bạn thấy khó xác định bộ thủ. Ta cùng thử các bước tìm bộ.', 'Vì sao bộ thủ và hình bàng thường trùng nhau, nhưng không phải luôn luôn?', 'Bạn thử giải thích vì sao viết đúng bút thuận lại giúp nhớ chữ lâu hơn.'],
+  feynman: 'Hướng dẫn một bạn mới học cách tra một chữ lạ trong Thiều Chửu theo bộ thủ, từng bước, dùng chữ 撫 (hoặc một chữ bạn chọn) làm ví dụ.',
+  essay: 'Lập bảng 30 bộ thủ thường gặp nhất mà bạn thấy trong các văn bản của khoá: bộ gốc, biến thể, nghĩa, và hai chữ ví dụ cho mỗi bộ. Đây sẽ là “bảng bộ thủ” riêng của bạn để ôn.',
+  exam: {
+    points: ['Vĩnh tự bát pháp: chấm, ngang, sổ, móc, hất, phẩy dài, phẩy ngắn, mác', 'Bút thuận: ngang trước sổ sau; phẩy trước mác sau; trên trước dưới sau; trái trước phải sau; ngoài trước trong sau; vào nhà rồi đóng cửa; giữa trước hai bên sau', 'Bộ thủ: Thuyết văn 540 → Tự vựng (1615) 214 → Khang Hy tự điển (1716); xếp theo số nét 1–17', 'Biến thể: 亻 氵 忄 扌 艹 刂 灬 犭 礻 衤 王 辶 攵; 阝 phải = 邑, 阝 trái = 阜', 'Nhục nguyệt: 月 trong 肝 胸 腦 = 肉', 'Bộ thủ ≠ hình bàng trong một số chữ: 聞 (耳), 也 (乙), 為 (爪), 年 (干)', 'Tra theo bộ: bộ → số nét bộ → số nét phần còn lại; Thiều Chửu (chữ), Đào Duy Anh (từ)'],
+    qs: ['Trong thời có phần mềm vẽ chữ, còn cần học bộ thủ và tra từ điển giấy không? Vì sao?', 'Bộ thủ giúp gì cho việc học từ vựng, ngoài việc tra từ điển?']
+  },
+  readings: ['Giáo trình của lớp: phần Bộ thủ và cách tra từ điển', 'Thiều Chửu, Hán Việt tự điển: đọc phần “Bảng bộ thủ” và cách tra ở đầu sách', 'Luyện tập viết: dùng nút ✍️ ở các thẻ chữ trong khoá, mỗi ngày 5 chữ']
+};
+
+const HV_AMHV = {
+  id: 'hv-amhv', kind: 'lang', short: 'Âm Hán Việt', title: 'Âm Hán Việt', sub: 'Nguồn gốc cách đọc Hán Việt, âm cổ Hán Việt, thanh điệu và bằng – trắc, chữ nhiều âm, đồng âm khác chữ, từ Hán Việt và những lỗi dùng sai', who: 'Phần I · Chữ Hán',
+  goals: ['Hiểu âm Hán Việt là gì và hình thành từ đâu (âm Hán đời Đường)', 'Phân biệt âm Hán Việt với âm cổ Hán Việt và Hán Việt Việt hoá', 'Nắm quan hệ thanh điệu Hán Việt với bình – thượng – khứ – nhập, và cách phân bằng – trắc', 'Đọc đúng chữ nhiều âm theo nghĩa; phân biệt chữ đồng âm khác nghĩa', 'Nhận ra và tránh các lỗi dùng từ Hán Việt phổ biến'],
+  q: 'Người Bắc Kinh đọc 學 là “xué”, người Quảng Đông đọc “hok”, người Việt đọc “học”. Cách đọc của người Việt từ đâu ra — và vì sao nó lại là một lợi thế lớn khi học Hán văn cổ?',
+  context: '<p>Âm Hán Việt là “giọng” mà người Việt dùng để đọc chữ Hán. Nó không phải tiếng Trung, cũng không chỉ là tiếng Việt: nó là một hệ thống đọc riêng, hình thành hơn nghìn năm trước và giữ lại nhiều đặc điểm của tiếng Hán cổ mà chính tiếng Hán hiện đại đã mất. Bài này giúp bạn hiểu hệ thống ấy để <b>đọc đúng</b>, <b>hiểu đúng</b>, và chuẩn bị cho phần thơ Đường (bằng – trắc) sau này.</p>',
+  lecture: [
+    { h: 'Âm Hán Việt là gì, hình thành từ đâu', html: `<p><b>Âm Hán Việt</b> là cách đọc chữ Hán theo hệ thống ngữ âm của tiếng Việt, mỗi chữ thường ứng với một âm tiết cố định: 學 học, 國 quốc, 人 nhân, 天 thiên.</p>
+<p>Theo các nghiên cứu kinh điển (Vương Lực, <i>Hán Việt ngữ nghiên cứu</i>, 1948; Nguyễn Tài Cẩn, <i>Nguồn gốc và quá trình hình thành cách đọc Hán Việt</i>, 1979), cách đọc Hán Việt hình thành chủ yếu từ <b>âm Hán đời Đường</b> (khoảng thế kỷ VIII – X), khi chữ Hán được dạy và học có hệ thống ở Giao Châu. Sau khi Việt Nam độc lập (thế kỷ X), cách đọc này phát triển theo quy luật riêng của tiếng Việt, tách khỏi sự biến đổi của tiếng Hán.</p>
+<p>Hệ quả: âm Hán Việt có sự <b>tương ứng có hệ thống</b> với hệ thống âm Hán trung cổ (được ghi trong các vận thư như <i>Thiết vận</i>, <i>Quảng vận</i>). Nó giữ được nhiều đặc điểm mà tiếng Bắc Kinh đã mất, ví dụ các âm cuối -p, -t, -c: 法 pháp, 日 nhật, 國 quốc (tiếng Bắc Kinh: fǎ, rì, guó — mất âm cuối). Vì thế âm Hán Việt là một “công cụ” tốt để đọc thơ cổ và hiểu luật thơ.</p>` },
+    { h: 'Ba lớp: cổ Hán Việt, Hán Việt, Hán Việt Việt hoá', html: `<p>Không phải mọi từ gốc Hán trong tiếng Việt đều đọc theo âm Hán Việt chuẩn. Có thể phân ba lớp:</p>
+<ul><li><b>Âm cổ Hán Việt</b> (tiền Hán Việt): những từ vào tiếng Việt <b>trước</b> đời Đường, đã Việt hoá sâu đến mức người Việt cảm thấy là từ thuần Việt:<br>房 phòng → <b>buồng</b>; 鏡 kính → <b>gương</b>; 寡 quả → <b>goá</b>; 味 vị → <b>mùi</b>; 舞 vũ → <b>múa</b>; 帆 phàm → <b>buồm</b>; 半 bán → <b>nửa</b>.</li>
+<li><b>Âm Hán Việt</b> (chuẩn): cách đọc hệ thống hình thành từ đời Đường — cách đọc dùng khi đọc văn bản Hán văn.</li>
+<li><b>Hán Việt Việt hoá</b>: những từ Hán Việt về sau bị đọc chệch theo thói quen tiếng Việt: 符 phù → <b>bùa</b>; 匙 thi → <b>thìa</b>.</li></ul>
+<p>Khi đọc Hán văn, luôn dùng âm <b>Hán Việt chuẩn</b>. Nhưng biết hai lớp kia giúp bạn thấy những cặp từ “anh em” trong tiếng Việt (buồng – phòng, gương – kính, mùi – vị) và hiểu chiều sâu lịch sử của tiếng mẹ đẻ.</p>` },
+    { h: 'Thanh điệu: bình – thượng – khứ – nhập và bằng – trắc', html: `<p>Tiếng Hán trung cổ có bốn <b>thanh</b>: <b>bình</b> (平), <b>thượng</b> (上), <b>khứ</b> (去), <b>nhập</b> (入); mỗi thanh lại chia âm (cao) và dương (thấp). Âm Hán Việt tương ứng khá đều đặn:</p>
+<table class="ac-tbl"><tr><th>Thanh trung cổ</th><th>Thanh Hán Việt</th><th>Ví dụ</th></tr>
+<tr><td>Bình</td><td>ngang, huyền</td><td>天 thiên, 人 nhân, 山 sơn, 年 niên</td></tr>
+<tr><td>Thượng</td><td>hỏi, ngã</td><td>海 hải, 草 thảo, 馬 mã, 五 ngũ</td></tr>
+<tr><td>Khứ</td><td>sắc, nặng</td><td>去 khứ, 樹 thụ, 夜 dạ, 地 địa</td></tr>
+<tr><td>Nhập</td><td>sắc, nặng (với âm cuối -p, -t, -c, -ch)</td><td>法 pháp, 日 nhật, 國 quốc, 學 học, 石 thạch</td></tr></table>
+<p>Trong thơ Đường luật, các thanh được chia thành hai nhóm:</p>
+<ul><li><b>Bằng</b> (平): thanh bình → trong âm Hán Việt là <b>không dấu (ngang) và huyền</b>.</li>
+<li><b>Trắc</b> (仄): thanh thượng, khứ, nhập → trong âm Hán Việt là <b>hỏi, ngã, sắc, nặng</b>.</li></ul>
+<p>Nhờ sự tương ứng này, người Việt chỉ cần nhìn dấu thanh của âm Hán Việt là biết chữ đó bằng hay trắc — một lợi thế lớn khi học luật thơ (bài thơ Đường ở Phần VI). Ví dụ câu 床前明月光 (sàng tiền minh nguyệt quang): sàng (B) tiền (B) minh (B) nguyệt (T) quang (B).</p>` },
+    { h: 'Một chữ nhiều âm, mỗi âm một nghĩa', html: `<p>Một số chữ có <b>nhiều âm Hán Việt</b>, mỗi âm ứng với một nghĩa hoặc một từ loại (hiện tượng <b>phá âm</b> — đổi âm để phân biệt nghĩa; đã giới thiệu ở bài 8). Đọc sai âm là hiểu sai nghĩa:</p>
+<table class="ac-tbl"><tr><th>Chữ</th><th>Các âm và nghĩa</th><th>Ví dụ</th></tr>
+<tr><td>樂</td><td>nhạc (âm nhạc) · lạc (vui) · nhạo (ưa thích)</td><td>音樂 âm nhạc · 快樂 khoái lạc · 智者樂水 trí giả nhạo thuỷ</td></tr>
+<tr><td>說</td><td>thuyết (nói) · duyệt (vui = 悅) · thuế (du thuyết)</td><td>學說 · 不亦說乎 · 遊說</td></tr>
+<tr><td>行</td><td>hành (đi, làm) · hàng (hàng lối) · hạnh (nết)</td><td>行人 · 行列 · 品行 phẩm hạnh</td></tr>
+<tr><td>惡</td><td>ác (xấu) · ố (ghét) · ô (sao, đâu — nghi vấn)</td><td>善惡 · 好惡 hiếu ố · 惡乎</td></tr>
+<tr><td>好</td><td>hảo (tốt) · hiếu (ưa thích)</td><td>好人 · 好學 hiếu học</td></tr>
+<tr><td>長</td><td>trường (dài) · trưởng (lớn, đứng đầu)</td><td>長江 · 校長</td></tr>
+<tr><td>重</td><td>trọng (nặng) · trùng (lặp lại)</td><td>重要 · 重陽 trùng dương</td></tr>
+<tr><td>易</td><td>dịch (thay đổi) · dị (dễ)</td><td>易經 · 容易 dung dị</td></tr>
+<tr><td>見</td><td>kiến (thấy) · hiện (hiện ra)</td><td>見聞 · 見龍在田 (Kinh Dịch: rồng hiện ở ruộng)</td></tr>
+<tr><td>王</td><td>vương (vua) · vượng (làm vua, cai trị)</td><td>王道 · 保民而王 (bảo dân nhi vượng)</td></tr></table>
+<p>Thiều Chửu luôn ghi rõ “một âm là …” cho các chữ này. Khi gặp chữ quen mà nghĩa thông thường không hợp ngữ cảnh, hãy nghĩ ngay: <b>có thể chữ này đang đọc âm khác</b>.</p>` },
+    { h: 'Đồng âm khác chữ', html: `<p>Ngược lại với trường hợp trên, rất nhiều chữ <b>khác nhau</b> lại có <b>cùng một âm Hán Việt</b>. Hệ thống âm Hán Việt có ít âm tiết hơn số chữ, nên đồng âm là rất phổ biến:</p>
+<ul><li><b>đồng</b>: 同 (cùng), 銅 (đồng — kim loại), 童 (trẻ con), 桐 (cây ngô đồng), 瞳 (con ngươi).</li>
+<li><b>công</b>: 公 (chung, ông), 功 (công lao), 工 (thợ, việc), 攻 (đánh).</li>
+<li><b>kỳ</b>: 其 (ấy), 期 (hẹn, thời kỳ), 旗 (cờ), 奇 (lạ), 棋 (cờ — trò chơi).</li>
+<li><b>thế</b>: 世 (đời), 勢 (thế lực), 替 (thay).</li></ul>
+<p>Hệ quả: <b>âm Hán Việt không đủ để xác định nghĩa</b>; phải nhìn chữ. Đây là lý do “đồng chí”, “nhi đồng”, “đồng tiền” có chữ “đồng” khác hẳn nhau (同志, 兒童, 銅錢). Khi học từ Hán Việt, hãy cố nhớ <b>chữ Hán</b> của từng yếu tố — nhiều nhầm lẫn sẽ tự biến mất.</p>` },
+    { h: 'Từ Hán Việt trong tiếng Việt và những lỗi dùng sai', html: `<p>Từ Hán Việt chiếm một phần rất lớn trong vốn từ tiếng Việt (thường được ước tính khoảng 60%, cao hơn nữa trong lĩnh vực chính trị, khoa học, học thuật). Hiểu nghĩa từng chữ giúp dùng từ chính xác. Một số lỗi phổ biến do không hiểu chữ:</p>
+<table class="ac-tbl"><tr><th>Dùng sai</th><th>Đúng</th><th>Giải thích</th></tr>
+<tr><td>“yếu điểm” = điểm yếu</td><td>yếu điểm = điểm quan trọng</td><td>要點: 要 yếu = quan trọng (như “trọng yếu”), không phải “yếu đuối”</td></tr>
+<tr><td>“thăm quan”</td><td>tham quan</td><td>參觀: 參 tham = dự vào, 觀 quan = xem</td></tr>
+<tr><td>“sát nhập”</td><td>sáp nhập</td><td>插入: 插 sáp = cắm vào</td></tr>
+<tr><td>“bàng quang” (thờ ơ)</td><td>bàng quan</td><td>旁觀: đứng bên cạnh mà xem; 膀胱 bàng quang là bọng đái</td></tr>
+<tr><td>“tuyệt cảnh” = cảnh đẹp</td><td>tuyệt cảnh = tình thế tuyệt vọng / chốn cách biệt</td><td>絕境: 絕 = dứt, cùng; cảnh đẹp là “tuyệt sắc”, “thắng cảnh”</td></tr>
+<tr><td>“cứu cánh” = cứu giúp</td><td>cứu cánh = mục đích cuối cùng</td><td>究竟: 究 = xét đến cùng, 竟 = cuối cùng</td></tr></table>
+<p>Ngược lại, có những trường hợp tiếng Việt đã chấp nhận nghĩa mới (từ được dùng theo thói quen đến mức thành chuẩn). Thái độ đúng: hiểu chữ Hán để <b>biết nghĩa gốc</b>, rồi tôn trọng cách dùng hiện hành của tiếng Việt khi viết tiếng Việt.</p>` }
+  ],
+  texts: [
+    { title: 'Bằng – trắc trong một bài thơ quen thuộc', src: 'Lý Bạch, Tĩnh dạ tứ (thơ Đường)', lang: 'zh-TW',
+      orig: '床前明月光，\n疑是地上霜。\n舉頭望明月，\n低頭思故鄉。',
+      reading: 'Sàng tiền minh nguyệt quang,\nNghi thị địa thượng sương.\nCử đầu vọng minh nguyệt,\nĐê đầu tư cố hương.',
+      vi: 'Trước giường ánh trăng sáng,\nNgỡ là sương trên mặt đất.\nNgẩng đầu nhìn trăng sáng,\nCúi đầu nhớ quê nhà.',
+      notes: [['床 sàng', 'giường (cũng có thuyết là thành giếng) — bằng'], ['月 nguyệt', 'thanh nhập (âm cuối -t) → trắc'], ['疑 nghi', 'ngờ, ngỡ — bằng'], ['是 thị', 'ở đây gần nghĩa “là” (thơ Đường, đã muộn hơn Tiên Tần) — trắc'], ['霜 sương', 'bằng'], ['舉 cử', 'giơ lên, ngẩng — trắc (thượng thanh)'], ['望 vọng', 'trông — trắc (khứ thanh)'], ['低 đê', 'cúi — bằng'], ['故鄉 cố hương', 'quê cũ — 故 trắc, 鄉 bằng']],
+      guide: ['Đánh dấu B (bằng) / T (trắc) cho từng chữ trong bốn câu, chỉ dựa vào dấu thanh của âm Hán Việt.', 'Chữ 是 ở đây có nghĩa gần “là”. Điều đó có mâu thuẫn với bài Động từ (是 thời Tiên Tần là đại từ) không? (Gợi ý: Lý Bạch sống thời nào?)'],
+      comment: '<p>Bài thơ ai cũng thuộc trở thành bài tập thanh điệu: chỉ cần nhìn dấu của âm Hán Việt — <b>không dấu, huyền → bằng; hỏi, ngã, sắc, nặng → trắc</b>. Câu đầu: sàng (B) tiền (B) minh (B) nguyệt (T) quang (B). Chữ 月 nguyệt kết thúc bằng -t, là thanh nhập → trắc; tiếng Bắc Kinh đọc “yuè”, mất âm cuối — người Bắc Kinh phải học thuộc chữ nào là nhập thanh, còn người Việt nhìn dấu là biết.</p><p>Chữ <b>是</b> trong thơ Đường đã gần nghĩa hệ từ “là” — đúng với bài 11: hệ từ 是 phát triển dần từ đời Hán trở đi. Nghĩa của chữ thay đổi theo thời đại: luôn để ý văn bản thuộc thời nào.</p>' },
+    { title: 'Chữ nhiều âm: 樂 và 王', src: 'Luận ngữ 6.23 · Ung dã; Mạnh Tử · Lương Huệ vương thượng (trích)', lang: 'zh-TW',
+      orig: '子曰：「知者樂水，仁者樂山。知者動，仁者靜。知者樂，仁者壽。」\n……\n保民而王，莫之能禦也。',
+      reading: 'Tử viết: “Trí giả nhạo thuỷ, nhân giả nhạo sơn. Trí giả động, nhân giả tĩnh. Trí giả lạc, nhân giả thọ.”\n……\nBảo dân nhi vượng, mạc chi năng ngự dã.',
+      vi: 'Khổng Tử nói: “Người trí thích nước, người nhân thích núi. Người trí động, người nhân tĩnh. Người trí vui, người nhân sống lâu.”\n……\nBảo vệ dân mà làm vua (thiên hạ), thì không ai ngăn được.',
+      notes: [['知 = 智 trí', 'thông giả (bài 3)'], ['樂 nhạo', 'động từ: ưa thích (hai lần đầu)'], ['樂 lạc', 'hình dung từ: vui (lần thứ ba)'], ['壽 thọ', 'sống lâu'], ['王 vượng', 'động từ: làm vua, thống nhất thiên hạ (không đọc “vương”)'], ['莫之能禦 mạc chi năng ngự', 'không ai ngăn được (tân ngữ 之 đảo trước động từ trong câu phủ định — bài 24)']],
+      guide: ['Chữ 樂 xuất hiện ba lần với hai âm khác nhau. Lần nào đọc “nhạo”, lần nào đọc “lạc”? Dựa vào đâu?', '王 trong 保民而王 đứng ở vị trí nào trong câu? Vì sao phải đọc “vượng”?'],
+      comment: '<p>Chương 6.23 là ví dụ đẹp nhất cho chữ nhiều âm: <b>樂水, 樂山</b> — 樂 đứng trước tân ngữ (水, 山) nên là động từ “ưa thích”, đọc <b>nhạo</b>; <b>知者樂</b> — 樂 đứng cuối làm vị ngữ hình dung từ “vui”, đọc <b>lạc</b>. Vị trí trong câu quyết định từ loại, từ loại quyết định âm đọc. Thêm vào đó 知 đọc là <b>trí</b> (thông giả). Một câu ngắn mà đọc sai ba chữ là chuyện thường gặp!</p><p><b>王</b> trong 保民而王 là động từ (làm vua), nhiều sách chú âm <b>vượng</b>. Trong thực tế đọc ở Việt Nam, nhiều người vẫn đọc “vương”; khi làm bài, hãy ghi chú nghĩa động từ để thể hiện bạn hiểu.</p>' },
+    { title: 'Anh em trong tiếng Việt: âm cổ Hán Việt', src: 'Bảng đối chiếu (không phải văn bản cổ)', lang: 'zh-TW',
+      orig: '房　鏡　寡　味　舞　帆　半',
+      reading: 'phòng · kính · quả · vị · vũ · phàm · bán',
+      vi: 'buồng · gương · goá · mùi · múa · buồm · nửa',
+      notes: [['房 phòng / buồng', 'phòng ngủ — buồng ngủ'], ['鏡 kính / gương', 'kính (mắt kính) — gương soi'], ['寡 quả / goá', 'quả phụ — goá bụa'], ['味 vị / mùi', 'hương vị — mùi'], ['舞 vũ / múa', 'vũ điệu — múa'], ['帆 phàm / buồm', 'phàm (cánh buồm) — buồm'], ['半 bán / nửa', 'bán cầu — nửa']],
+      guide: ['Mỗi cặp: từ Hán Việt (cột giữa) và từ cổ Hán Việt (cột cuối) có dùng thay nhau được không? Khác nhau ở sắc thái nào?', 'Bạn có biết thêm cặp nào tương tự không?'],
+      comment: '<p>Đây không phải văn bản cổ mà là một bảng đối chiếu để thấy <b>hai lớp</b> từ gốc Hán trong tiếng Việt. Lớp cổ Hán Việt (buồng, gương, goá, mùi, múa, buồm, nửa) vào tiếng Việt từ rất sớm và đã hoà hẳn vào lớp từ thường ngày; lớp Hán Việt (phòng, kính, quả, vị, vũ, phàm, bán) đi vào sau qua con đường sách vở, thường mang sắc thái trang trọng, dùng trong từ ghép.</p><p>Khi đọc Hán văn, luôn đọc theo âm <b>Hán Việt</b> (cột giữa). Biết cột cuối là để hiểu tiếng Việt của chính mình sâu hơn.</p>' }
+  ],
+  concepts: [
+    { id: 'amhv', han: '漢越音', term: 'Âm Hán Việt', def: 'Cách đọc chữ Hán theo hệ thống ngữ âm tiếng Việt, hình thành chủ yếu từ âm Hán đời Đường (thế kỷ VIII–X); tương ứng có hệ thống với âm Hán trung cổ, giữ được âm cuối -p, -t, -c.', ex: '法 pháp, 日 nhật, 國 quốc (Bắc Kinh: fǎ, rì, guó).', counter: 'Âm cổ Hán Việt (buồng, gương) — lớp vào trước đời Đường, đã Việt hoá sâu.', rel: ['cohv', 'bangtrac'], write: '音' },
+    { id: 'cohv', han: '古漢越音', term: 'Ba lớp: cổ Hán Việt, Hán Việt, Hán Việt Việt hoá', def: 'Cổ Hán Việt: vào trước đời Đường, cảm nhận như thuần Việt (buồng, gương, goá, mùi, múa). Hán Việt chuẩn: dùng để đọc văn bản. Hán Việt Việt hoá: đọc chệch về sau (bùa ← phù).', ex: '房 phòng / buồng; 鏡 kính / gương; 符 phù / bùa.', counter: 'Từ thuần Việt không có gốc Hán (ăn, uống, đi).', rel: ['amhv'], write: '鏡' },
+    { id: 'bangtrac', han: '平仄', term: 'Thanh điệu và bằng – trắc', def: 'Bình → ngang, huyền; thượng → hỏi, ngã; khứ → sắc, nặng; nhập (âm cuối -p, -t, -c, -ch) → sắc, nặng. Bằng = ngang, huyền; trắc = hỏi, ngã, sắc, nặng.', ex: '床前明月光: B B B T B.', counter: 'Thanh điệu Bắc Kinh hiện đại — nhập thanh đã tan vào các thanh khác, không nhìn được bằng trắc.', rel: ['amhv'], write: '平仄' },
+    { id: 'nhieuam', han: '一字多音', term: 'Chữ nhiều âm', def: 'Một chữ có nhiều âm Hán Việt, mỗi âm một nghĩa hoặc từ loại; vị trí trong câu quyết định từ loại, từ loại quyết định âm.', ex: '樂 nhạc / lạc / nhạo; 惡 ác / ố / ô; 見 kiến / hiện; 王 vương / vượng.', counter: 'Chữ đồng âm khác chữ (同, 銅, 童 đều đọc “đồng”) — nhiều chữ một âm.', rel: ['dongam'], write: '樂' },
+    { id: 'dongam', han: '同音異字', term: 'Đồng âm khác chữ và lỗi dùng từ Hán Việt', def: 'Nhiều chữ khác nhau cùng một âm Hán Việt, nên âm không đủ xác định nghĩa — phải nhớ chữ. Không hiểu chữ dẫn đến lỗi dùng từ (yếu điểm, thăm quan, sát nhập, bàng quang…).', ex: '同志 đồng chí / 兒童 nhi đồng / 銅錢 đồng tiền; 要點 yếu điểm = điểm quan trọng.', counter: 'Chữ nhiều âm (một chữ nhiều âm) — hiện tượng ngược lại.', rel: ['nhieuam'], write: '同' }
+  ],
+  drills: [
+    { t: 'mcq', q: 'Âm Hán Việt hình thành chủ yếu từ âm Hán thời kỳ nào?', o: ['Thời Tiên Tần', 'Đời Đường (khoảng thế kỷ VIII – X)', 'Đời Thanh', 'Thế kỷ XX'], a: 1, why: 'Theo Vương Lực, Nguyễn Tài Cẩn: chủ yếu từ âm Hán đời Đường.' },
+    { t: 'mcq', ch: '鏡', q: '“Gương” là âm gì của chữ 鏡 (kính)?', o: ['Âm Hán Việt chuẩn', 'Âm cổ Hán Việt', 'Âm Bắc Kinh', 'Từ thuần Việt không liên quan'], a: 1, why: 'Gương là lớp cổ Hán Việt, vào tiếng Việt trước đời Đường, đã Việt hoá sâu.' },
+    { t: 'mcq', q: 'Trong thơ Đường, những thanh nào của âm Hán Việt là BẰNG?', o: ['Sắc, nặng', 'Hỏi, ngã', 'Không dấu (ngang) và huyền', 'Huyền và nặng'], a: 2, why: 'Bằng (thanh bình) = ngang, huyền; trắc = hỏi, ngã, sắc, nặng.' },
+    { t: 'mcq', ch: '月', q: 'Chữ 月 (nguyệt) thuộc thanh nào, bằng hay trắc?', o: ['Bình — bằng', 'Nhập (âm cuối -t) — trắc', 'Thượng — trắc', 'Khứ — bằng'], a: 1, why: 'Âm cuối -t → thanh nhập → trắc.' },
+    { t: 'mcq', ch: '樂', q: 'Trong 知者樂水, chữ 樂 đọc là:', o: ['nhạc', 'lạc', 'nhạo', 'lạo'], a: 2, why: 'Đứng trước tân ngữ 水 → động từ “ưa thích” → nhạo.' },
+    { t: 'mcq', ch: '好學', q: '好學 đọc đúng là:', o: ['hảo học', 'hiếu học', 'hảo hạc', 'hiếu hạc'], a: 1, why: '好 khi là động từ “ưa thích” đọc hiếu: hiếu học = ham học.' },
+    { t: 'mcq', ch: '惡', q: '惡 trong 好惡 (hiếu ố — ưa ghét) đọc là:', o: ['ác', 'ố', 'ô', 'ốc'], a: 1, why: '惡 là động từ “ghét” → đọc ố.' },
+    { t: 'mcq', q: '“Yếu điểm” (要點) đúng nghĩa là:', o: ['Điểm yếu', 'Điểm quan trọng', 'Điểm trung bình', 'Điểm cuối'], a: 1, why: '要 yếu = quan trọng (trọng yếu, yếu tố); “điểm yếu” là nhược điểm.' },
+    { t: 'mcq', q: 'Viết đúng: “Hai công ty ___ thành một.”', o: ['sát nhập', 'sáp nhập', 'xác nhập', 'sát nhặp'], a: 1, why: 'Sáp nhập 插入 — 插 sáp = cắm vào, gộp vào.' },
+    { t: 'tr', src: '舉頭望明月，低頭思故鄉。', rd: 'Cử đầu vọng minh nguyệt, đê đầu tư cố hương.', a: 'Ngẩng đầu nhìn trăng sáng, cúi đầu nhớ quê nhà.', why: '舉: giơ lên; 望: trông; 低: cúi; 思: nhớ; 故鄉: quê cũ (định ngữ 故 đứng trước).' },
+    { t: 'tr', src: '知者樂水，仁者樂山。', rd: 'Trí giả nhạo thuỷ, nhân giả nhạo sơn.', a: 'Người trí thích nước, người nhân thích núi.', why: '知 = 智 (trí); 樂 đọc nhạo = ưa thích; 者: người.' }
+  ],
+  socra: ['Cho mình một từ Hán Việt bạn thường dùng mà bạn nghi là đang dùng sai nghĩa. Ta cùng tra chữ Hán của nó nhé.', 'Vì sao người Việt nhìn dấu thanh là biết chữ bằng hay trắc, còn người Bắc Kinh thì không?', 'Bạn thử giải thích vì sao 樂 trong 知者樂水 đọc “nhạo”, còn trong 知者樂 đọc “lạc”.'],
+  feynman: 'Giải thích cho một bạn cùng lớp cách xác định bằng – trắc của một chữ chỉ bằng âm Hán Việt, và vì sao điều đó quan trọng khi học thơ Đường.',
+  essay: 'Sưu tầm 10 từ Hán Việt dễ dùng sai (ngoài bài): ghi chữ Hán, nghĩa từng chữ, nghĩa đúng của từ, và một câu ví dụ dùng đúng. Kiểm tra bằng Thiều Chửu và Đào Duy Anh.',
+  exam: {
+    points: ['Âm Hán Việt: cách đọc chữ Hán theo hệ thống âm tiếng Việt, hình thành chủ yếu từ âm Hán đời Đường (Vương Lực 1948; Nguyễn Tài Cẩn 1979)', 'Giữ âm cuối -p, -t, -c: 法 pháp, 日 nhật, 國 quốc', 'Ba lớp: cổ Hán Việt (buồng, gương, goá, mùi, múa, buồm, nửa) — Hán Việt chuẩn — Hán Việt Việt hoá (bùa)', 'Bình → ngang, huyền; thượng → hỏi, ngã; khứ → sắc, nặng; nhập → sắc, nặng (-p -t -c -ch)', 'Bằng = ngang, huyền; trắc = hỏi, ngã, sắc, nặng', 'Chữ nhiều âm: 樂 nhạc/lạc/nhạo, 說, 行, 惡 ác/ố/ô, 好 hảo/hiếu, 長, 重, 易, 見, 王 vương/vượng', 'Đồng âm khác chữ: 同 銅 童; 公 功 工 攻', 'Lỗi từ Hán Việt: yếu điểm, tham quan, sáp nhập, bàng quan, cứu cánh'],
+    qs: ['Âm Hán Việt có phải là “tiếng Trung đọc kiểu Việt” không? Lập luận bằng các đặc điểm đã học.', 'Khi tiếng Việt đã dùng một từ Hán Việt theo nghĩa mới (khác nghĩa gốc), nên “sửa” lại hay chấp nhận?']
+  },
+  readings: ['Giáo trình của lớp: phần Âm Hán Việt', 'Nguyễn Tài Cẩn — Nguồn gốc và quá trình hình thành cách đọc Hán Việt (đọc phần mở đầu)', 'Thiều Chửu: tra 樂, 惡, 見, 王 và đọc các mục “một âm là…”']
+};
+
 const ACAD_HANVAN = {
   format: 'chutchi-course@1', id: 'han-van', field: 'Hán Nôm', icon: '📜', color: '#ffe680',
   title: 'Cơ sở Hán văn cổ',
@@ -683,11 +1184,11 @@ const ACAD_HANVAN = {
   intro: '<p>Khoá dựng theo khung chung của môn Cơ sở Hán Nôm, kết hợp ghi chép trên lớp. Thuật ngữ theo giáo trình Việt Nam (văn/tự, thực từ/hư từ, tự động từ/tha động từ, phần đề/phần thuyết, nòng cốt câu…).</p><p>Mỗi bài: mục tiêu · bài giảng · văn bản (nguyên văn, âm Hán Việt, chú thích, lời bình) · thẻ chữ & từ (có tập viết theo thứ tự nét) · luyện tập (trắc nghiệm, dịch câu có AI chấm) · hỏi gia sư · tự dịch & tự giảng lại.</p>',
   parts: [
     { title: 'Phần I · Chữ Hán', lessons: [
-      { id: 'hv-khaiquat', title: 'Chữ Hán: khái quát', sub: 'Chữ ghi ý – âm, các thể chữ, phồn thể & giản thể' },
-      { id: 'hv-lucthu1', title: 'Văn và tự · Lục thư (I)', sub: 'Thuyết văn giải tự; tượng hình, chỉ sự, hội ý' },
-      { id: 'hv-lucthu2', title: 'Lục thư (II)', sub: 'Hình thanh, chuyển chú, giả tá, thông giả' },
-      { id: 'hv-botthu', title: 'Nét, bút thuận, bộ thủ, tra từ điển', sub: '214 bộ, bộ biến thể, Thiều Chửu – Đào Duy Anh' },
-      { id: 'hv-amhv', title: 'Âm Hán Việt', sub: 'Âm cổ Hán Việt, chữ nhiều âm, đồng âm khác chữ' }] },
+      HV_KHAIQUAT,
+      HV_LUCTHU1,
+      HV_LUCTHU2,
+      HV_BOTHU,
+      HV_AMHV] },
     { title: 'Phần II · Từ vựng văn ngôn', lessons: [
       HV_TUTU,
       HV_DONDAAM,
