@@ -719,3 +719,23 @@ body.reduce-fx .view.pg-in { animation: none; }
 .ac-exam { margin: 0 0 16px; padding: 10px 16px; border: 2px solid var(--ink); border-radius: 14px; background: #fff4cf; color: #2a2346; }
 .ac-exam summary { cursor: pointer; font-weight: 800; font-family: var(--fh); font-size: 17px; } .ac-exam ul, .ac-exam ol { margin: 6px 0; padding-left: 22px; } .ac-exam li { margin: 3px 0; }
 .ac-outline h2 { font-family: var(--fh); font-size: 18px; margin: 16px 0 4px; } .ac-outline li { margin: 2px 0; }
+
+/* Học viện — bài giảng sâu */
+.ac-intro { margin: 18px 0 0; padding: 12px 18px; border: 2px solid var(--ink); border-radius: 14px; background: var(--card, #fff); }
+.ac-intro summary { cursor: pointer; font-weight: 800; font-family: var(--fh); font-size: 17px; } .ac-intro .rich { line-height: 1.75; }
+.ac-lesson.soon { opacity: .55; } .ac-lesson .tag { white-space: nowrap; }
+.ac-toc { padding: 12px 16px; border: 2px solid var(--ink); border-radius: 14px; background: #f1ebff; color: #2a2346; margin-bottom: 8px; }
+.ac-toc ol { margin: 6px 0 0; padding-left: 22px; columns: 2; column-gap: 28px; } .ac-toc a { color: inherit; }
+.ac-lec { scroll-margin-top: 90px; } .ac-lec .rich { font-size: 16.5px; line-height: 1.85; }
+.ac-lec .rich blockquote { margin: 10px 0; padding: 8px 14px; border-left: 4px solid var(--pink); background: #fff7fb; color: #2a2346; border-radius: 4px; }
+.ac-lec .rich .han { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 1.05em; }
+.ac-passage { margin: 22px 0; padding: 14px 18px 8px; border: 2px solid var(--ink); border-radius: 16px; background: var(--card, #fff); }
+.ac-passage h3 { margin-top: 0 !important; }
+.ac-text .ac-say { position: absolute; right: 8px; top: 8px; }
+.ac-notes { margin: 8px 0; padding: 8px 12px; border-radius: 10px; background: #fffbe8; color: #2a2346; font-size: 14.5px; }
+.ac-notes dl { margin: 4px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; } .ac-notes dt { font-weight: 800; font-family: 'Noto Serif SC', serif; } .ac-notes dd { margin: 0; }
+.ac-comment { margin: 10px 0 6px; padding: 8px 12px; border: 2px dashed var(--ink); border-radius: 12px; background: #f6f1ff; color: #2a2346; }
+.ac-comment summary { cursor: pointer; font-weight: 800; } .ac-comment .rich { line-height: 1.75; margin-top: 6px; }
+.ac-han { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 1.15em; color: var(--pink); }
+.ac-debates { display: grid; gap: 10px; margin: 10px 0; } .ac-deb { padding: 10px 14px; border-left: 5px solid #8a5cff; background: #f6f1ff; border-radius: 6px; color: #2a2346; } .ac-deb .rich p { margin: 4px 0 0; }
+@media (max-width: 720px) { .ac-toc ol { columns: 1; } .ac-notes dl { grid-template-columns: 1fr; } .ac-notes dd { margin-bottom: 6px; } }

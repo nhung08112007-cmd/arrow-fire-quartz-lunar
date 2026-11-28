@@ -6,6 +6,7 @@
    ========================================================= */
 const Academy = {
   builtin: [
+    { id: 'cn-phil', src: 'js/data/acad-cnphil.js', name: 'ACAD_CNPHIL', title: 'Triết học Trung Quốc cổ đại', field: 'Triết học phương Đông', icon: '☯️', color: '#b8f0a0', n: 24 },
     { id: 'konrad', src: 'js/data/acad-konrad.js', name: 'ACAD_KONRAD', title: 'Konrad: Phương Tây và Phương Đông', field: 'Văn học phương Đông', icon: '🌏', color: '#ffc0b0', n: 6 },
     { id: 'philo-west', src: 'js/data/acad-philo.js', name: 'ACAD_PHILO', title: 'Nhập môn Triết học phương Tây', field: 'Triết học', icon: '🏛', color: '#c9b6ff', n: 6 },
     { id: 'postmodern', src: 'js/data/acad-pomo.js', name: 'ACAD_POMO', title: 'Hiểu Hậu hiện đại', field: 'Lý luận văn hoá', icon: '🌀', color: '#9fdcff', n: 8 },
@@ -15,6 +16,17 @@ const Academy = {
   STEPS: [['q', '❓', 'Câu hỏi lớn'], ['read', '📜', 'Văn bản gốc'], ['concepts', '💡', 'Khái niệm'], ['arg', '🧩', 'Sơ đồ lập luận'], ['socra', '🗣', 'Đối thoại Socrates'], ['feyn', '✍️', 'Tự giảng lại']],
   LOOK: [['describe', 'Mô tả', 'Chỉ kể những gì mắt thấy: hình, màu, người, vật, vị trí. Chưa đánh giá, chưa đoán ý.'], ['analyze', 'Phân tích', 'Các yếu tố được sắp xếp thế nào: bố cục, đường dẫn mắt, ánh sáng, màu, nét, tỉ lệ.'], ['interpret', 'Diễn giải', 'Theo bạn tác phẩm nói về điều gì? Chỉ ra chi tiết nào làm bằng chứng.'], ['judge', 'Đánh giá', 'Tác phẩm có thành công không — theo tiêu chí nào? Bạn có đổi ý so với ấn tượng đầu không?']],
 
+  stepsOf(l) {
+    const st = this.STEPS.map((x, i) => i === 1 && l.kind === 'art' ? ['look', '👁', 'Nhìn chậm'] : x);
+    if (l.lecture?.length) st.splice(1, 0, ['lecture', '🎓', 'Bài giảng']);
+    return st;
+  },
+  /* ước lượng thời gian đọc của một bài (phút) */
+  mins(l) {
+    const t = [l.context, ...(l.lecture || []).map(x => x.html), ...(l.texts || []).map(x => (x.vi || '') + (x.comment || '')), l.text?.vi].join(' ');
+    return Math.max(10, Math.round(wordCount(stripHtml(t)) / 170 / 5) * 5 + 15);
+  },
+  isBuiltin(cid) { return this.builtin.some(b => b.id === cid); },
   /* ---------- dữ liệu ---------- */
   recs() { return Store.list('acad'); },
   rec(id, init) { let r = Store.find('acad', id); if (!r && init) { r = { id, ...init }; Store.list('acad').push(r); } return r; },
@@ -89,10 +101,12 @@ const Academy = {
         <div class="row"><span class="tag">${done}/${ls.length} bài</span><span class="tag">${this.concepts(cid).length} khái niệm đang ôn</span>
         ${due ? `<button class="btn pri sm" id="acRv">💡 Ôn ${due} khái niệm</button>` : ''}
         ${ls.some(l => l.exam) ? '<button class="btn pri sm" id="acOutline">📌 Tóm tắt khoá</button>' : ''}<button class="btn sm" id="acExp">⤓ Xuất JSON</button>${custom ? '<button class="btn sm" id="acDel">🗑 Xoá khoá</button>' : ''}</div></div></header>
+      ${c.intro ? `<details class="ac-intro" ${this.recs().some(r => r.kind === 'lesson' && r.course === cid) ? '' : 'open'}><summary>📋 Giới thiệu môn học</summary><div class="rich">${c.intro}</div></details>` : ''}
       ${c.parts.map((p, pi) => `<section class="ac-part"><h2>${esc(p.title)}</h2><div class="ac-lessons">${p.lessons.map((l, li) => {
         const r = Store.find('acad', `L:${cid}:${l.id}`), st = r?.done ? 'done' : r ? 'go' : '';
-        return `<a class="ac-lesson ${st}" href="#/hoc-vien/${cid}/${l.id}"><span class="ac-no">${st === 'done' ? '✓' : ls.findIndex(x => x.id === l.id) + 1}</span><div><b>${esc(l.title)}</b><small>${esc(l.sub || '')}</small>
-          ${st === 'go' ? `<small class="ac-st">Đang ở bước ${(r.step || 0) + 1}/6 · ${this.STEPS[r.step || 0][2]}</small>` : ''}${!l.concepts ? '<small class="ac-st">chưa soạn nội dung</small>' : ''}</div>${l.kind === 'art' ? '<span class="tag">🎨 nhìn chậm</span>' : ''}</a>`;
+        const sts = this.stepsOf(l), soon = !l.concepts && this.isBuiltin(cid);
+        return `<a class="ac-lesson ${st} ${soon ? 'soon' : ''}" href="#/hoc-vien/${cid}/${l.id}"><span class="ac-no">${st === 'done' ? '✓' : ls.findIndex(x => x.id === l.id) + 1}</span><div><b>${esc(l.title)}</b><small>${esc(l.sub || '')}</small>
+          ${st === 'go' ? `<small class="ac-st">Đang ở bước ${Math.min(r.step || 0, sts.length - 1) + 1}/${sts.length} · ${sts[Math.min(r.step || 0, sts.length - 1)][2]}</small>` : ''}${soon ? '<small class="ac-st">🕓 đang soạn</small>' : !l.concepts ? '<small class="ac-st">chưa soạn nội dung</small>' : ''}</div>${l.kind === 'art' ? '<span class="tag">🎨 nhìn chậm</span>' : ''}${l.lecture ? `<span class="tag">🎓 ~${this.mins(l)} phút</span>` : ''}</a>`;
       }).join('')}</div></section>`).join('')}
       <section class="ac-part"><h2>🕸 Bản đồ khái niệm</h2><p class="muted sm">Các khái niệm của cả khoá và mối liên hệ giữa chúng. Đậm = đã đưa vào lịch ôn. Bấm vào một khái niệm để xem lại.</p><div class="ac-map" id="acMap">${this.mapSVG(c, cid)}</div></section>
     </div>`;
@@ -140,11 +154,12 @@ const Academy = {
     let c; try { c = await this.load(cid); } catch (e) { }
     const l = c && this.lessons(c).find(x => x.id === lid);
     if (!l) { view.innerHTML = '<div class="page"><div class="empty">Không tìm thấy bài. <a href="#/hoc-vien">← Học viện</a></div></div>'; return; }
+    if (!l.concepts && this.isBuiltin(cid)) { view.innerHTML = `<div class="page acad"><div class="ac-crumb"><a href="#/hoc-vien">🏛 Học viện</a> › <a href="#/hoc-vien/${cid}">${esc(c.title)}</a></div><div class="empty big">${Art.creature('prof', { size: 100, mood: 'joy' })}<h2>${esc(l.title)}</h2><p class="muted">${esc(l.sub || '')}</p><p>Bài này đang được soạn. Hãy học các bài trước theo thứ tự nhé.</p><a class="btn pri" href="#/hoc-vien/${cid}">← Về đề cương</a></div></div>`; return; }
     if (!l.concepts) return this.draftLesson(view, c, l);
     const r = this.lrec(cid, lid); r.n = r.n || {};
+    const steps = this.stepsOf(l), LAST = steps.length - 1;
     if (step != null) r.step = step;
-    const S = r.step || 0, art = l.kind === 'art';
-    const steps = this.STEPS.map((s, i) => i === 1 && art ? ['look', '👁', 'Nhìn chậm'] : s);
+    const S = Math.min(r.step || 0, LAST);
     const ls = this.lessons(c), idx = ls.findIndex(x => x.id === lid), nextL = ls[idx + 1];
     view.innerHTML = `
     <div class="page acad ac-lp">
@@ -153,7 +168,7 @@ const Academy = {
       <nav class="ac-steps">${steps.map((s, i) => `<button data-s="${i}" class="${i === S ? 'on' : ''} ${(r.seen || []).includes(i) ? 'seen' : ''}"><span>${s[1]}</span><small>${i + 1}. ${s[2]}</small></button>`).join('')}</nav>
       <section class="ac-body" id="acBody"></section>
       <div class="ac-foot">${S > 0 ? '<button class="btn" id="acPrev">← Bước trước</button>' : ''}<span class="grow"></span>
-        ${S < 5 ? `<button class="btn pri" id="acNext">Bước tiếp: ${steps[S + 1][2]} →</button>` : r.done ? `<span class="tag ok">✓ Đã hoàn thành ${fmtDate(r.done)}</span>${nextL ? `<a class="btn pri" href="#/hoc-vien/${cid}/${nextL.id}">Bài tiếp: ${esc(nextL.title)} →</a>` : ''}` : '<button class="btn pri" id="acDone">✓ Hoàn thành bài</button>'}</div>
+        ${S < LAST ? `<button class="btn pri" id="acNext">Bước tiếp: ${steps[S + 1][2]} →</button>` : r.done ? `<span class="tag ok">✓ Đã hoàn thành ${fmtDate(r.done)}</span>${nextL ? `<a class="btn pri" href="#/hoc-vien/${cid}/${nextL.id}">Bài tiếp: ${esc(nextL.title)} →</a>` : ''}` : '<button class="btn pri" id="acDone">✓ Hoàn thành bài</button>'}</div>
     </div>`;
     r.seen = [...new Set([...(r.seen || []), S])]; this.save();
     const go = i => { this.lesson(view, cid, lid, i); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -162,7 +177,7 @@ const Academy = {
     $('#acNext') && ($('#acNext').onclick = () => go(S + 1));
     $('#acDone') && ($('#acDone').onclick = () => {
       r.done = Date.now(); const n = this.addConcepts(cid, l); this.save(); Activity.add('acad');
-      toast(`🎓 Xong bài “${l.title}”${n ? ` · ${n} khái niệm vào lịch ôn` : ''}`, 'ok', 4000); Sfx.jingle && Sfx.jingle(); go(5);
+      toast(`🎓 Xong bài “${l.title}”${n ? ` · ${n} khái niệm vào lịch ôn` : ''}`, 'ok', 4000); Sfx.jingle && Sfx.jingle(); go(LAST);
     });
     const body = $('#acBody', view);
     this['step_' + steps[S][0]](body, c, l, r, cid);
@@ -174,6 +189,15 @@ const Academy = {
   setN(r, k, v) { r.n = r.n || {}; r.n[k] = v; r.at = Date.now(); },
   ta(r, k, ph, rows = 3) { return `<textarea class="inp" rows="${rows}" data-n="${k}" placeholder="${esc(ph)}">${esc(this.getN(r, k))}</textarea>`; },
 
+  step_lecture(el, c, l, r) {
+    const secs = l.lecture;
+    el.innerHTML = `<div class="ac-toc"><b>🎓 Bài giảng</b> <span class="muted sm">· ${secs.length} phần · đọc chậm khoảng ${Math.max(10, Math.round(wordCount(stripHtml(secs.map(x => x.html).join(' '))) / 170))} phút. Có thể chia làm hai buổi.</span>
+        <ol>${secs.map((x, i) => `<li><a href="#" data-j="${i}">${esc(x.h)}</a></li>`).join('')}</ol></div>
+      ${secs.map((x, i) => `<section class="ac-lec" id="acLec${i}"><h3>${i + 1}. ${esc(x.h)}</h3><div class="rich">${x.html}</div></section>`).join('')}
+      ${l.readings?.length ? `<div class="ac-book"><b>📚 Bài đọc của buổi này</b><ul>${l.readings.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+      <h3>Ghi chép bài giảng</h3><p class="muted sm">Tóm ý chính bằng lời của bạn, ghi lại chỗ còn thắc mắc — bước Socrates sẽ dùng tới.</p>${this.ta(r, 'lec', 'Ý chính… / Mình chưa hiểu…', 5)}`;
+    $$('.ac-toc a', el).forEach(a => a.onclick = e => { e.preventDefault(); $('#acLec' + a.dataset.j, el).scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  },
   step_q(el, c, l, r) {
     const art = l.kind === 'art';
     el.innerHTML = `<div class="ac-bigq">${esc(l.q)}</div>
@@ -189,6 +213,7 @@ const Academy = {
   },
 
   step_read(el, c, l, r) {
+    if (l.texts) return this.readMany(el, c, l, r);
     const t = l.text || {}, orig = t.orig || t.en, ol = t.lang || 'en-GB', mode = r.lang || (orig ? 'both' : 'vi');
     const para = s => esc(s || '').split('\n').map(x => `<p>${x}</p>`).join('');
     const oname = { en: 'English', zh: 'Nguyên văn 漢', ja: 'Nguyên văn 日本語', vi: 'Nguyên văn' }[ol.slice(0, 2)] || 'Nguyên văn';
@@ -204,6 +229,29 @@ const Academy = {
       const id = 'acx-' + c.id + '-' + l.id;
       if (Store.find('archive', id)) { Router.go('/doc/luu/' + id); return; }
       Store.upsert('archive', { id, title: `${l.title} — trích đoạn`, author: (l.who || '').split('·')[0].trim(), source: t.src || '', type: 'note', status: 'inbox', tags: [c.field || 'nhân văn', 'học viện'], rating: 0, summary: l.q, content: `${orig ? `<blockquote>${para(orig)}</blockquote>${t.reading ? para(t.reading) : ''}` : ''}<h2>Bản dịch</h2>${para(t.vi)}<h2>Câu hỏi dẫn đường</h2><ol>${(t.guide || []).map(g => `<li>${esc(g)}</li>`).join('')}</ol>`, notes: [] });
+      toast('Đã lưu vào Kho lưu trữ — bấm lần nữa để mở trình đọc'); $('#acArc', el).textContent = '📖 Mở trong trình đọc';
+    };
+  },
+  readMany(el, c, l, r) {
+    const mode = r.lang || 'both', para = s => esc(s || '').split('\n').map(x => `<p>${x}</p>`).join('');
+    el.innerHTML = `<p class="muted">Bài này có <b>${l.texts.length} đoạn văn bản</b>. Với mỗi đoạn: đọc nguyên văn (nhìn chữ Hán, đọc phiên âm), rồi bản dịch và chú thích; tự trả lời câu hỏi <b>trước</b> khi mở lời bình.</p>
+      <div class="seg sm" id="acLang">${[['both', 'Song ngữ'], ['en', 'Nguyên văn'], ['vi', 'Bản dịch']].map(([k, n]) => `<button data-l="${k}" class="${mode === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+      ${l.texts.map((t, i) => {
+        const ol = t.lang || 'zh-TW', cjk = !/^en/.test(ol);
+        return `<article class="ac-passage"><h3>${i + 1}. ${esc(t.title || '')}</h3><div class="ac-src">📜 ${esc(t.src || '')}</div>
+          <div class="ac-text ${t.orig ? mode : 'vi'}">${t.orig ? `<blockquote class="en ${cjk ? 'cjk' : ''}" lang="${esc(ol)}">${para(t.orig)}${t.reading ? `<div class="ac-reading">${para(t.reading)}</div>` : ''}<button class="btn sm ac-say" data-i="${i}" title="Đọc to">🔊</button></blockquote>` : ''}<blockquote class="vi">${para(t.vi)}</blockquote></div>
+          ${t.notes?.length ? `<div class="ac-notes"><b>Chú thích</b><dl>${t.notes.map(n => `<dt>${esc(n[0])}</dt><dd>${esc(n[1])}</dd>`).join('')}</dl></div>` : ''}
+          ${(t.guide || []).map((g, j) => `<div class="ac-guide"><b>${esc(g)}</b>${this.ta(r, `t${i}g${j}`, 'Ý của bạn, dẫn chữ trong văn bản làm bằng chứng…', 2)}</div>`).join('')}
+          ${t.comment ? `<details class="ac-comment"><summary>🎓 Lời bình</summary><div class="rich">${t.comment}</div></details>` : ''}</article>`;
+      }).join('')}
+      <div class="row"><button class="btn sm" id="acArc">📥 Lưu các đoạn vào Kho lưu trữ</button><span class="muted sm">để bôi đen, tô màu, ghi chú trong trình đọc</span></div>`;
+    $$('#acLang button', el).forEach(b => b.onclick = () => { r.lang = b.dataset.l; this.save(); this.readMany(el, c, l, r); this.rebind(el, r); });
+    $$('.ac-say', el).forEach(b => b.onclick = () => { const t = l.texts[+b.dataset.i]; Speech.speak(t.orig, t.lang || 'zh-TW', .8); });
+    $('#acArc', el).onclick = () => {
+      const id = 'acx-' + c.id + '-' + l.id;
+      if (Store.find('archive', id)) { Router.go('/doc/luu/' + id); return; }
+      Store.upsert('archive', { id, title: `${l.title} — văn bản`, author: (l.who || '').split('·')[0].trim(), source: c.title, type: 'note', status: 'inbox', tags: [c.field || 'nhân văn', 'học viện'], rating: 0, summary: l.q,
+        content: l.texts.map((t, i) => `<h2>${i + 1}. ${esc(t.title || '')}</h2><p><i>${esc(t.src || '')}</i></p>${t.orig ? `<blockquote>${para(t.orig)}</blockquote>${t.reading ? para(t.reading) : ''}` : ''}${para(t.vi)}${t.notes?.length ? `<ul>${t.notes.map(n => `<li><b>${esc(n[0])}</b>: ${esc(n[1])}</li>`).join('')}</ul>` : ''}${t.comment || ''}`).join(''), notes: [] });
       toast('Đã lưu vào Kho lưu trữ — bấm lần nữa để mở trình đọc'); $('#acArc', el).textContent = '📖 Mở trong trình đọc';
     };
   },
@@ -226,7 +274,7 @@ const Academy = {
 
   step_concepts(el, c, l, r, cid) {
     el.innerHTML = `<p class="muted">Với mỗi khái niệm: <b>tự định nghĩa bằng lời của bạn trước</b>, rồi mới mở định nghĩa, ví dụ và phản ví dụ để so.</p>
-      <div class="ac-concepts">${l.concepts.map((k, i) => `<div class="ac-con" data-i="${i}"><h3>${esc(k.term)}</h3>${this.ta(r, 'def_' + k.id, 'Mình hiểu khái niệm này là…', 2)}
+      <div class="ac-concepts">${l.concepts.map((k, i) => `<div class="ac-con" data-i="${i}"><h3>${k.han ? `<span class="ac-han">${esc(k.han)}</span> ` : ''}${esc(k.term)}</h3>${this.ta(r, 'def_' + k.id, 'Mình hiểu khái niệm này là…', 2)}
         <button class="btn sm" data-show="${i}">${this.getN(r, 'open_' + k.id) ? 'Ẩn' : 'Mở'} định nghĩa</button><div class="ac-reveal" ${this.getN(r, 'open_' + k.id) ? '' : 'hidden'}>${this.conceptHTML(k, null, c)}</div></div>`).join('')}</div>
       <div class="row"><button class="btn pri" id="acAddK">💡 Đưa ${l.concepts.length} khái niệm vào lịch ôn</button><span class="muted sm">(tự động khi hoàn thành bài)</span></div>`;
     $$('[data-show]', el).forEach(b => b.onclick = () => {
@@ -254,7 +302,8 @@ const Academy = {
         <div class="am-row">${(a.premises || []).map((p, i) => box('p', 'Tiền đề ' + (i + 1), esc(p))).join('')}</div><div class="am-arrow">▼ vậy nên</div>${box('c', 'Kết luận', `<b>${esc(a.claim)}</b>`)}
         <div class="am-row two">${box('o', '⚔ Phản bác', esc(a.objection))}${box('re', '🛡 Trả lời', esc(a.reply))}</div></div>
         <p class="muted sm">Sơ đồ mẫu không phải “đáp án đúng” — là một cách đọc. Nếu bạn tìm được tiền đề hay phản bác khác, đó là dấu hiệu tốt.</p></div>
-      <div id="acArgFb"></div>`;
+      <div id="acArgFb"></div>
+      ${l.debates?.length ? `<h3>🏛 Các cách hiểu trong giới nghiên cứu</h3><p class="muted sm">Cùng một văn bản, các học giả đọc rất khác nhau. Bạn thấy cách đọc nào thuyết phục hơn — và vì sao?</p><div class="ac-debates">${l.debates.map(d => `<div class="ac-deb"><b>${esc(d.who)}</b><div class="rich">${d.view}</div></div>`).join('')}</div>${this.ta(r, 'deb', 'Mình nghiêng về cách đọc… vì…', 3)}` : ''}`;
     $('#acCmp', el).onclick = e => { const m = $('#acModel', el); m.hidden = !m.hidden; e.target.textContent = (m.hidden ? 'So sánh với' : 'Ẩn') + ' sơ đồ mẫu'; this.setN(r, 'argShown', m.hidden ? '' : '1'); this.save(); };
     $('#acArgAI', el).onclick = e => AI.withSpinner(e.target, async () => {
       const mine = `Tiền đề: ${[0, 1, 2].map(i => this.getN(r, 'p' + i)).filter(Boolean).join(' | ') || '(trống)'}\nPhản bác: ${this.getN(r, 'obj') || '(trống)'}\nTrả lời: ${this.getN(r, 'rep') || '(trống)'}\nTiền đề yếu nhất: ${this.getN(r, 'weak') || '(trống)'}\nLập trường: ${this.getN(r, 'stance') || '(trống)'}`;
