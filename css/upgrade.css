@@ -716,3 +716,6 @@ body.reduce-fx .view.pg-in { animation: none; }
 .ac-reading { font-family: var(--fb); font-size: 15px; letter-spacing: 0; opacity: .8; font-style: italic; margin-top: 10px; padding-top: 8px; border-top: 1px dashed currentColor; }
 .ac-book { margin: 0 0 12px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 12px; background: #fff4cf; color: #2a2346; }
 .ac-book small { display: block; opacity: .75; margin-top: 2px; }
+.ac-exam { margin: 0 0 16px; padding: 10px 16px; border: 3px solid var(--ink); border-radius: 14px; background: #ffe9e2; color: #2a2346; box-shadow: var(--sh-s); }
+.ac-exam summary { cursor: pointer; font-weight: 800; font-family: var(--fh); font-size: 17px; } .ac-exam ul, .ac-exam ol { margin: 6px 0; padding-left: 22px; } .ac-exam li { margin: 3px 0; }
+.ac-outline h2 { font-family: var(--fh); font-size: 18px; margin: 16px 0 4px; } .ac-outline li { margin: 2px 0; }

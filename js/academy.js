@@ -6,6 +6,7 @@
    ========================================================= */
 const Academy = {
   builtin: [
+    { id: 'konrad', src: 'js/data/acad-konrad.js', name: 'ACAD_KONRAD', title: 'Konrad: Phương Tây và Phương Đông', field: 'Văn học phương Đông', icon: '🌏', color: '#ffc0b0', n: 6 },
     { id: 'philo-west', src: 'js/data/acad-philo.js', name: 'ACAD_PHILO', title: 'Nhập môn Triết học phương Tây', field: 'Triết học', icon: '🏛', color: '#c9b6ff', n: 6 },
     { id: 'postmodern', src: 'js/data/acad-pomo.js', name: 'ACAD_POMO', title: 'Hiểu Hậu hiện đại', field: 'Lý luận văn hoá', icon: '🌀', color: '#9fdcff', n: 8 },
     { id: 'art-looking', src: 'js/data/acad-art.js', name: 'ACAD_ART', title: 'Cách xem một bức tranh', field: 'Nghệ thuật', icon: '🎨', color: '#ffd9b0', n: 3 },
@@ -87,7 +88,7 @@ const Academy = {
       <header class="ac-head" style="--cc:${c.color || '#e3d4ff'}"><span class="ac-ic big">${c.icon || '📘'}</span><div><h1>${esc(c.title)}</h1><p>${esc(c.desc || '')}</p>
         <div class="row"><span class="tag">${done}/${ls.length} bài</span><span class="tag">${this.concepts(cid).length} khái niệm đang ôn</span>
         ${due ? `<button class="btn pri sm" id="acRv">💡 Ôn ${due} khái niệm</button>` : ''}
-        <button class="btn sm" id="acExp">⤓ Xuất JSON</button>${custom ? '<button class="btn sm" id="acDel">🗑 Xoá khoá</button>' : ''}</div></div></header>
+        ${ls.some(l => l.exam) ? '<button class="btn pri sm" id="acOutline">🎯 Đề cương ôn thi</button>' : ''}<button class="btn sm" id="acExp">⤓ Xuất JSON</button>${custom ? '<button class="btn sm" id="acDel">🗑 Xoá khoá</button>' : ''}</div></div></header>
       ${c.parts.map((p, pi) => `<section class="ac-part"><h2>${esc(p.title)}</h2><div class="ac-lessons">${p.lessons.map((l, li) => {
         const r = Store.find('acad', `L:${cid}:${l.id}`), st = r?.done ? 'done' : r ? 'go' : '';
         return `<a class="ac-lesson ${st}" href="#/hoc-vien/${cid}/${l.id}"><span class="ac-no">${st === 'done' ? '✓' : ls.findIndex(x => x.id === l.id) + 1}</span><div><b>${esc(l.title)}</b><small>${esc(l.sub || '')}</small>
@@ -96,6 +97,7 @@ const Academy = {
       <section class="ac-part"><h2>🕸 Bản đồ khái niệm</h2><p class="muted sm">Các khái niệm của cả khoá và mối liên hệ giữa chúng. Đậm = đã đưa vào lịch ôn. Bấm vào một khái niệm để xem lại.</p><div class="ac-map" id="acMap">${this.mapSVG(c, cid)}</div></section>
     </div>`;
     $('#acRv') && ($('#acRv').onclick = () => this.review(view, cid));
+    $('#acOutline') && ($('#acOutline').onclick = () => this.outline(c));
     $('#acExp').onclick = () => download(`${cid}.chutchi-course.json`, JSON.stringify(c, null, 1), 'application/json');
     $('#acDel') && ($('#acDel').onclick = async () => {
       if (!(await confirmBox(`Xoá khoá “${esc(c.title)}” cùng tiến độ và khái niệm của nó?`))) return;
@@ -309,6 +311,7 @@ QUY TẮC:
   step_feyn(el, c, l, r, cid) {
     const q0 = this.getN(r, 'q0');
     el.innerHTML = `${q0 ? `<div class="ac-then"><small>Lúc đầu bạn đã viết</small><p>${esc(q0)}</p></div>` : ''}
+      ${l.exam ? this.examHTML(l) : ''}
       <h3>1 · Tự giảng lại (kỹ thuật Feynman)</h3><p class="muted">${esc(l.feynman || 'Giải thích lại bài này cho một người chưa biết gì, bằng lời đơn giản.')}</p>
       ${this.ta(r, 'feyn', 'Không dùng thuật ngữ nào mà bạn chưa giải thích…', 5)}
       <h3>2 · Bài viết ngắn</h3><p class="muted">${esc(l.essay || 'Bạn nghĩ gì về câu hỏi lớn của bài? Nêu một phản bác và trả lời nó.')}</p>
@@ -334,6 +337,23 @@ QUY TẮC:
       const f = this.getN(r, 'feyn'), es = this.getN(r, 'essay'); if (!f && !es) { toast('Viết phần tự giảng hoặc bài viết trước đã', 'err'); return; }
       const o = await AI.json({ system: 'Bạn là giáo sư nhân văn chấm bài theo tinh thần khích lệ nhưng trung thực, trả lời tiếng Việt.', prompt: `Bài học: ${l.title}\nCâu hỏi lớn: ${l.q}\nKhái niệm chính: ${(l.concepts || []).map(k => `${k.term}: ${k.def}`).join(' || ')}\n\nPhần tự giảng của người học:\n${f || '(trống)'}\n\nBài viết ngắn:\n${es || '(trống)'}\n\nTrả về JSON: {"level":1-5 (1 = còn mơ hồ, 3 = hiểu ý chính, 5 = hiểu sâu và có lập luận riêng),"understood":["điều đã hiểu đúng", …],"gaps":["chỗ còn mờ/chưa giải thích", …],"misconceptions":["hiểu sai cụ thể (nếu có)"],"argument":"nhận xét 1–2 câu về chất lượng lập luận trong bài viết","next":"một câu hỏi để người học đào sâu tiếp"}` });
       r.feynFb = o; this.save(); $('#acFeynFb', el).innerHTML = this.feynHTML(o);
+    });
+  },
+  examHTML(l, open = true) {
+    const e = l.exam || {};
+    return `<details class="ac-exam" ${open ? 'open' : ''}><summary>🎯 Ôn thi — ý cần thuộc</summary><ul>${(e.points || []).map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+      ${e.qs?.length ? `<b>Câu hỏi dễ ra</b><ol>${e.qs.map(q => `<li>${esc(q)}</li>`).join('')}</ol>` : ''}</details>`;
+  },
+  /* đề cương ôn thi cả khoá: xem, in, hoặc chép sang Phòng Viết */
+  outline(c) {
+    const ls = this.lessons(c).filter(l => l.exam);
+    const html = ls.map((l, i) => `<h2>${i + 1}. ${esc(l.title)}</h2><ul>${l.exam.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>${l.exam.qs?.length ? `<p><b>Câu hỏi dễ ra:</b></p><ol>${l.exam.qs.map(q => `<li>${esc(q)}</li>`).join('')}</ol>` : ''}`).join('');
+    modal({
+      title: '🎯 Đề cương ôn thi · ' + esc(c.title), wide: true, body: `<div class="rich ac-outline">${html}</div>`,
+      actions: [
+        { label: '📝 Chép sang Phòng Viết', onClick: () => { const id = uid(); Store.upsert('posts', { id, title: 'Đề cương ôn thi: ' + c.title, subtitle: 'Học viện', cat: 'van-hoa', tags: ['ôn thi', 'học viện'], paper: 'lines', status: 'draft', content: html, words: wordCount(stripHtml(html)) }); toast('Đã chép — sửa, bổ sung tuỳ ý'); Router.go('/viet/sua/' + id); } },
+        { label: '🖨 In / lưu PDF', cls: 'pri', onClick: () => { const w = window.open('', '_blank'); if (!w) { toast('Trình duyệt chặn cửa sổ mới', 'err'); return false; } w.document.write(`<!doctype html><meta charset="utf-8"><title>Đề cương · ${esc(c.title)}</title><style>body{font:15px/1.6 Georgia,serif;max-width:760px;margin:30px auto;padding:0 20px;color:#222}h1{font-size:22px}h2{font-size:17px;margin:22px 0 6px;border-bottom:1px solid #ccc}li{margin:3px 0}</style><h1>Đề cương ôn thi · ${esc(c.title)}</h1>${html}`); w.document.close(); setTimeout(() => w.print(), 300); return false; } }
+      ]
     });
   },
   feynHTML(o) {
