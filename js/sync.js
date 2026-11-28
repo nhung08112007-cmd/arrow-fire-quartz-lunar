@@ -7,6 +7,7 @@
    ========================================================= */
 const Sync = {
   FILE: 'chutchi-sync.json',
+  LOCAL_ONLY: ['tbdata'],   // nội dung giáo trình có bản quyền: chỉ ở máy này
   LS_TOKEN: 'ct_gh_token', LS_META: 'ct_sync_meta', LS_BASE: 'ct_sync_base',
   busy: false, _t: null,
 
@@ -39,7 +40,7 @@ const Sync = {
     if (k !== 'settings' || !v) return v;
     const o = { ...v }; Object.keys(o).forEach(f => { if (/key$/i.test(f)) delete o[f]; }); return o;
   },
-  snapshot() { const o = {}; Store.keys.forEach(k => { if (Store.data[k] !== undefined) o[k] = this.clean(k, Store.data[k]); }); return o; },
+  snapshot() { const o = {}; Store.keys.forEach(k => { if (Store.data[k] !== undefined && !this.LOCAL_ONLY.includes(k)) o[k] = this.clean(k, Store.data[k]); }); return o; },
   baseOf(data) {
     const b = {};
     Object.entries(data).forEach(([k, v]) => { const kd = this.kind(v); b[k] = { kind: kd, h: {} }; this.entries(v, kd).forEach(([id, x]) => b[k].h[id] = this.hash(x)); });
@@ -106,7 +107,7 @@ const Sync = {
   merge(local, remote, base) {
     const out = {}, changedKeys = [];
     new Set([...Object.keys(local), ...Object.keys(remote)]).forEach(k => {
-      if (!Store.keys.includes(k)) return;
+      if (!Store.keys.includes(k) || this.LOCAL_ONLY.includes(k)) return;
       const r = this.mergeKey(k, local[k], remote[k], base?.[k]);
       out[k] = r.v; if (r.changed) changedKeys.push(k);
     });

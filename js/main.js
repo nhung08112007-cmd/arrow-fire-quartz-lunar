@@ -64,6 +64,9 @@ ${Blocks.divider('eggs')}
   Router.on(/^\/sach\/(\w+)$/, (v, id) => Books.detail(v, id));
   Router.on(/^\/doc\/sach\/(\w+)$/, (v, id) => Books.read(v, id));
   Router.on(/^\/ngoai-ngu$/, v => Lang.home(v));
+  Router.on(/^\/ngoai-ngu\/giao-trinh$/, v => TB.home(v));
+  Router.on(/^\/ngoai-ngu\/giao-trinh\/([\w-]+)$/, (v, b) => TB.outline(v, b));
+  Router.on(/^\/ngoai-ngu\/giao-trinh\/([\w-]+)\/(\d+)$/, (v, b, n) => TB.lessonPage(v, b, n));
   Router.on(/^\/ngoai-ngu\/(\w+)$/, (v, id) => Lang.course(v, id));
   Router.on(/^\/ngoai-ngu\/(\w+)\/([\w-]+)$/, (v, id, t) => Lang.course(v, id, t));
   Router.on(/^\/hoc-vien$/, v => Academy.home(v));

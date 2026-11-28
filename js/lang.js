@@ -203,7 +203,7 @@ const Lang = {
         <div class="ph-art scene">${Art.scene('lang')}</div>
         <div class="ph-txt"><div class="kicker">Tầng 3 · Lớp Ngoại Ngữ</div><h1>Lớp học của thầy Ếch Kính</h1>
           <p>Mỗi ngôn ngữ là một lớp học. Bên trong chia theo <b>Sách › Bài › Phần</b>. Có flashcard đầy đủ, ôn lặp lại ngắt quãng, nghe chép, trò chơi, ngữ pháp và gia sư AI.</p>
-          <div class="lh-acts"><button class="btn pri big" id="addCourse">＋ Mở lớp ngôn ngữ mới</button><button class="btn big" id="addPack">📚 Thư viện giáo trình</button></div></div>
+          <div class="lh-acts"><button class="btn pri big" id="addCourse">＋ Mở lớp ngôn ngữ mới</button><button class="btn big" id="addPack">📚 Thư viện giáo trình</button><a class="btn big" href="#/ngoai-ngu/giao-trinh">📘 Học theo giáo trình</a></div></div>
       </header>
       <div class="course-grid">${courses.map(c => {
         const cs = Store.list('cards').filter(x => x.courseId === c.id); const due = cs.filter(x => x.seen && (x.due || 0) <= Date.now()).length;
@@ -217,6 +217,8 @@ const Lang = {
     </div>`;
     $('#addCourse').onclick = () => this.courseForm();
     $('#addPack').onclick = () => Packs.open();
+    const tbs = Store.list('tbdata');
+    if (tbs.length) $('.course-grid', view).insertAdjacentHTML('beforebegin', `<section class="tb-shelf"><h2>📘 Đang học theo giáo trình</h2><div class="tb-shelf-row">${tbs.map(b => { const B = b.data, done = B.lessons.filter(l => Store.find('acad', `G:${B.id}:${l.n}`)?.done).length, next = B.lessons.find(l => l.texts?.length && !Store.find('acad', `G:${B.id}:${l.n}`)?.done); return `<a class="tb-shelf-card" href="#/ngoai-ngu/giao-trinh/${esc(B.id)}${next ? '/' + next.n : ''}"><b>${esc(B.flag || '📘')} ${esc(B.title)}</b><small>${done}/${B.lessons.length} bài${next ? ` · tiếp: 第${next.n}课 ${esc(next.zh)}` : ''}</small></a>`; }).join('')}</div></section>`);
   },
   courseForm(c) {
     const isNew = !c; c = c || { id: uid(), name: '', lang: 'en-US', flag: '🇬🇧', color: '#b8f0a0', native: 'vi' };
@@ -262,7 +264,7 @@ const Lang = {
     const tbs = () => Store.list('tbooks').filter(b => b.courseId === cid);
     const drawTree = () => {
       $('#tree').innerHTML = `<div class="tn ${!sc.bookId ? 'on' : ''}" data-k="all">🌐 Toàn bộ lớp <small>${this.cardsIn(cid, {}).length}</small></div>` + tbs().map(b => `
-        <div class="tn tn-b ${sc.bookId === b.id && !sc.unitId ? 'on' : ''}" data-b="${b.id}">📘 ${esc(b.title)} <small>${this.cardsIn(cid, { bookId: b.id }).length}</small><span class="tn-act"><i data-a="addU" data-b="${b.id}" title="Thêm bài">＋</i><i data-a="renB" data-b="${b.id}" title="Đổi tên">✎</i><i data-a="delB" data-b="${b.id}" title="Xoá">✕</i></span></div>
+        <div class="tn tn-b ${sc.bookId === b.id && !sc.unitId ? 'on' : ''}" data-b="${b.id}">📘 ${esc(b.title)}${b.tb ? ` <a href="#/ngoai-ngu/giao-trinh/${esc(b.tb)}" title="Mở giáo trình" onclick="event.stopPropagation()">↗</a>` : ''} <small>${this.cardsIn(cid, { bookId: b.id }).length}</small><span class="tn-act"><i data-a="addU" data-b="${b.id}" title="Thêm bài">＋</i><i data-a="renB" data-b="${b.id}" title="Đổi tên">✎</i><i data-a="delB" data-b="${b.id}" title="Xoá">✕</i></span></div>
         ${(b.units || []).map(u => `
           <div class="tn tn-u ${sc.unitId === u.id && !sc.part ? 'on' : ''}" data-b="${b.id}" data-u="${u.id}">📄 ${esc(u.title)} <small>${this.cardsIn(cid, { bookId: b.id, unitId: u.id }).length}</small><span class="tn-act"><i data-a="addP" data-b="${b.id}" data-u="${u.id}" title="Thêm phần">＋</i><i data-a="renU" data-b="${b.id}" data-u="${u.id}">✎</i><i data-a="delU" data-b="${b.id}" data-u="${u.id}">✕</i></span></div>
           ${(u.parts || []).map(p => `<div class="tn tn-p ${sc.unitId === u.id && sc.part === p ? 'on' : ''}" data-b="${b.id}" data-u="${u.id}" data-p="${esc(p)}">· ${esc(p)} <small>${this.cardsIn(cid, { bookId: b.id, unitId: u.id, part: p }).length}</small><span class="tn-act"><i data-a="delP" data-b="${b.id}" data-u="${u.id}" data-p="${esc(p)}">✕</i></span></div>`).join('')}
