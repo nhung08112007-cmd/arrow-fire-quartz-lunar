@@ -1,9 +1,9 @@
 /* Học viện · Konrad — “Phương Tây và Phương Đông”. Biên soạn từ ghi chép của bạn, Chữ-tchi bổ sung nguyên văn (Sử ký, Nguyên đạo, Đại học, Thu hứng — đều thuộc phạm vi công cộng)
-   và sửa vài số liệu. Phần “exam” là ý cần thuộc + câu hỏi dễ ra thi. */
+   và sửa vài số liệu. Trường “exam” là ý chính của bài + câu hỏi để nghĩ tiếp. */
 const ACAD_KONRAD = {
   format: 'chutchi-course@1', id: 'konrad', field: 'Văn học phương Đông', icon: '🌏', color: '#ffc0b0',
   title: 'Konrad: Phương Tây và Phương Đông',
-  desc: 'Ôn thi theo ghi chép của bạn: Pôlibi & Tư Mã Thiên, khái niệm Trung thế kỷ, Phục hưng Đường – Tống, Tống Nho, ba nhà thơ Lý Bạch – Vương Duy – Đỗ Phủ. Mỗi bài có nguyên văn chữ Hán, thẻ khái niệm và khối 🎯 Ôn thi.',
+  desc: 'Đọc Konrad để nhìn Đông – Tây trong cùng một dòng lịch sử: Pôlibi & Tư Mã Thiên, khái niệm Trung thế kỷ, Phục hưng Đường – Tống, Tống Nho, ba nhà thơ Lý Bạch – Vương Duy – Đỗ Phủ. Dựng từ ghi chép của bạn, kèm nguyên văn chữ Hán.',
   parts: [
     {
       title: 'Phần I · Triết học lịch sử: Pôlibi và Tư Mã Thiên',
@@ -32,10 +32,10 @@ const ACAD_KONRAD = {
           },
           socra: ['Một thể chế tốt có thể biến chất vì những người cai trị đổi khác, hay vì chính cấu trúc của nó? Pôlibi nghĩ gì?', 'Bạn có thấy ý tưởng “kiềm chế và đối trọng” trong các nhà nước hiện đại không?', 'Nếu lịch sử là tuần hoàn, thì con người còn có thể làm gì để thay đổi nó?'],
           feynman: 'Vẽ (hoặc kể) vòng tuần hoàn 6 chính thể của Pôlibi và giải thích vì sao thể chế hỗn hợp giúp La Mã bền vững.',
-          essay: 'Trình bày quan niệm lịch sử của Pôlibi theo Konrad: sáu chính thể, vòng tuần hoàn biện chứng và thể chế hỗn hợp. 300–400 chữ.',
+          essay: 'Theo bạn, ý “mọi thể chế đơn lẻ đều tự biến chất” còn đúng với thế giới hôm nay không? Chọn một ví dụ và dùng khái niệm của Pôlibi để soi nó. 250–350 chữ.',
           exam: {
             points: ['Hai kiểu nghiên cứu lịch sử: suy luận triết học thuần tuý / chủ nghĩa kinh nghiệm lịch sử — Pôlibi & Tư Mã Thiên thuộc kiểu 2', 'Bối cảnh chung: đỉnh cao chiếm hữu nô lệ, hình thành đế chế La Mã và Hán', '6 chính thể: quân chủ ↔ chuyên chế, quý tộc ↔ quả đầu, dân chủ ↔ vô chính phủ — tiêu chí chất lượng', 'Anacyclosis: quân chủ → chuyên chế → quý tộc → quả đầu → dân chủ → vô chính phủ → quân chủ', 'Tuần hoàn biện chứng (xoắn ốc), không phải lặp lại kiểu Pythagore', 'Thể chế hỗn hợp: Chấp chính (quân chủ) – Nguyên lão (quý tộc) – Đại hội nhân dân (dân chủ)', 'La Mã chinh phục thế giới trong chưa đầy 53 năm'],
-            qs: ['Trình bày quan niệm về các hình thức chính thể và vòng tuần hoàn lịch sử của Pôlibi.', 'Vì sao Konrad gọi tuần hoàn của Pôlibi là “biện chứng”?']
+            qs: ['Thể chế hỗn hợp của La Mã giống và khác các nhà nước hiện đại có phân quyền ở đâu?', 'Nếu lịch sử tuần hoàn, liệu có “tiến bộ” thật sự không?']
           },
           read: ['Konrad — Phương Tây và Phương Đông, bài “Pôlibi và Tư Mã Thiên”', 'Pôlibi — Lịch sử, quyển VI']
         },
@@ -62,14 +62,14 @@ const ACAD_KONRAD = {
             claim: 'So với Pôlibi, Tư Mã Thiên tìm nguyên nhân lịch sử ở phẩm chất con người, không ở hình thức thể chế.',
             premises: ['Pôlibi phân loại và giải thích bằng hình thức chính thể, sự biến chất nằm ở cơ quan quyền lực.', 'Tư Mã Thiên giải thích bằng nguyên tắc tinh thần (Trung – Kính – Văn) và cái tệ của chúng bộc lộ ở bản tính quần chúng.', 'Giải pháp cũng khác: Pôlibi — cân bằng quyền lực; Tư Mã Thiên — quay về phẩm chất nguyên sơ (Trung) trên cơ sở mới.'],
             objection: 'Hai người thực ra rất giống nhau: đều tuần hoàn, đều biện chứng, đều rút quy luật từ kinh nghiệm. Nhấn mạnh khác biệt là làm lu mờ điểm chung mà chính Konrad muốn chứng minh.',
-            reply: 'Konrad làm cả hai: chỉ ra điểm chung (phương pháp kinh nghiệm, tuần hoàn biện chứng, bối cảnh đế chế) để chứng minh tính phổ quát của tư duy nhân loại, và chỉ ra khác biệt (thể chế vs phẩm chất) để thấy đặc sắc từng nền văn minh. Bài thi tốt cần nêu cả hai vế.'
+            reply: 'Konrad làm cả hai: chỉ ra điểm chung (phương pháp kinh nghiệm, tuần hoàn biện chứng, bối cảnh đế chế) để chứng minh tính phổ quát của tư duy nhân loại, và chỉ ra khác biệt (thể chế vs phẩm chất) để thấy đặc sắc từng nền văn minh. Hiểu Konrad là thấy được cả hai vế cùng lúc.'
           },
           socra: ['Hãy tìm một ví dụ hôm nay về “văn tệ” — hình thức lấn át lòng thành.', 'Bạn đồng ý rằng cái tệ bộc lộ ở quần chúng trước, hay ở người cầm quyền trước?', 'Nếu phải chọn: sửa xã hội bằng thể chế (Pôlibi) hay bằng phẩm chất con người (Tư Mã Thiên)?'],
           feynman: 'Giải thích sơ đồ Hạ (Trung → dã) → Ân (Kính → quỷ) → Chu (Văn → tắc) → Tần (sai: Pháp) → Hán (về Trung) cho một bạn chưa học.',
-          essay: 'So sánh quan niệm lịch sử của Pôlibi và Tư Mã Thiên theo Konrad (góc nhìn, bản chất suy đồi, trọng tâm tác động, giải pháp, quy luật chung). 400–500 chữ.',
+          essay: 'Đặt Pôlibi và Tư Mã Thiên cạnh nhau: mỗi người thấy được điều gì mà người kia bỏ sót? Cách nhìn nào giúp bạn hiểu xã hội hôm nay hơn? 300–400 chữ.',
           exam: {
             points: ['Tư Mã Thiên: phẩm chất bản tính con người làm cơ sở chính quyền (khác Pôlibi: thể chế)', 'Hạ – Trung → tệ: dã; Ân – Kính → tệ: quỷ (Trịnh Huyền chú); Chu – Văn → tệ: tắc/giả nguy', '“Tam vương chi đạo nhược tuần hoàn, chung nhi phục thuỷ”', 'Tần dùng Pháp hà khắc = lỗi lầm (Giả Nghị, Tư Mã Thiên) → mất sau 15 năm', 'Hán quay về Trung → “sử nhân bất quyện, đắc thiên thống”', 'Cái tệ bộc lộ ở tiểu nhân; quân tử nhận ra và lập trật tự mới', 'Ngũ hành: Hạ Mộc – Ân Kim – Chu Hoả – Tần Thuỷ – Hán Thổ; Thiên mệnh = trật tự vũ trụ', 'Bảng so sánh 5 tiêu chí Pôlibi / Tư Mã Thiên'],
-            qs: ['So sánh quan niệm triết học lịch sử của Pôlibi và Tư Mã Thiên.', 'Phân tích học thuyết Trung – Kính – Văn của Tư Mã Thiên qua cách đọc của Konrad.', 'Vì sao nhà Tần bị coi là “lỗi lầm” của lịch sử?']
+            qs: ['Một thời đại có thể mắc cả ba cái tệ dã – quỷ – tắc cùng lúc không? Thời của bạn thì sao?', 'Tư Mã Thiên bị Hán Vũ Đế xử cung hình, vậy mà vẫn viết nhà Hán “được mối giềng của trời”. Điều đó nói gì về cách ông viết sử?']
           },
           read: ['Sử ký · Cao Tổ bản kỷ (đoạn Thái sử công viết)', 'Giả Nghị — Quá Tần luận']
         }
@@ -97,14 +97,14 @@ const ACAD_KONRAD = {
             claim: 'Khái niệm Trung thế kỷ có thể và cần áp dụng cho phương Đông.',
             premises: ['Nội dung thực chất của Trung thế kỷ là sự hình thành và thịnh vượng của chế độ phong kiến.', 'Ở phương Đông cũng diễn ra đúng quá trình đó, cùng bốn hiện tượng đồng thời với châu Âu.', 'Vậy giữ khái niệm này riêng cho châu Âu là phiến diện; áp dụng chung giúp thấy quy luật phổ quát và cả vị trí tiên phong của phương Đông.'],
             objection: 'Dùng một khung khái niệm châu Âu (và khung năm hình thái của chủ nghĩa Mác) cho phương Đông có thể lại là một dạng lấy châu Âu làm chuẩn — ép phương Đông vào khuôn có sẵn.',
-            reply: 'Konrad đổi nghĩa khái niệm: không còn là “thời kỳ của châu Âu Kitô giáo” mà là một giai đoạn phát triển chung, và cho thấy phương Đông thậm chí đi trước. Tuy vậy, phản bác này đáng nêu trong bài thi để cho thấy tư duy phản biện về giới hạn của cách tiếp cận Konrad.'
+            reply: 'Konrad đổi nghĩa khái niệm: không còn là “thời kỳ của châu Âu Kitô giáo” mà là một giai đoạn phát triển chung, và cho thấy phương Đông thậm chí đi trước. Dù vậy, phản bác này vẫn đáng giữ trong đầu: nó chỉ ra giới hạn của chính cách tiếp cận Konrad.'
           },
           socra: ['Gọi một thời kỳ là “trung gian” (middle) giữa hai thời rực rỡ nói lên định kiến gì?', 'Lịch sử Việt Nam có thể chia theo khung Cổ đại – Trung đại – Cận đại không? Có gì gượng ép?', 'Nếu phương Đông đi trước, vì sao trong đầu nhiều người “phát triển” vẫn đồng nghĩa với “phương Tây”?'],
           feynman: 'Giải thích bốn đặc trưng toàn cầu của Trung thế kỷ, mỗi đặc trưng một ví dụ phương Đông và một ví dụ phương Tây.',
-          essay: 'Trình bày và đánh giá luận điểm của Konrad: “Trung thế kỷ là một quy luật toàn cầu, trong đó phương Đông đi trước.” 400–500 chữ.',
+          essay: 'Konrad muốn phá cái nhìn lấy châu Âu làm trung tâm. Theo bạn ông làm được đến đâu, và cách làm của ông có giới hạn gì? 300–400 chữ.',
           exam: {
             points: ['Thuật ngữ do các nhà nhân văn châu Âu thế kỷ XV đặt: Cổ đại – Trung thế kỷ – Thời đại mới', 'Phê phán: phương Đông bị dồn thành “thế giới khác”', 'Konrad: Trung thế kỷ = hình thành, củng cố, thịnh vượng của phong kiến thay chiếm hữu nô lệ — quy luật toàn nhân loại', '4 đặc trưng: đế chế sụp (III–V) / dân tộc trẻ di cư / tôn giáo thế giới / khởi nghĩa nông dân', 'Niên biểu: TQ III→VIII; Trung Á – Iran III→IX–XI; châu Âu V→XV', 'Phương Đông tiên phong; tụt hậu cận đại vì phong kiến quá vững, tư bản chậm lớn'],
-            qs: ['Vì sao Konrad cho rằng khái niệm Trung thế kỷ có thể áp dụng cho phương Đông?', 'Trình bày bốn đặc trưng toàn cầu của Trung thế kỷ theo Konrad.']
+            qs: ['Lịch sử Việt Nam có “Trung thế kỷ” theo nghĩa của Konrad không? Đặc trưng nào khớp, đặc trưng nào không?', 'Khung “Cổ đại – Trung cổ – Cận đại” có còn hữu ích, hay chính nó cũng là một đại tự sự (nối với khoá Hậu hiện đại)?']
           },
           read: ['Konrad — Phương Tây và Phương Đông, chương “Trung thế kỷ trong khoa học lịch sử”']
         },
@@ -129,14 +129,14 @@ const ACAD_KONRAD = {
             claim: 'Phong trào Cổ văn đời Đường là một cuộc Phục hưng, tương đương Phục hưng châu Âu.',
             premises: ['Cả hai lấy ngọn cờ quay về cổ đại (Khổng – Mạnh / Hy – La) để vượt qua Trung thế kỷ.', 'Cả hai chống giáo điều tôn giáo thống trị (Phật – Đạo / Giáo hội).', 'Cả hai đề cao giá trị con người — Nhân / humanism.'],
             objection: 'Phục hưng châu Âu gắn với giai cấp tư sản đô thị và mở đường cho chủ nghĩa tư bản, còn Phục hưng Đường – Tống diễn ra trong lòng phong kiến tập quyền và không dẫn tới tư bản. Gọi chung một tên có thể khiên cưỡng.',
-            reply: 'Konrad thừa nhận khác biệt môi trường (chính bảng so sánh trong ghi chép của bạn có tiêu chí này), nhưng coi điểm chung về nội dung tư tưởng — chủ nghĩa nhân đạo — là quyết định. Bài thi nên nêu cả điểm giống và khác.'
+            reply: 'Konrad thừa nhận khác biệt môi trường (chính bảng so sánh trong ghi chép của bạn có tiêu chí này), nhưng coi điểm chung về nội dung tư tưởng — chủ nghĩa nhân đạo — là quyết định. Đọc kỹ thì thấy cả điểm giống lẫn khác đều làm rõ thêm cho nhau.'
           },
           socra: ['“Quay về cổ đại” để tiến lên — nghe như nghịch lý. Bạn giải thích thế nào?', 'Hàn Dũ phê phán Phật giáo là “ngoại giáo”. Đó là tinh thần nhân văn hay một dạng bài ngoại?', 'Định nghĩa “nhân” của Hàn Dũ còn hợp với hôm nay không?'],
           feynman: 'Giải thích vì sao Konrad gọi Hàn Dũ là người “mở màn” Phục hưng phương Đông, nêu ba việc tiêu biểu của ông.',
-          essay: 'So sánh Phục hưng Đường – Tống và Phục hưng châu Âu theo Konrad (thời điểm, đòn bẩy, giá trị cốt lõi, môi trường). 400–500 chữ.',
+          essay: '“Quay về cổ đại để đi tới” — bạn nghĩ gì về nghịch lý này? Liên hệ Hàn Dũ và một ví dụ của riêng bạn. 250–350 chữ.',
           exam: {
             points: ['Phục hưng Đường – Tống: khẩu hiệu Cổ văn, quay về Khổng – Mạnh ↔ Phục hưng Ý quay về Hy – La', 'Bản chất: chủ nghĩa nhân đạo (Nhân), giải phóng khỏi giáo điều Phật – Đạo', 'Hàn Dũ (768–824) mở màn: Gián nghênh Phật cốt biểu (819) — Nguyên đạo: “Bác ái chi vị nhân” — đề cao Mạnh Tử, Đại học → nền móng Tứ thư', 'Bảng so sánh: thời điểm (VIII–XVI / XIV–XVI), đòn bẩy (Cổ văn / Hy – La), giá trị (Nhân / Humanism), môi trường (phong kiến tập quyền đô thị / tư sản đô thị)', 'Kết luận Konrad: Phục hưng là quy luật toàn cầu, phương Đông đi trước'],
-            qs: ['Trình bày luận điểm của Konrad về Phục hưng ở phương Đông.', 'Vai trò của Hàn Dũ trong phong trào Phục hưng Đường – Tống.']
+            qs: ['Hàn Dũ chống Phật giáo nhân danh tinh thần nhân văn. Có thể vừa nhân văn vừa bài xích một tôn giáo không?', 'Hôm nay có phong trào nào “quay về cổ” để làm mới không?']
           },
           read: ['Hàn Dũ — Nguyên đạo; Gián nghênh Phật cốt biểu', 'Konrad — các bài về Phục hưng phương Đông']
         },
@@ -161,14 +161,14 @@ const ACAD_KONRAD = {
             claim: 'Dù đối lập về phương pháp, Lý học và Tâm học cùng thuộc chủ nghĩa nhân đạo Phục hưng.',
             premises: ['Lý học hướng ngoại (cách vật trí tri), Tâm học hướng nội (Tâm tức là Lý) — phương pháp nhận thức ngược nhau.', 'Nhưng cả hai đều chống kinh viện, chống biến triết học thành công cụ quan quyền.', 'Và cả hai đều đặt con người — khả năng nhận thức và đạo đức của con người — vào trung tâm thế giới.'],
             objection: 'Về sau Lý học Chu Hy trở thành hệ tư tưởng chính thống của khoa cử, chính nó lại thành giáo điều kinh viện. Gọi nó là “nhân đạo, khai phóng” chỉ đúng với lúc ra đời.',
-            reply: 'Đây là biện chứng mà Konrad hẳn chấp nhận: một tư tưởng tiến bộ ở thời của nó có thể thành giáo điều khi được thể chế hoá — giống chính vòng Trung – Kính – Văn của Tư Mã Thiên. Nêu ý này trong bài sẽ cho thấy bạn nối được các phần của sách.'
+            reply: 'Đây là biện chứng mà Konrad hẳn chấp nhận: một tư tưởng tiến bộ ở thời của nó có thể thành giáo điều khi được thể chế hoá — giống chính vòng Trung – Kính – Văn của Tư Mã Thiên. Nhận ra điều này là thấy được các phần của sách nối với nhau.'
           },
           socra: ['Khi học, bạn thuộc kiểu “cách vật” (đi từ nhiều ví dụ) hay kiểu “tâm học” (tin trực giác rồi kiểm chứng)?', '“Biết mà không làm thì chưa phải là biết” — bạn đồng ý không? Cho một ví dụ trong việc học của bạn.', 'Một tư tưởng khai phóng có thể biến thành giáo điều như thế nào?'],
           feynman: 'Giải thích sự khác nhau giữa Trình – Chu và Lục – Vương bằng ví dụ “học cách viết một bài văn hay”.',
-          essay: 'Trình bày hai khuynh hướng Tống Nho (Trình – Chu, Lục – Vương) và nhận định của Konrad về điểm gặp gỡ của chúng. 300–400 chữ.',
+          essay: 'Bạn học theo kiểu “cách vật trí tri” hay “tâm tức là lý”? Kể lại một trải nghiệm học của mình qua lăng kính hai phái. 250–350 chữ.',
           exam: {
             points: ['Tống Nho: Chu Đôn Di, Trương Tái, Trình Hạo, Trình Di, Chu Hy', 'Chống chú giải vụn vặt và triết học phục vụ quan quyền; tìm Lý (quy luật tự nhiên & xã hội)', 'Họ Trình rút Đại học, Trung dung khỏi Lễ ký; Chu Hy: Đại học → Luận ngữ → Mạnh Tử → Trung dung', 'Trình – Chu: Lý học, cách vật trí tri (hướng ngoại)', 'Lục – Vương: Tâm học, “Tâm tức là Lý”, “Lục kinh chú ngã, ngã chú Lục kinh”, tri hành hợp nhất (hướng nội)', 'Konrad: hai phái gặp nhau ở chủ nghĩa nhân đạo; thơ ca là lực lượng báo hiệu Phục hưng đầu tiên → chuyển sang chương Ba nhà thơ'],
-            qs: ['Trình bày phương pháp đọc Tứ thư của Chu Hy và ý nghĩa của nó.', 'So sánh Lý học Trình – Chu và Tâm học Lục – Vương.']
+            qs: ['Chu Hy đề cao cách vật — vì sao Lý học về sau lại bị coi là giáo điều khoa cử?', '“Tri hành hợp nhất” có giống “học đi đôi với hành”, hay sâu hơn?']
           },
           read: ['Đại học, Trung dung (bản dịch Việt có chú Hán)', 'Vương Dương Minh — Truyền tập lục (trích)']
         }
@@ -198,14 +198,14 @@ const ACAD_KONRAD = {
             claim: 'Thơ Đường là lực lượng báo hiệu đầu tiên của Phục hưng phương Đông.',
             premises: ['Phục hưng có bản chất là khẳng định giá trị con người, giải phóng cá nhân.', 'Thơ Lý Bạch (tự do cá nhân), Vương Duy (chiều sâu nội tâm), Đỗ Phủ (tình thương nhân loại) đã thể hiện đủ ba mặt của tinh thần đó ngay từ thế kỷ VIII.', 'Triết học Tống Nho chỉ hệ thống hoá tinh thần ấy về sau (thế kỷ XI–XII).'],
             objection: 'Vương Duy chịu ảnh hưởng Phật giáo sâu sắc, trong khi Phục hưng phương Đông lại được định nghĩa là chống giáo điều Phật – Đạo. Xếp ông vào đây có mâu thuẫn không?',
-            reply: 'Konrad phân biệt Thiền tông thế tục (khám phá tâm hồn ngay trong đời sống) với Phật giáo giáo điều, cúng bái (thứ Hàn Dũ phê phán). Vương Duy thuộc vế trước — đó chính là mấu chốt nên nêu khi làm bài.'
+            reply: 'Konrad phân biệt Thiền tông thế tục (khám phá tâm hồn ngay trong đời sống) với Phật giáo giáo điều, cúng bái (thứ Hàn Dũ phê phán). Vương Duy thuộc vế trước — đó chính là mấu chốt.'
           },
           socra: ['Trong ba nhà thơ, ai gần với bạn nhất? Lý do đó nói gì về điều bạn coi trọng ở con người?', 'Nỗi buồn cá nhân trở thành “nhân đạo” khi nào?', 'So sánh Lý Bạch với Petrarca có làm ta hiểu Lý Bạch hơn, hay lại đo phương Đông bằng thước phương Tây?'],
           feynman: 'Giới thiệu ba nhà thơ trong 6 câu (mỗi người 2 câu: biệt danh + tinh thần + một câu thơ).',
-          essay: 'Phân tích bài Thu hứng (bài 1) để làm rõ nhận định của Konrad: Đỗ Phủ là nhà thơ nhân đạo theo nghĩa cao quý nhất. 400–500 chữ.',
+          essay: 'Đọc chậm Thu hứng bài 1 và viết cảm nhận: nỗi buồn riêng của Đỗ Phủ chạm tới bạn ở đâu? Bạn có đồng ý với Konrad rằng đó là “nhân đạo theo nghĩa cao quý nhất”? 300–400 chữ.',
           exam: {
             points: ['Konrad: thơ ca là lực lượng báo hiệu đầu tiên của Phục hưng (trước triết học Tống)', 'Lý Bạch – Thi Tiên – tự do cá nhân, cái Tôi – đối sánh Petrarca', 'Vương Duy – Thi Phật – Thiền tông thế tục, hoà hợp nội tâm – thiên nhiên', 'Đỗ Phủ – Thi Thánh – nỗi đau nhân dân, loạn An Lộc Sơn – nhân đạo cao quý nhất', 'Thu hứng: 8 bài, Quỳ Châu 766; bài 1: 4 câu cảnh – 4 câu tình; “cô chu nhất hệ cố viên tâm”'],
-            qs: ['Trình bày nhận định của Konrad về ba nhà thơ Lý Bạch, Vương Duy, Đỗ Phủ.', 'Phân tích bài Thu hứng số 1 của Đỗ Phủ.']
+            qs: ['Nếu chỉ được chọn một bài thơ để hiểu “Phục hưng phương Đông”, bạn chọn bài nào, của ai?', 'Thử đặt Đỗ Phủ cạnh Nguyễn Du — cả hai cùng “đau đớn lòng” trước những điều trông thấy: giống và khác ở đâu?']
           },
           read: ['Konrad — chương “Ba nhà thơ” và “Tám bài Thu hứng của Đỗ Phủ”', 'Đỗ Phủ — Thu hứng bát thủ (đọc kèm một bản dịch thơ, ví dụ bản mở đầu “Lác đác rừng phong hạt móc sa…”)']
         }
