@@ -754,3 +754,7 @@ body.reduce-fx .view.pg-in { animation: none; }
 .ac-drill .dans { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: #eaffdf; color: #2a2346; }
 .ac-wr { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; } .ac-wrc { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .ac-wrc .wr-box { width: 180px; height: 180px; border: 2px solid var(--ink); border-radius: 12px; background: #fffdf6; }
+
+.ac-tbl { border-collapse: collapse; margin: 10px 0; width: 100%; font-size: 15px; } .ac-tbl th, .ac-tbl td { border: 1.5px solid var(--ink); padding: 6px 10px; text-align: left; vertical-align: top; } .ac-tbl th { background: #fff4cf; color: #2a2346; }
+.ac-lec .rich { overflow-x: auto; }
+.ac-drill .dopts .btn:disabled { opacity: 1; cursor: default; } .ac-drill .dopts .btn:disabled:not(.ok):not(.bad) { opacity: .55; }

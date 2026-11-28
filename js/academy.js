@@ -335,6 +335,8 @@ const Academy = {
         $$('[data-a]', w).forEach(b => b.onclick = () => { const i = +b.dataset.i, bx = boxes[i]; if (!bx) return; if (b.dataset.a === 'show') bx.animate(); if (b.dataset.a === 'ghost') { ghostOn[i] = !ghostOn[i]; bx.ghost(ghostOn[i]); } if (b.dataset.a === 'redo') bx.reset(); });
       } });
   },
+  /* hoán vị cố định theo khoá: thứ tự lựa chọn không lộ đáp án mà vẫn ổn định giữa các lần mở */
+  perm(n, key) { let t = hashStr(key) + 0x6D2B79F5; const rnd = () => { t = (t + 0x6D2B79F5) | 0; let x = Math.imul(t ^ (t >>> 15), 1 | t); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; }; const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
   step_practice(el, c, l, r) {
     const D = l.drills || []; r.dr = r.dr || {};
     const mcqs = D.map((d, i) => [d, i]).filter(([d]) => d.t !== 'tr');
@@ -344,11 +346,11 @@ const Academy = {
         ? `<div class="ac-drill tr"><div class="dq"><b>${i + 1}.</b> Dịch câu sau: <span class="dsrc">${esc(d.src)}</span></div>${d.rd ? `<div class="drd">${esc(d.rd)}</div>` : ''}${this.ta(r, 'tr' + i, 'Bản dịch của bạn…', 2)}
             <div class="row"><button class="btn sm" data-show="${i}">Xem bản dịch mẫu</button><button class="btn sm" data-ai="${i}">✦ AI chấm</button></div>
             <div class="dans" ${this.getN(r, 'trshow' + i) ? '' : 'hidden'}><b>Bản mẫu:</b> ${esc(d.a)}${d.why ? `<div class="dwhy">${esc(d.why)}</div>` : ''}</div><div class="dfb">${this.getN(r, 'trfb' + i) ? `<div class="ac-fb rich">${this.md(this.getN(r, 'trfb' + i))}</div>` : ''}</div></div>`
-        : `<div class="ac-drill" data-i="${i}"><div class="dq"><b>${i + 1}.</b> ${d.ch ? `<span class="dch">${esc(d.ch)}</span>` : ''}${esc(d.q)}</div><div class="dopts">${d.o.map((o, j) => `<button class="btn sm" data-j="${j}">${esc(o)}</button>`).join('')}</div><div class="dwhy" hidden>${esc(d.why || '')}</div></div>`).join('')}</div>
+        : `<div class="ac-drill" data-i="${i}"><div class="dq"><b>${i + 1}.</b> ${d.ch ? `<span class="dch">${esc(d.ch)}</span>` : ''}${esc(d.q)}</div><div class="dopts">${this.perm(d.o.length, l.id + i).map(j => `<button class="btn sm" data-j="${j}">${esc(d.o[j])}</button>`).join('')}</div><div class="dwhy" hidden>${esc(d.why || '')}</div></div>`).join('')}</div>
       <div class="row"><span id="acScore"></span><span class="grow"></span><button class="btn sm" id="acRedo">↺ Làm lại trắc nghiệm</button></div>`;
     const paint = (box, i) => {
       const d = D[i], pick = r.dr[i]; if (pick == null) return;
-      $$('.dopts button', box).forEach((b, j) => { b.disabled = true; if (j === d.a) b.classList.add('ok'); else if (j === pick) b.classList.add('bad'); });
+      $$('.dopts button', box).forEach(b => { const j = +b.dataset.j; b.disabled = true; if (j === d.a) b.classList.add('ok'); else if (j === pick) b.classList.add('bad'); });
       $('.dwhy', box).hidden = false;
     };
     $$('.ac-drill[data-i]', el).forEach(box => {
